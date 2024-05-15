@@ -38,10 +38,12 @@
 
 \author{Tim Kalan \\ \medskip
         \footnotesize Mentor: doc.~dr. Tilen Marc}
-\institute[FMF]{Fakulteta za matematiko in fiziko}
-\title{
-    Skupinski podpisi \\ 
-    \large (angl. \textit{Group signatures})}
+% \author{Tim Kalan}
+% \institute[FMF]{Fakulteta za matematiko in fiziko}
+% \title{
+%     Kako se skupina podpiše? \\ 
+%     \large (angl. \textit{How can a group sign?})}
+\title{Kako se skupina podpiše?}
 \date{27. maj 2024} 
 
 
@@ -53,359 +55,175 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Načrt}
+    \frametitle{Zakaj potrebujemo podpise?}
+    \begin{itemize}
+        \item Mislim, da si lahko predstavljate ... 
+        \item Avtentikacija, integriteta
+        \item Bančništvo, e-pošta, \texttt{ssh}, ...
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Motivacija}
+    \frametitle{Kaj je podpis?}
+    \begin{multicols*}{2}
+        \textbf{Ročni podpis}
+        \begin{itemize}
+            \item Vsakič (približno) enak
+            \item Enostavno ponarediti
+            \item Težko (zares) preveriti
+        \end{itemize}
+        \columnbreak
+
+        \textbf{Digitalni podpis}
+        \begin{itemize}
+            \item Vsakič unikaten
+            \item Težko ponarediti
+            \item Enostavno preveriti
+        \end{itemize}
+    \end{multicols*}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Nadaljnje delo}
+    \frametitle{Kriptografija javnega ključa 1}
+    \begin{figure}
+        \includegraphics[width=\textwidth]{images/enkripcija.png}
+    \end{figure}
 \end{frame}
 
-% \begin{frame}
-%     \frametitle{Strojno učenje}
-%     \begin{itemize}
-%         \item Nadzorovano učenje \textit{(npr. prepoznavanje števk)}
-%         \item Nenadzorovano učenje \textit{(npr. razvrščanje)}
-%         \item \textbf{Spodbujevano učenje}
-%     \end{itemize}
-% \end{frame}
+\begin{frame}
+    \frametitle{Kriptografija javnega ključa 2}
+    \begin{figure}
+        \includegraphics[width=\textwidth]{images/podpisovanje.png}
+    \end{figure}
+\end{frame}
 
+\begin{frame}
+    \frametitle{Zgostitvene funkcije}
+\end{frame}
 
-% \begin{frame}
-%     \frametitle{Motivacija: Instrumentalno pogojevanje}
-%     \begin{itemize}
-%         %http://www.edugyan.in/2017/03/edward-lee-thorndike-theory-of-learning.html, 
-%         %https://en.wikipedia.org/wiki/Reinforcement
-%         \item Lepa psihološko motivirana podlaga
-%         \item \textbf{Nagrade in kazni} 
-%     \end{itemize}
+\begin{frame}
+    \frametitle{Primer digitalnega podpisa: RSA}
+    Odličen primer za spoznavanje osnovnih konceptov:
+    \vspace{1cm}
+    \begin{itemize}
+        \item Generiranje ključev
+        \item Podpisovanje
+        \item Preverjanje 
+    \end{itemize}
+\end{frame}
 
-%     \begin{figure}[b]
-%         % \includegraphics[scale=0.47]{slike/macka.jpg}
-%         % \includegraphics[scale=0.5]{slike/miska.jpg}
-%     \end{figure}
-% \end{frame}
+\begin{frame}
+    \frametitle{RSA: Generiranje ključev}
+    \begin{itemize}
+        \item Izberemo dve \alert{veliki} praštevili $p$ in $q$ (kako?)
+        \item Izračunamo $n = pq$ in $\phi(n) = (p-1)(q-1)$
+        \item Izberemo $e$ tako, da je $1 < e < \phi(n)$ in $\gcd(e, \phi(n)) = 1$
+        \item Izračunamo $d$ tako, da je $ed \equiv 1 \pmod{\phi(n)}$
+    \end{itemize}
+    \begin{multicols*}{2}
+        \textbf{Javni ključ}: $(n, e)$
+        \columnbreak
 
+        \textbf{Zasebni ključ}: $d$
+    \end{multicols*}
+\end{frame}
 
-% \begin{frame}
-%     \frametitle{Motivacija: Zakaj namizne igre?}
-%     \begin{itemize}
-%         \item Aplikacija abstraktnega mišljenja.
-%         \item Spremljajo človeštvo že zelo dolgo.
-%         \item ">Modelirajo"< resnično življenje.
-%         \item Uporabno mesto za testiranje algoritmov.
-%     \end{itemize}
-% \end{frame}
+\begin{frame}
+    \frametitle{RSA: Podpisovanje in preverjanje}
+    \begin{itemize}
+        \item Sporočilo $m$ podpišemo tako, da izračunamo $s = m^d \bmod n$
+        \item Podpis je par $(m, s)$
+    \end{itemize}
+    
+    \vspace{1cm}
+    \begin{itemize}
+        \item Preverimo tako, da izračunamo $m' = s^e \bmod n$
+        \item Podpis je pravilen, če je $m' = m$
+    \end{itemize}
+\end{frame}
 
+\begin{frame}
+    \frametitle{RSA: Primer}
+\end{frame}
 
-% \begin{frame}
-%     \frametitle{Spodbujevano učenje - osnovni koncepti 1}
-%     \begin{multicols}{2}
-%     \begin{itemize}
-%         \item Nagrada
-%         \item Agent
-%         \item Okolje
-%         \item Stanje
-%         \item Akcija
-%         %https://sl.wikipedia.org/wiki/Spodbujevano_učenje
-%     \end{itemize}
-%     \end{multicols}
+\begin{frame}
+    \frametitle{Kako se skupina podpiše?}
+    \begin{itemize}
+        \item \textbf{Prilagodljivost} (angl. \textit{flexibility})
+        \item \textbf{Odgovornost} (angl. \textit{accountability})
+    \end{itemize}
+    \vspace{1cm}
+    \textbf{Skupina}: 
+    \begin{align*}
+        G &= P_1, P_2, \dots, P_L \\
+        S &\subseteq G
+    \end{align*}
+\end{frame}
 
-%     \begin{figure}
-%         % \includegraphics[scale=0.5]{slike/RLloop.png}
-%     \end{figure}
-% \end{frame}
+\begin{frame}
+    \frametitle{Skupinski podpisi (angl. \textit{group signatures})}
+    \begin{itemize}
+        \item Anonimen podpis v imenu skupine
+        \item Ni prilagodljivosti
+        \item Delna odgovornost (vodja skupine)
+        \item Primer: 
+    \end{itemize}
+\end{frame}
 
+\begin{frame}
+    \frametitle{Mejni podpisi (angl. \textit{threshold signatures})}
+    \begin{itemize}
+        \item $t$-od-$n$ shema
+        \item Zmerna prilagodljivost
+        \item Ni odgovornosti
+        \item Primer: 
+    \end{itemize}
+\end{frame}
 
-% \begin{frame}
-%     \frametitle{Spodbujevano učenje - osnovni koncepti 2}
-%     \begin{itemize}
-%         \item Pomemben je čas.
-%         \item Ne poznamo ">pravilnih"< akcij.
-%         \item Raziskovanje in izkoriščanje
-%     \end{itemize}
-% \end{frame}
+\begin{frame}
+    \frametitle{Naivna ideja}
+    \begin{itemize}
+        \item Želimo si prilagodljivost in odgovornost
+        \item Vsak član $S$ podpiše $(M, S) \rightarrow \sigma_i$
+        \item Kot na papirju
+        \item Primer:
+    \end{itemize}
+    \vspace{1cm}
+    \pause
+    Težava?
+        $\sigma_1, \sigma_2, \sigma_3, \sigma_4, \sigma_5, \sigma_6,
+        \sigma_7,  \sigma_8, \sigma_9, \sigma_{10}, \sigma_{11}, \sigma_{12}, 
+        \sigma_{13}, \sigma_{14}, \sigma_{15}, \dots$
+\end{frame}
 
+\begin{frame}
+    \frametitle{Skupni podpisi (angl. \textit{multisignatures})}
+    \begin{itemize}
+        \item Skupina vrne samo en podpis
+        \item Prilagodljivost in odgovornost
+        \item Naivna ideja + učinkovitost
+        \item Primer:
+    \end{itemize}
+\end{frame}
 
-% \begin{frame}
-%     \frametitle{RL agent}
-%     \begin{itemize}
-%         \item Strategija (angl. \textit{Policy})
-%         \item Vrednostna funkcija (angl. \textit{Value function})
-%         \item (Model)
-%     \end{itemize}
-% \end{frame}
+\begin{frame}
+    \frametitle{Schnorrov podpis}
+    \textbf{Generiranje ključa} \\
+    \begin{itemize}
+        \item 
+    \end{itemize}
+    \textbf{Podpisovanje} \\
+    \begin{itemize}
+        \item 
+    \end{itemize}
+    \textbf{Verifikacija}
+    \begin{itemize}
+        \item 
+    \end{itemize}
+\end{frame}
 
-
-% \begin{frame}
-%     \frametitle{Kje je to uporabno?}
-%     \begin{itemize}
-%         \item Naučiti robota hoje.
-%         \item Upravljati s portfeljem.
-%         \item Igrati namizne igre.
-%         \item Igrati katerekoli igre.
-%         \item ...
-%     \end{itemize}
-%     \medskip
-%     \emph{Praktično karkoli, kjer lahko cilj modeliramo kot numerične
-%     nagrade, ne poznamo pa optimalnih akcij za dostop do teh nagrad.}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Problem}
-%     \begin{definicija}[Hipoteza o nagradi]
-%         Vse cilje je mogoče opisati kot maksimizacijo neke kumulativne numerične 
-%         nagrade.
-%     \end{definicija}
-
-%     \medskip
-
-%     \begin{itemize}
-%         \item Je to vedno res?
-%     \end{itemize}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Primer: Križci in krožci 1}
-%     \tikzstyle{block} = [rectangle, draw, 
-%     text width=5em, text centered, rounded corners, minimum height=4em]
-%     \tikzstyle{line} = [draw, -latex]
-%     \begin{tikzpicture}[node distance = 6em, auto, thick]
-%         \node [block] (Agent) {Agent};
-%         \node [block, below of=Agent] (Okolje) {Okolje};
-%         \path [line] (Agent.0) --++ (4em,0em) |- node [near start]{Akcija $A_t$} (Okolje.0);
-%         \path [line] (Okolje.190) --++ (-5em,0em) |- node [near start] {Novo stanje  $S_{t+1}$} (Agent.170);
-%         \path [line] (Okolje.170) --++ (-4.25em,0em) |- node [near start, right] {Nagrada $R_{t+1}$} (Agent.190);
-%     \end{tikzpicture}
-%     \begin{itemize}
-%         \item \textbf{Stanje:} Kje je prazno, kje ">X"< in kje ">O"<.
-%         \item \textbf{Agent:} Program, ki se odloča, kako igrati.
-%         \item \textbf{Okolje:} Agentu sporoča nagrade in stanje.
-%         \item \textbf{Nagrada:} Pozitivna za zmago, negativna za poraz.
-%         \item \textbf{Akcija:} Postavitev ">X"< oz. ">O"< na ploščo.
-%     \end{itemize}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Primer: Križci in krožci 2}
-%     \begin{itemize}
-%         \item Agent igra igre, posodablja svoje vrednosti stanj glede na odgovor okolja.
-%         \item Kako naj to stori?
-%     \end{itemize}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Primer: Križci in krožci 3}
-%     \begin{itemize}
-%         \item Enostavna ideja:                                  
-%         %
-%         $$
-%         V(s) \leftarrow V(s) + \alpha [V(s') - V(s)]
-%         $$
-%         %                                       
-%         \pause
-%         \item $s$ je trenutno stanje                     
-%         \pause
-%         \item $V$ je vrednostna funkcija                 
-%         \pause
-%         \item $\alpha$ je velikost koraka (hitrost učenja) 
-%         %\pause
-%         %\item $R$ je nagrada   
-%         %\pause
-%         %\item $\gamma$ je diskontni faktor (pomemben je čas)    
-%         \pause
-%         \item $s'$ je stanje, ki sledi \textit{s}   
-%     \end{itemize}
-%     \medskip
-%     \emph{Zgornje je primer \textbf{učenja s časovno razliko}} (angl. \textit{Temporal difference learning})
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Bistvo}
-%     %
-%     $$
-%     \textit{nova ocena} \leftarrow \textit{stara ocena} + \textit{korak} 
-%     [\textit{tarča} - \textit{stara ocena}]
-%     $$
-%     %
-%     \medskip
-%     \begin{itemize}
-%         \item Tako ocenimo dano strategijo.
-%         \item Kako pa strategijo dejansko spremenimo?
-%     \end{itemize}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{$\epsilon$-požrešna izboljšava strategije}
-%     \only<1>{Izberemo ">najboljšo"< akcijo.}
-%     \pause
-%     \sout{Izberemo ">najboljšo"< akcijo.}
-%     \pause
-%     \medskip
-
-%     \begin{itemize}
-%         \item ">Ponavadi"< izberemo ">najboljšo"< akcijo.
-%         \item Z verjetnostjo $\epsilon$ izberemo naključno akcijo.
-%     \end{itemize}
-
-%     \begin{figure}
-%         % \includegraphics[scale=0.23]{slike/policy-iteration.png}
-%     \end{figure}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Alternativa: Monte Carlo spodbujevano učenje 1}
-%     \begin{definicija}
-%         \begin{itemize}
-%             \item Agentova \textbf{strategija} je takšna preslikava $\pi: S \rightarrow A$
-%                     da velja 
-%                     \begin{align*}
-%                     a &= \pi(s) \\
-%                     \pi(a | s) &= P(A_t = a | S_t = s). 
-%                     \end{align*}
-
-%             \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
-%                     $t$ do konca epizode. \textbf{Povračilo} $G_t$ definiramo kot
-%                     $$
-%                     G_t = R_{t+1} + \gamma R_{t+2} + ... + \gamma^{T-1} R_T.
-%                     $$
-
-%             \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
-%                     stanja} glede na dano strategijo $v_\pi(s)$ je
-%                     $$
-%                     v_\pi(s) = \mathbb{E} [G_t | S_t = s].
-%                     $$
-%         \end{itemize}
-%     \end{definicija}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Alternativa: Monte Carlo spodbujevano učenje 2}
-%     \begin{itemize}
-%         \item Ob obisku stanja $s$: 
-%         \begin{align*}
-%             N(s) &\leftarrow N(s) + 1 \\
-%             S(s) &\leftarrow S(s) + G_t
-%         \end{align*}
-%         \item Po koncu učenja: 
-%         $$
-%         V(s) \leftarrow S(s) / N(s)
-%         $$
-%        \item Pomni: Računanje povprečja zaporedja $(X_i)_{i \in \mathbb{N}}$
-%        $$
-%        \mu_k = \frac{1}{k} \sum_{j=1}^k X_j = \mu_{k-1} + \frac{1}{k} (X_k - \mu_{k-1})
-%        $$
-%        \item Inkrementalni Monte Carlo:
-%        $$
-%        V(s) \leftarrow V(s) + \alpha (G_t - V(S_t))
-%        $$
-%     \end{itemize}
-% \end{frame}
-
-
-% %\begin{frame}
-% %    \frametitle{Formalizacija: Markovski proces odločanja 1}
-% %    \begin{definicija}[Markovska veriga]
-% %        Skučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
-% %        $(\Omega, P)$ je \textbf{Markovska veriga}, če velja Markovska lastnost
-% %        $$
-% %        P(S_{t+1} = s_{t+1} | S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1} | S_{t} = s_{t})
-% %        $$
-% %    \end{definicija}
-% %    \pause
-% %    \medskip
-% %    \begin{itemize}
-% %        \item Prihodnost je neodvisna od preteklosti, če poznamo sedanjost
-% %        \pause
-% %        \item $p_{ss'} := P(S_{t+1} = s' | S_{t} = s) \rightarrow
-% %                \mathcal{P} := [p_{ss'}]_{s,s'\in \mathcal{S} }$, $\mathcal{S}$ 
-% %                je množica stanj
-% %        \item \emph{Markovska veriga} je torej dvojica $(\mathcal{S}, \mathcal{P})$
-% %    \end{itemize}
-% %    
-% %\end{frame}
-% %
-% %
-% %\begin{frame}
-% %    \frametitle{Formalizacija: Markovski proces odločanja 2}
-% %    %\begin{definicija}[Markovski proces]
-% %    %    \textbf{Markovski proces} je par $(\mathcal{S}, \mathcal{P})$, kjer je
-% %    %    \begin{itemize}
-% %    %        \item $\mathcal{S}$ je (končna) množica stanj
-% %    %        \item $\mathcal{P}$ je prehodna matrika
-% %    %    \end{itemize}
-% %    %\end{definicija}
-% %    %\pause
-% %    \begin{definicija}[Markovski proces odločanja]
-% %        \textbf{Markovski proces odločanja} je nabor 
-% %        $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
-% %        \begin{itemize}
-% %            \item $\mathcal{S}$ je (končna) množica stanj
-% %            \item $\mathcal{A}$ je (končna) množiza akcij oz. dejanj
-% %            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'}^a = P(S_{t+1} = s' | S_{t} = s, A_t = a)$
-% %            \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s^a = E[R_{t+1} | S_{t} = s, A_t = a]$
-% %            \item $\gamma \in [0, 1]$ je diskontni faktor
-% %        \end{itemize}
-% %    \end{definicija}
-% %\end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Kam gremo od tu?}
-%     \begin{itemize}
-%         \item Koliko stanj imamo?
-%         \item Do kje lahko pridemo?
-%         \item Kaj je rešitev?
-%         \medskip 
-%         \medskip
-%         \medskip
-%         \item Monte Carlo metode ponavadi nastopijo, ko nekaj aproksimiramo, 
-%                 kako je s tem v našem primeru?
-%     \end{itemize}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Ideje za naprej}
-%     \begin{itemize}
-%         \item Drugi algoritmi
-%         \item Problem časovne dodelitve zaslug
-%         \item Večje igre - nevronske mreže
-%         \item Različni tipi učenja 
-%     \end{itemize}
-% \end{frame}
-
-
-% \begin{frame}
-%     \frametitle{Literatura}
-%     \begin{thebibliography}{9}
-%         \bibitem{RLintro} 
-%         Richard S. Sutton and Andrew G. Barto. 
-%     \textit{Reinforcement Learning: An introduction}.
-%     The MIT Press, 
-%     2015.
-
-%     \medskip
-%     \medskip
-
-%     \bibitem{RLboard}
-%     Imran Ghory.
-%     \textit{Reinforcement learning in board games}.
-%     2004.
-
-%     \end{thebibliography}
-% \end{frame}
-
+\begin{frame}
+    \frametitle{Varnost}
+\end{frame}
 
 \end{document}
