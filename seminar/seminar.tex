@@ -46,8 +46,6 @@
 \title{Kako se skupina podpiše?}
 \date{27. maj 2024} 
 
-
-
 \begin{document}
 
 \begin{frame}
@@ -99,6 +97,22 @@
 
 \begin{frame}
     \frametitle{Zgostitvene funkcije}
+    \begin{itemize}
+        \item Psevdonaključne funkcije
+        \item Enosmerne
+        \item ">Enostavno"< izračunljive
+    \end{itemize}
+    \begin{align*}
+        &\texttt{SHA-256(Ljubljana)} = \\
+        &\texttt{b7f147d8b4a6703a951336654355071f} \\ 
+        &\texttt{9752385f85d0860379e99b484aee7a82} \\
+        &\texttt{SHA-256(Ljubljena)} = \\
+        &\texttt{995d2d8ffb40e1838219e65dd2c66570} \\
+        &\texttt{1ba34a90e11f7195a4b791838b6787fe} \\ 
+    \end{align*}
+    \begin{itemize}
+        \item Naključni oraklji
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -113,13 +127,15 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{RSA: Generiranje ključev}
+    \frametitle{RSA}
+    \framesubtitle{Generiranje ključev}
     \begin{itemize}
         \item Izberemo dve \alert{veliki} praštevili $p$ in $q$ (kako?)
         \item Izračunamo $n = pq$ in $\phi(n) = (p-1)(q-1)$
         \item Izberemo $e$ tako, da je $1 < e < \phi(n)$ in $\gcd(e, \phi(n)) = 1$
         \item Izračunamo $d$ tako, da je $ed \equiv 1 \pmod{\phi(n)}$
     \end{itemize}
+    \vspace{1cm}
     \begin{multicols*}{2}
         \textbf{Javni ključ}: $(n, e)$
         \columnbreak
@@ -129,7 +145,8 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{RSA: Podpisovanje in preverjanje}
+    \frametitle{RSA}
+    \framesubtitle{Podpisovanje in preverjanje}
     \begin{itemize}
         \item Sporočilo $m$ podpišemo tako, da izračunamo $s = m^d \bmod n$
         \item Podpis je par $(m, s)$
@@ -143,7 +160,8 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{RSA: Primer}
+    \frametitle{RSA}
+    \framesubtitle{Primer}
 \end{frame}
 
 \begin{frame}
@@ -166,18 +184,23 @@
         \item Anonimen podpis v imenu skupine
         \item Ni prilagodljivosti
         \item Delna odgovornost (vodja skupine)
-        \item Primer: 
+        \item Primer: Upravni odbor, kjer je generalni direktor vodja
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Mejni podpisi (angl. \textit{threshold signatures})}
-    \begin{itemize}
-        \item $t$-od-$n$ shema
-        \item Zmerna prilagodljivost
-        \item Ni odgovornosti
-        \item Primer: 
-    \end{itemize}
+    \frametitle{Pragovni podpisi (angl. \textit{threshold signatures})}
+    \begin{multicols*}{2}
+        \begin{itemize}
+            \item $t$-od-$n$ shema
+            \item Zmerna prilagodljivost
+            \item Ni odgovornosti
+            \item Primer: Sef, ki ga lahko odklene nekaj lastnikov
+        \end{itemize}
+    \begin{figure}
+        \includegraphics[width=0.5\textwidth]{images/interpolation.png}
+    \end{figure}
+    \end{multicols*}
 \end{frame}
 
 \begin{frame}
@@ -186,7 +209,7 @@
         \item Želimo si prilagodljivost in odgovornost
         \item Vsak član $S$ podpiše $(M, S) \rightarrow \sigma_i$
         \item Kot na papirju
-        \item Primer:
+        \item Primer: 
     \end{itemize}
     \vspace{1cm}
     \pause
@@ -208,18 +231,197 @@
 
 \begin{frame}
     \frametitle{Schnorrov podpis}
-    \textbf{Generiranje ključa} \\
+    \framesubtitle{Generiranje ključev}
     \begin{itemize}
-        \item 
+        \item $p, q \in \mathbb{P}$, $q\text{ }|\text{ }p-1$
+        \item $g \in \mathbb{Z}_p^*$, $g^q \equiv 1 \pmod{p}$, torej $\text{ord}(g) = q$
+        \item $s \in [0, q-1]$
+        \item $I = g^s \bmod{p}$
     \end{itemize}
-    \textbf{Podpisovanje} \\
+    \vspace{1cm}
+    \begin{multicols*}{2}
+        \textbf{Javni ključ}: $(p, q, g, I)$
+        \columnbreak
+
+        \textbf{Zasebni ključ}: $s$
+    \end{multicols*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Schnorrov podpis}
+    \framesubtitle{Podpisovanje in preverjanje}
     \begin{itemize}
-        \item 
+        \item Podpis sporočila $M$ je par $(X, y)$
+        \item $r \in [0, q-1]$
+        \item $X = g^r \bmod{p}$
+        \item $e = H(X, M)$
+        \item $y = es + r \bmod{q}$
     \end{itemize}
-    \textbf{Verifikacija}
+    
+    \vspace{1cm}
     \begin{itemize}
-        \item 
+        \item Preverimo, če je $(X', y')$ veljaven podpis za $M$
+        \item $e' = H(X', M)$
+        \item $g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod{p}$
     \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Začetna ideja}
+    \framesubtitle{Osnovni pojmi}
+    \begin{itemize}
+        \item Skupina $G = P_1, P_2, \dots, P_L$
+        \item Podmnožica podpisnikov $S$ je znana vnaprej, poljubna
+        \item Vsi v skupini imajo dostop do naključnega oraklja $H$
+        \item Napadalec: 
+            \begin{itemize}
+                \item Ima dostop do $H$
+                \item Kontrolira vse komunikacijske kanale
+                \item Cilj: ponarediti podpis
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Začetna ideja}
+    \framesubtitle{Generiranje ključev}
+    \begin{itemize}
+        \item Vsi v skupini poznajo \alert{$p, q$} in \alert{$g$}
+        \item Vsak podpisnik $P_i$: 
+            \begin{align*}
+                s_i &\in [0, q-1] \\
+                I_i &= g^{s_i} \bmod{p}
+            \end{align*}
+    \end{itemize}
+    \vspace{1cm}
+    \begin{multicols*}{2}
+        \textbf{Javni ključi}: $(\alert{p, q, g}, I_i)$
+        \columnbreak
+
+        \textbf{Zasebni ključi}: $s_i$
+    \end{multicols*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Začetna ideja}
+    \framesubtitle{Podpisovanje}
+    \begin{center}
+        $r_i \in [0, q-1]$ \\
+        $X_i = g^{r_i} \bmod{p}$ \\
+        \vspace{0.25cm}
+        $\downarrow$ \\
+        \vspace{0.25cm}
+        $\tilde{X} = \prod_{P_i \in S} X_i \bmod{p}$ \\
+        \vspace{0.25cm}
+        $\downarrow$ \\
+        \vspace{0.25cm}
+        $e = H(\tilde{X}, M, S)$ \\
+        $y_i = e s_i + r_i \bmod{q}$ \\
+        \vspace{0.25cm}
+        $\downarrow$ \\
+        \vspace{0.25cm}
+        $\tilde{y} = \sum_{P_i \in S} y_i \bmod{q}$ \\
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Začetna ideja}
+    \framesubtitle{Preverjanje}
+    \begin{itemize}
+        \item Preverimo, če je $(\tilde{X}', \tilde{y}')$ veljaven podpis za $M$
+        \item $e' = H(\tilde{X}', M, S)$
+        \item $g^{\tilde{y}'} \stackrel{?}{\equiv} \tilde{X}' \cdot (\prod_{P_i \in S} I_i)^{e'} \pmod{p}$   
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problem 1}
+    \framesubtitle{Skupni parametri}
+    \begin{itemize}
+        \item Kako generiramo $p, q, g$?
+        \item Če si pomagamo z orakljem, to pozna tudi napadalec
+        \vspace{1cm}
+        \item \textbf{Rešitev}: Del DLP, varna praštevila
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problem 2}
+    \framesubtitle{$I_A = g^{s_A} \bmod p$}
+    \begin{itemize}
+        \item Napadalec goljufa pri izračunu $I_A$
+        \item Lahko podpisuje v imenu skupine
+        \vspace{1cm}
+        \item \textbf{Rešitev}: Dokaz brez razkritja znanja, potrebno preverjanje 
+                vsakega javnega ključa
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Dokazi brez razkritja znanja}
+    \begin{itemize}
+        \item Dokaz, da nekaj vemo, ne da bi razkrili kaj vemo
+        \item Interaktivni protokol
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Fiat-Shamirjeva hevristika}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problem 3}
+    \framesubtitle{Preverjanje dokazov}
+    \begin{itemize}
+        \item Kdo preverja dokaze brez razkritja znanja?
+        \vspace{1cm}
+        \item \textbf{Rešitev}: Dokaz brez razkritja znanja del javnega ključa
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problem 4}
+    \framesubtitle{Velikost $S$}
+    \begin{itemize}
+        \item Število podpisnikov omejeno
+        \item Tehnikalije v dokazu varnosti
+        \vspace{1cm}
+        \item \textbf{Rešitev}: Podpis $\sigma_i$ sporočila 
+            $H(X_1, I_1, X_2, I_2, \dots, X_L, I_L)$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problem 5}
+    \framesubtitle{Velikost ključa}
+    \begin{itemize}
+        \item V ključ moramo torej dati $\sigma_i$ in $X_1, I_1, X_2, I_2, 
+        \dots X_L, I_L$
+        \item Predolg ključ, proporcionalen velikosti $G$
+        \vspace{1cm}
+        \item \textbf{Rešitev}: Merklovo drevo z listi $I_1, I_2, \dots, I_L$
+    \end{itemize}  
+\end{frame}
+
+\begin{frame}
+    \frametitle{Merklova drevesa}
+    \begin{figure}
+        \includegraphics[width=\textwidth]{images/merkle-tree.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problem 6}
+    \framesubtitle{Sočasno podpisovanje}
+    \begin{itemize}
+        \item Dokaz varnosti uporablja previjanje (angl. \textit{rewinding})
+        \vspace{1cm}
+        \item \textbf{Rešitev}: Ne dovolimo sočasnega podpisovanja
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Končna shema}
 \end{frame}
 
 \begin{frame}
