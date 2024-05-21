@@ -11,6 +11,8 @@
 \usepackage{multicol}
 \usepackage{ulem}
 \usepackage{bibentry}
+\usepackage{caption}
+\usepackage{subcaption}
 
 %\hypersetup{hidelinks}
 
@@ -140,7 +142,7 @@
         \textbf{Javni ključ}: $(n, e)$
         \columnbreak
 
-        \textbf{Zasebni ključ}: $d$
+        \textbf{Zasebni ključ}: $d (+ p, q)$
     \end{multicols*}
 \end{frame}
 
@@ -159,23 +161,31 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
     \frametitle{RSA}
     \framesubtitle{Primer}
+    \begin{itemize}
+        \item $p = 61, q = 53, n = 61 \cdot 53 = 3233, \phi(n) = 60 \cdot 52 = 3120$
+        \item $e = 17, d = 2753$
+        \item Sporočilo $m = 42$
+        \item Podpis $s = 42^{2753} \bmod 3233 = 2464$
+        \item Preverimo $m' = 2464^{17} \bmod 3233 = 42$
+    \end{itemize}
+
 \end{frame}
 
 \begin{frame}
     \frametitle{Kako se skupina podpiše?}
-    \begin{itemize}
-        \item \textbf{Prilagodljivost} (angl. \textit{flexibility})
-        \item \textbf{Odgovornost} (angl. \textit{accountability})
-    \end{itemize}
-    \vspace{1cm}
     \textbf{Skupina}: 
     \begin{align*}
         G &= P_1, P_2, \dots, P_L \\
         S &\subseteq G
     \end{align*}
+    \vspace{1cm}
+    \begin{itemize}
+        \item \textbf{Prilagodljivost} (angl. \textit{flexibility})
+        \item \textbf{Odgovornost} (angl. \textit{accountability})
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -192,7 +202,7 @@
     \frametitle{Pragovni podpisi (angl. \textit{threshold signatures})}
     \begin{multicols*}{2}
         \begin{itemize}
-            \item $t$-od-$n$ shema
+            \item $t$-od-$L$ shema
             \item Zmerna prilagodljivost
             \item Ni odgovornosti
             \item Primer: Sef, ki ga lahko odklene nekaj lastnikov
@@ -204,15 +214,14 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Naivna ideja}
+    \frametitle{Naivni pristop}
     \begin{itemize}
         \item Želimo si prilagodljivost in odgovornost
         \item Vsak član $S$ podpiše $(M, S) \rightarrow \sigma_i$
         \item Kot na papirju
-        \item Primer: 
+        \item Primer: Ponudniki cen na omrežju Flare 
     \end{itemize}
     \vspace{1cm}
-    \pause
     Težava?
         $\sigma_1, \sigma_2, \sigma_3, \sigma_4, \sigma_5, \sigma_6,
         \sigma_7,  \sigma_8, \sigma_9, \sigma_{10}, \sigma_{11}, \sigma_{12}, 
@@ -225,7 +234,7 @@
         \item Skupina vrne samo en podpis
         \item Prilagodljivost in odgovornost
         \item Naivna ideja + učinkovitost
-        \item Primer:
+        \item Primer: Podpisovanje peticij
     \end{itemize}
 \end{frame}
 
@@ -363,10 +372,54 @@
         \item Dokaz, da nekaj vemo, ne da bi razkrili kaj vemo
         \item Interaktivni protokol
     \end{itemize}
+    \vspace{1cm}
+    \begin{figure}
+        \begin{subfigure}{0.32\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp1.png}
+        \end{subfigure}
+        \hspace{0.25cm}
+        \begin{subfigure}{0.3\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp2.png}
+        \end{subfigure}
+        \hspace{0.25cm}
+        \begin{subfigure}{0.3\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp3.png}
+        \end{subfigure}
+    \end{figure}
 \end{frame}
 
 \begin{frame}
     \frametitle{Fiat-Shamirjeva hevristika}
+    \begin{itemize}
+        \item Pretvorba interaktivnega dokaza v neinteraktivnega
+        \item Interaktivnost zamenja naključni orakelj
+        \item Če oraklji ne obstajajo, hevristika ni varna
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{(Ne)interaktivni dokaz}
+    \begin{itemize}
+        \centering
+        \item A: Poznam $x$, da $y \equiv g^x \bmod q$
+        \item A: Naključni $v$, da $t \equiv g^v \bmod q$
+        \item A: Pošlje $t$
+    \end{itemize}
+    \vspace{1cm}
+    \begin{multicols*}{2}
+        \begin{itemize}
+            \item B: Naključni $c$, pošlje A
+        \end{itemize}
+        \begin{itemize}
+            \item A: Izračuna $c = H(g, y, t)$
+        \end{itemize}
+    \end{multicols*}
+    \vspace{1cm}
+    \begin{itemize}
+        \centering
+        \item A: Pošlje $r = v - cx \bmod{\varphi(q)}$ B
+        \item B: Preveri $t \stackrel{?}{\equiv} g^r y^c \bmod q$
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
