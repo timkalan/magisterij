@@ -13,6 +13,7 @@
 \usepackage{bibentry}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{algpseudocodex}
 
 %\hypersetup{hidelinks}
 
@@ -45,22 +46,13 @@
 % \title{
 %     Kako se skupina podpiše? \\ 
 %     \large (angl. \textit{How can a group sign?})}
-\title{Kako se skupina podpiše?}
+\title{Skupinsko generirani podpisi}
 \date{27. maj 2024} 
 
 \begin{document}
 
 \begin{frame}
     \titlepage
-\end{frame}
-
-\begin{frame}
-    \frametitle{Zakaj potrebujemo podpise?}
-    \begin{itemize}
-        \item Mislim, da si lahko predstavljate ... 
-        \item Avtentikacija, integriteta
-        \item Bančništvo, e-pošta, \texttt{ssh}, ...
-    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -81,6 +73,15 @@
             \item Enostavno preveriti
         \end{itemize}
     \end{multicols*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zakaj potrebujemo podpise?}
+    \begin{itemize}
+        \item Mislim, da si lahko predstavljate ... 
+        \item Avtentikacija, integriteta
+        \item Bančništvo, e-pošta, \texttt{ssh}, ...
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
@@ -113,12 +114,41 @@
         &\texttt{1ba34a90e11f7195a4b791838b6787fe} \\ 
     \end{align*}
     \begin{itemize}
-        \item Naključni oraklji
+        \item Slučajni oraklji
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Primer digitalnega podpisa: RSA}
+    \frametitle{Modularna aritmetika}
+    \begin{itemize}
+        \item Kongruenca: $a \equiv b \pmod{m} \iff m \text{ }|\text{ }a - b$
+        \item Grupa $\mathbb{Z}_p^*$
+        \item Red elementa: $\text{ord}(g) = 
+                \min\{n \in \mathbb{N} \mid g^n \equiv 1 \pmod{p}\}$
+        \item Diskretni logaritem: $g^x \equiv h \pmod{p}, x = ?$
+    \end{itemize}
+    \begin{multicols*}{2}
+        \begin{align*}
+            2^1 &\equiv 2 \pmod{11} \\
+            2^2 &\equiv 4 \pmod{11} \\
+            2^3 &\equiv 8 \pmod{11} \\
+            2^4 &\equiv 5 \pmod{11} \\
+            2^5 &\equiv 10 \pmod{11} \\
+        \end{align*}
+        \columnbreak
+        \begin{align*}
+            \\
+            2^6 &\equiv 9 \pmod{11} \\
+            2^7 &\equiv 7 \pmod{11} \\
+            2^8 &\equiv 3 \pmod{11} \\
+            2^9 &\equiv 6 \pmod{11} \\
+            2^{10} &\equiv 1 \pmod{11} 
+        \end{align*}
+    \end{multicols*}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Primer digitalnega podpisa: Schnorrov podpis}
     Odličen primer za spoznavanje osnovnih konceptov:
     \vspace{1cm}
     \begin{itemize}
@@ -129,49 +159,45 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{RSA}
+    \frametitle{Schnorrov podpis}
     \framesubtitle{Generiranje ključev}
     \begin{itemize}
-        \item Izberemo dve \alert{veliki} praštevili $p$ in $q$ (kako?)
-        \item Izračunamo $n = pq$ in $\phi(n) = (p-1)(q-1)$
-        \item Izberemo $e$ tako, da je $1 < e < \phi(n)$ in $\gcd(e, \phi(n)) = 1$
-        \item Izračunamo $d$ tako, da je $ed \equiv 1 \pmod{\phi(n)}$
+        \item $p, q$ \alert{veliki} praštevili, $q\text{ }|\text{ }p-1$
+        \item $g \in \mathbb{Z}_p^*$, $\text{ord}(g) = q$, torej 
+                $g^q \equiv 1 \pmod{p}$
+        \item $s \in [0, q-1]$
+        \item $I = g^s \bmod{p}$
     \end{itemize}
     \vspace{1cm}
     \begin{multicols*}{2}
-        \textbf{Javni ključ}: $(n, e)$
+        \textbf{Javni ključ}: $(p, q, g, I)$
         \columnbreak
 
-        \textbf{Zasebni ključ}: $d (+ p, q)$
+        \textbf{Zasebni ključ}: $s$
     \end{multicols*}
 \end{frame}
 
 \begin{frame}
-    \frametitle{RSA}
+    \frametitle{Schnorrov podpis}
     \framesubtitle{Podpisovanje in preverjanje}
     \begin{itemize}
-        \item Sporočilo $m$ podpišemo tako, da izračunamo $s = m^d \bmod n$
-        \item Podpis je par $(m, s)$
+        \item Podpis sporočila $M$ je par $(X, y)$
+        \item $r \in [0, q-1]$
+        \item $X = g^r \bmod{p}$
+        \item $e = H(X, M)$
+        \item $y = es + r \bmod{q}$
     \end{itemize}
     
     \vspace{1cm}
     \begin{itemize}
-        \item Preverimo tako, da izračunamo $m' = s^e \bmod n$
-        \item Podpis je pravilen, če je $m' = m$
+        \item Preverimo, če je $(X', y')$ veljaven podpis za $M$
+        \item $e' = H(X', M)$
+        \item $g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod{p}$
+            \begin{itemize}
+                \item $g^{y'} \equiv g^{es + r} \pmod{p}$
+                \item $X' \cdot I^{e'} \equiv g^r \cdot (g^s)^e \pmod{p}$
+            \end{itemize}
     \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{RSA}
-    \framesubtitle{Primer}
-    \begin{itemize}
-        \item $p = 61, q = 53, n = 61 \cdot 53 = 3233, \phi(n) = 60 \cdot 52 = 3120$
-        \item $e = 17, d = 2753$
-        \item Sporočilo $m = 42$
-        \item Podpis $s = 42^{2753} \bmod 3233 = 2464$
-        \item Preverimo $m' = 2464^{17} \bmod 3233 = 42$
-    \end{itemize}
-
 \end{frame}
 
 \begin{frame}
@@ -229,7 +255,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Skupni podpisi (angl. \textit{multisignatures})}
+    \frametitle{Večstranski podpisi (angl. \textit{multisignatures})}
     \begin{itemize}
         \item Skupina vrne samo en podpis
         \item Prilagodljivost in odgovornost
@@ -239,49 +265,12 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Schnorrov podpis}
-    \framesubtitle{Generiranje ključev}
-    \begin{itemize}
-        \item $p, q \in \mathbb{P}$, $q\text{ }|\text{ }p-1$
-        \item $g \in \mathbb{Z}_p^*$, $g^q \equiv 1 \pmod{p}$, torej $\text{ord}(g) = q$
-        \item $s \in [0, q-1]$
-        \item $I = g^s \bmod{p}$
-    \end{itemize}
-    \vspace{1cm}
-    \begin{multicols*}{2}
-        \textbf{Javni ključ}: $(p, q, g, I)$
-        \columnbreak
-
-        \textbf{Zasebni ključ}: $s$
-    \end{multicols*}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Schnorrov podpis}
-    \framesubtitle{Podpisovanje in preverjanje}
-    \begin{itemize}
-        \item Podpis sporočila $M$ je par $(X, y)$
-        \item $r \in [0, q-1]$
-        \item $X = g^r \bmod{p}$
-        \item $e = H(X, M)$
-        \item $y = es + r \bmod{q}$
-    \end{itemize}
-    
-    \vspace{1cm}
-    \begin{itemize}
-        \item Preverimo, če je $(X', y')$ veljaven podpis za $M$
-        \item $e' = H(X', M)$
-        \item $g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod{p}$
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
     \frametitle{Začetna ideja}
     \framesubtitle{Osnovni pojmi}
     \begin{itemize}
         \item Skupina $G = P_1, P_2, \dots, P_L$
         \item Podmnožica podpisnikov $S$ je znana vnaprej, poljubna
-        \item Vsi v skupini imajo dostop do naključnega oraklja $H$
+        \item Vsi v skupini imajo dostop do slučajnega oraklja $H$
         \item Napadalec: 
             \begin{itemize}
                 \item Ima dostop do $H$
@@ -339,7 +328,8 @@
     \begin{itemize}
         \item Preverimo, če je $(\tilde{X}', \tilde{y}')$ veljaven podpis za $M$
         \item $e' = H(\tilde{X}', M, S)$
-        \item $g^{\tilde{y}'} \stackrel{?}{\equiv} \tilde{X}' \cdot (\prod_{P_i \in S} I_i)^{e'} \pmod{p}$   
+        \item $g^{\tilde{y}'} \stackrel{?}{\equiv} 
+            \tilde{X}' \cdot (\prod_{P_i \in S} I_i)^{e'} \pmod{p}$   
     \end{itemize}
 \end{frame}
 
@@ -355,10 +345,32 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{Generiranje skupnih parametrov $p, q, g$}
+    \begin{itemize}
+        \item Vsem je dostopen orakelj $H$ in varnostni parameter $k$
+        \item Za naključno generiranje $H^*(2^k), H^*(2^k + 1), H^*(2^k + 2), \dots$
+    \end{itemize}
+    \vspace{0.5cm}
+    \begin{algorithmic}
+    \While{True}
+        \State $q \gets \text{random $k$-bit string}$
+        \State $p \gets 2q + 1$
+        \If{$p$ is prime and $q$ is prime}
+            \Return $p, q$
+        \EndIf
+    \EndWhile
+    \end{algorithmic}
+    \vspace{0.5cm}
+    \begin{itemize}
+        \item Preverjanje praštevil?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
     \frametitle{Problem 2}
     \framesubtitle{$I_A = g^{s_A} \bmod p$}
     \begin{itemize}
-        \item Napadalec goljufa pri izračunu $I_A$
+        \item Napadalec goljufa pri izračunu javnega ključa $I_A$
         \item Lahko podpisuje v imenu skupine
         \vspace{1cm}
         \item \textbf{Rešitev}: Dokaz brez razkritja znanja, potrebno preverjanje 
@@ -392,7 +404,7 @@
     \frametitle{Fiat-Shamirjeva hevristika}
     \begin{itemize}
         \item Pretvorba interaktivnega dokaza v neinteraktivnega
-        \item Interaktivnost zamenja naključni orakelj
+        \item Interaktivnost zamenja slučajni orakelj
         \item Če oraklji ne obstajajo, hevristika ni varna
     \end{itemize}
 \end{frame}
@@ -400,8 +412,7 @@
 \begin{frame}
     \frametitle{(Ne)interaktivni dokaz}
     \begin{itemize}
-        \centering
-        \item A: Poznam $x$, da $y \equiv g^x \bmod q$
+        \item A: Pozna $x$, da $y \equiv g^x \bmod q$
         \item A: Naključni $v$, da $t \equiv g^v \bmod q$
         \item A: Pošlje $t$
     \end{itemize}
@@ -416,7 +427,6 @@
     \end{multicols*}
     \vspace{1cm}
     \begin{itemize}
-        \centering
         \item A: Pošlje $r = v - cx \bmod{\varphi(q)}$ B
         \item B: Preveri $t \stackrel{?}{\equiv} g^r y^c \bmod q$
     \end{itemize}
@@ -427,8 +437,10 @@
     \framesubtitle{Preverjanje dokazov}
     \begin{itemize}
         \item Kdo preverja dokaze brez razkritja znanja?
+        \item Kje so sploh dostopni?
         \vspace{1cm}
         \item \textbf{Rešitev}: Dokaz brez razkritja znanja del javnega ključa
+            (daljši ključi, dražje preverjanje podpisov)
     \end{itemize}
 \end{frame}
 
@@ -452,7 +464,8 @@
         \dots X_L, I_L$
         \item Predolg ključ, proporcionalen velikosti $G$
         \vspace{1cm}
-        \item \textbf{Rešitev}: Merklovo drevo z listi $I_1, I_2, \dots, I_L$
+        \item \textbf{Rešitev}: Merklovo drevo z listi $I_1, I_2, \dots, I_L$, 
+            v ključu samo $I_i$ in avtentikacijska pot  
     \end{itemize}  
 \end{frame}
 
@@ -468,17 +481,15 @@
     \framesubtitle{Sočasno podpisovanje}
     \begin{itemize}
         \item Dokaz varnosti uporablja previjanje (angl. \textit{rewinding})
+        \item Previjanje je potovanje nazaj v času
         \vspace{1cm}
         \item \textbf{Rešitev}: Ne dovolimo sočasnega podpisovanja
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Končna shema}
-\end{frame}
-
-\begin{frame}
     \frametitle{Varnost}
+    \framesubtitle{DLP}
 \end{frame}
 
 \end{document}
