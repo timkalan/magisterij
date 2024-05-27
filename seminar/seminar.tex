@@ -78,8 +78,8 @@
 \begin{frame}
     \frametitle{Zakaj potrebujemo podpise?}
     \begin{itemize}
-        \item Mislim, da si lahko predstavljate ... 
-        \item Avtentikacija, integriteta
+        \item Avtentikacija
+        \item Integriteta
         \item Bančništvo, e-pošta, \texttt{ssh}, ...
     \end{itemize}
 \end{frame}
@@ -259,7 +259,8 @@
     \begin{itemize}
         \item Skupina vrne samo en podpis
         \item Prilagodljivost in odgovornost
-        \item Naivna ideja + učinkovitost
+        \item Naivna ideja + učinkovitost (dolžina, preverjanje)
+        \item Cena: komunikacija, čas podpisovanja, generiranje ključa
         \item Primer: Podpisovanje peticij
     \end{itemize}
 \end{frame}
@@ -414,7 +415,7 @@
     \begin{itemize}
         \item A: Pozna $x$, da $y \equiv g^x \bmod q$
         \item A: Naključni $v$, da $t \equiv g^v \bmod q$
-        \item A: Pošlje $t$
+        \item A: Pošlje $t$ osebi B
     \end{itemize}
     \vspace{1cm}
     \begin{multicols*}{2}
@@ -427,7 +428,7 @@
     \end{multicols*}
     \vspace{1cm}
     \begin{itemize}
-        \item A: Pošlje $r = v - cx \bmod{\varphi(q)}$ B
+        \item A: Pošlje $r = v - cx \bmod{\varphi(q)}$ osebi B
         \item B: Preveri $t \stackrel{?}{\equiv} g^r y^c \bmod q$
     \end{itemize}
 \end{frame}
@@ -489,7 +490,14 @@
 
 \begin{frame}
     \frametitle{Varnost}
-    \framesubtitle{DLP}
+    Za vsako konstanto $c > 0$ in varnostni parameter $k$, ne obstaja
+    napadalec, ki lahko v času, polinomskem v $k$, z verjetnostjo več 
+    kot $k^{-c}$ vrne trojico $(\sigma, M, S)$, da:
+    \begin{itemize}
+        \item $\sigma$ je podpis sporočila $M$ s strani skupine $S$,
+        \item Obstaja iskren podpisnik $P \in S$, od katerega napadalec 
+            ni zahteval podpisa.
+    \end{itemize}
 \end{frame}
 
 \end{document}
