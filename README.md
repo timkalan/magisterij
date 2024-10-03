@@ -1,3 +1,3 @@
-# Magistrsko delo: Naslov še pride
+# Magistrsko delo: Skupinsko generirani podpisi
 
 Repozitorij za magistrsko delo na drugi stopnji IŠRM.

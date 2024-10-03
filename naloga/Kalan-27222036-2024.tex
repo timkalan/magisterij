@@ -13,7 +13,7 @@
 \avtor{Tim Kalan}
 
 % - naslov dela v slovenščini
-\naslov{Skupni podpisi}
+\naslov{Skupinsko generirani podpisi}
 
 % - naslov dela v angleščini
 \title{Multisignatures}
@@ -46,13 +46,13 @@ the content and not the structure of your work.}
 
 % - klasifikacijske oznake, ločene z vejicami
 %   Oznake, ki opisujejo področje dela, so dostopne na strani https://www.ams.org/msc/
-\klasifikacija{74B05, 65N99}
+\klasifikacija{94A60, 11T71}
 
 % - ključne besede, ki nastopajo v delu, ločene s \sep
-\kljucnebesede{integracija\sep kompleks}
+\kljucnebesede{digitalni podpis\sep kriptografija}
 
 % - angleški prevod ključnih besed
-\keywords{integration\sep complex} % angleški prevod ključnih besed
+\keywords{digital signature\sep cryptography} % angleški prevod ključnih besed
 
 % - neobvezna zahvala
 \zahvala{
@@ -69,10 +69,10 @@ the content and not the structure of your work.}
 % Literatura mora biti tukaj posebej samostojno navedena (po pomembnosti) in ne
 % le citirana. V tem razdelku literature ne oštevilčimo po svoje, ampak uporabljamo
 % ukaz \vnosliterature, v katerega vpišemo citat
-  \vnosliterature{lebedev2009introduction}
-  \vnosliterature{gurtin1982introduction}
-  \vnosliterature{zienkiewicz2000finite}
-  \vnosliterature{STtemplate}
+  \vnosliterature{micali2001asm}
+  % \vnosliterature{gurtin1982introduction}
+  % \vnosliterature{zienkiewicz2000finite}
+  % \vnosliterature{STtemplate}
 }
 
 % - ime datoteke z viri (vključno s končnico .bib), če uporabljate BibTeX
@@ -123,108 +123,173 @@ the content and not the structure of your work.}
 \begin{document}
 
 \section{Uvod}
-Napišite kratek zgodovinski in matematični uvod.  Pojasnite motivacijo za problem, kje
-nastopa, kje vse je bil obravnavan. Na koncu opišite tudi organizacijo dela -- kaj je v
-katerem razdelku.
+% Napišite kratek zgodovinski in matematični uvod.  Pojasnite motivacijo za problem, kje
+% nastopa, kje vse je bil obravnavan. Na koncu opišite tudi organizacijo dela -- kaj je v
+% katerem razdelku.
+Odkar se je na svetu pojavil koncept (ročnega) podpisa, je večina primerov uporabe temeljila na
+pridobivanju podpisov več deležnikov. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih 
+držav Amerike. SLIKA?. 
+
+V prejšnjem stoletju je vzpon računalnika in napredek v kriptografiji privedel do \textit{digitalnih
+podpisov}. Ti odlično nadomeščajo ročni podpis, prav tako omogočajo, da se skupina podpiše tako, 
+da vsak član poda svoj podpis. Vendar tu lahko z malo matematike poskrbimo, da se skupina lahko 
+podpiše tako, da vsi člani skupaj oddajo en sam podpis, ki priča o podpisu celotne skupine. Tako 
+razbremenimo preverjalca podpisov, kar je ključno v sistemih, kjer je računska moč omejena ali 
+pa draga (npr.\ pri tehnologiji veriženja blokov).
 
 \section{Kriptografske osnove}
+Preden si lahko pogledamo točno kako lahko skupina generira en sam podpis besedila, si moramo 
+pogledati nekaj kriptografskih osnov. Bolj komplicirane stvari bodo opisane sproti, ideja tega 
+poglavja je predstaviti stvari, ki so predpogoj za branje kakršnegakoli kriptografskega 
+besedila.
 
-\subsection{Kriptografski podpis}
-\subsubsection{RSA}
 
-\subsection{Schnorrov podpis}
+\subsection{Kriptografija javnega ključa}
+\subsection{Zgoščevalne funkcije}
+
+\subsection{Kriptografski podpisi}
+Ideja \textit{kriptografskih} ali \textit{digitalnih} podpisov je, da služijo kot izboljšava človeškega 
+ročnega podpisa. Za razliko od ročnega podpisa, lahko z digitalnim dosežemo pravo identifikacijo 
+posameznika, ki temelji na njegovem zasebnem ključu. Tako smo lahko za digitalno podpisan dokument 
+prepričani, da ga je res podpisal lastnik točno določenega zasebnega ključa. 
+
+Podpis dokumenta poteka nekoliko drugače, kot pri ročnih podpisih. Pri ročnem podpisu ta postane del 
+dokumenta, digitalni podpis pa je od njega ločen, vseeno pa nastane s pomočjo zgostitve podpisanega 
+dokumenta, zato bo podpis za dva različna dokumenta vedno drugačen.
+
+Ostane še vprašanje preverjanja avtentičnosti podpisa. Pri ročnem podpisu to lahko storimo prek 
+primerjave z znanim, preverjeno avtentičnim podpisom. Ta postopek je zamuden in nenatančen, veliko 
+večino ročnih podpisov je moč ponarediti z nekaj prakse. Preverjanje digitalnega podpisa pa temelji 
+na kriptografiji javnega ključa. Ker je podpis nastal s pomočjo podpisnikovega zasebnega ključa,
+lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
+
+\begin{definicija}
+    \textbf{Digitalni} ali \textbf{kriptografski podpis} $\mathcal{S} = (G, S, V)$ je trojica 
+    učinkovitih algoritmov $G$ za ustvarjanje ključa, $S$ za podpisovanje in $V$ za preverjanje 
+    podpisa. Definirana je nad končno množico možnih sporočil $\mathcal{M}$, vrnjeni podpis pa 
+    leži v v končni množici podpisov $\Sigma$.
+    \begin{itemize}
+        \item $G$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
+            ki ne prejme nobenega argumenta. $\text{pk}$ je javni kljč za preverjanje avtentičnosti 
+            podpisa, $\text{sk}$ pa je zasebni ključ za podpisovanje. 
+        \item $S$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$ 
+            in sporočilo $m$, vrne pa podpis $\sigma$ spročila $m$ z zasebnim ključem $\text{sk}$ 
+            oz.\ 
+            $$ 
+            \sigma = S(\text{sk}, m).
+            $$
+        \item $V$ je determinističen algoritem, ki preverja veljavnost podpisov. Za svoje arugmente 
+            prejme javni ključ $\text{pk}$, sporočilo $m$ in podpis $\sigma$, vrne $veljaven$, če je podpis 
+            veljaven in $neveljaven$, sicer. Velja torej
+            $$ 
+            V(\text{pk}, m, \sigma) = 
+            \begin{cases}
+                veljaven; \sigma = S(\text{sk}, m), \\
+                neveljaven; \sigma \neq S(\text{sk}, m).
+            \end{cases}
+            $$
+    \end{itemize}
+\end{definicija}
 
 \subsubsection{Ustvarjanje ključa}
-Kot pri vsakem podpisu, mora podpisnik najprej generirati zasebni in javni ključ. Najprej mora 
-naključno izbrati dve praštevili $p, q \in \mathbb{P}$ tako, da $q$ deli $p-1$. Potem izbere še 
-naključni element $g$ reda $q$ iz grupe $\mathbb{Z}_p^*$.
-
 \subsubsection{Podpisovanje}
+\subsubsection{Preverjanje podpisa}
 
-\subsubsection{Verifikacija podpisa}
+\subsubsection{Primer: Schnorrov podpis}
 
-\section{Integrali po \texorpdfstring{$\omega$}{ω}-kompleksih}
-\subsection{Definicija}
-\begin{definicija}
-  Neskončno zaporedje kompleksnih števil, označeno z $\omega = (\omega_1, \omega_2, \ldots)$,
-  se imenuje \emph{$\omega$-kompleks}.\footnote{To ime je izmišljeno.}
+\section{Matematično ozadje}
+\subsection{Modularna aritmetika}
+\subsection{Multiplikativne grupe modulo $n$}
 
-  Črni blok zgoraj je tam namenoma. Označuje, da \LaTeX{} ni znal vrstice prelomiti pravilno
-  in vas na to opozarja. Preoblikujte stavek ali mu pomagajte deliti problematično besedo z
-  ukazom \verb|\hyphenation{an-ti-ko-mu-ta-ti-ven}| v preambuli.
-\end{definicija}
-\begin{trditev}[Znano ime ali avtor]
-  \label{trd:obstoj-omega}
-  Obstaja vsaj en $\omega$-kompleks.
-\end{trditev}
-\begin{proof}
-  Naštejmo nekaj primerov:
-  \begin{align}
-    \omega &= (0, 0, 0, \dots), \label{eq:zero-kompleks} \\
-    \omega &= (1, i, -1, -i, 1, \ldots), \nonumber \\
-    \omega &= (0, 1, 2, 3, \ldots). \nonumber \qedhere  % postavi QED na zadnjo vrstico enačbe
-  \end{align}
-\end{proof}
+\section{Pregled skupinskih podpisov}
 
-\section{Tehnični napotki za pisanje}
+\section{Skupinsko generirani podpisi na podlagi Schnorrovega podpisa}
+Povzeto po~\cite{micali2001asm}.
 
-\subsection{Sklicevanje in citiranje}
-Za sklice uporabljamo \verb|\ref|, za sklice na enačbe \verb|\eqref|, za citate \verb|\cite|. Pri
-sklicevanju in citiranju sklicano številko povežemo s prejšnjo besedo z nedeljivim presledkom
-$\sim$, kot npr.\ \verb|iz trditve~\ref{trd:obstoj-omega} vidimo|.
+\section{Skupinsko generirani podpisi v splošnem}
 
-\begin{primer}
-  Zaporedje~\eqref{eq:zero-kompleks} iz dokaza trditve~\ref{trd:obstoj-omega} na
-  strani~\pageref{trd:obstoj-omega} lahko najdemo tudi v Spletni enciklopediji zaporedij~\cite{oeis}.
-  Citiramo lahko tudi bolj natančno~\cite[trditev 2.1, str.\ 23]{lebedev2009introduction}.
-\end{primer}
-
-\subsection{Okrajšave}
-Pri uporabi okrajšav \LaTeX{} za piko vstavi predolg presledek, kot npr. tukaj. Zato se za vsako
-piko, ki ni konec stavka doda presledek običajne širine z ukazom \verb*|\ |, kot npr.\ tukaj.
-Primerjaj z okrajšavo zgoraj za razliko.
-
-\subsection{Vstavljanje slik}
-Sliko vstavimo v plavajočem okolju \texttt{figure}. Plavajoča okolja \emph{plavajo} po tekstu, in
-jih lahko postavimo na vrh strani z opcijskim parametrom `\texttt{t}', na lokacijo, kjer je v kodi s
-`\texttt{h}', in če to ne deluje, potem pa lahko rečete \LaTeX u, da ga \emph{res} želite tukaj,
-kjer ste napisali, s `\texttt{h!}'. Lepo je da so vstavljene slike vektorske (recimo \texttt{.pdf}
-ali \texttt{.eps} ali \texttt{.svg}) ali pa \texttt{.png} visoke resolucije (več kot
-\unit[300]{dpi}).  Pod vsako sliko je napis in na vsako sliko se skličemo v besedilu. Primer
-vektorske slike je na sliki~\ref{fig:sample}. Vektorsko sliko prepoznate tako, da močno
-zoomate v sliko, in še vedno ostane gladka. Več informacij je na voljo na
-\url{https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions}. Če so slike bitne, kot na
-primer slika~\ref{fig:image}, poskrbite, da so v dovolj visoki resoluciji.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.6\textwidth]{images/sample.pdf}
-% \caption[caption za v kazalo]{Dolg caption pod sliko}
-  \caption[Primer vektorske slike.]{Primer vektorske slike z oznakami v enaki pisavi, kot jo
-     uporablja \LaTeX{}.  Narejena je s programom Inkscape, \LaTeX{} oznake so importane v
-     Inkscape iz pomožnega PDF.}
-  \label{fig:sample}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.8\textwidth]{images/image.png}
-  \caption[Primer bitne slike.]{Primer bitne slike, izvožene iz Matlaba. Poskrbite, da so slike v
-  dovolj visoki resoluciji in da ne vsebujejo prosojnih elementov (to zahteva PDF/A-1b format).}
-  \label{fig:image}
-\end{figure}
-
-\subsection{Kako narediti stvarno kazalo}
-Dodate ukaze \verb|\index{polje}| na besede, kjer je pojavijo, kot tukaj\index{tukaj}.
-Več o stvarnih kazalih je na voljo na \url{https://en.wikibooks.org/wiki/LaTeX/Indexing}.
-
-\subsection{Navajanje literature}
-Članke citiramo z uporabo \verb|\cite{label}|, \verb|\cite[text]{label}| ali pa več naenkrat s
-\verb|\cite\{label1, label2}|. Tudi tukaj predhodno besedo in citat povežemo z nedeljivim presledkom
-$\sim$. Na primer~\cite{chen2006meshless,liu2001point}, ali pa \cite{kibriya2007empirical}, ali pa
-\cite[str.\ 12]{trobec2015parallel}, \cite[enačba (2.3)]{pereira2016convergence}.
-Vnosi iz \verb|.bib| datoteke, ki niso citirani, se ne prikažejo v seznamu literature, zato jih
-tukaj citiram.~\cite{vene2000categorical}, \cite{gregoric2017stopniceni}, \cite{slak2015induktivni},
-\cite{nsphere}, \cite{kearsley1975linearly}, \cite{STtemplate}, \cite{NunbergerTand}, \cite{vanoosten2008realizability}.
+% \section{Integrali po \texorpdfstring{$\omega$}{ω}-kompleksih}
+% \subsection{Definicija}
+% \begin{definicija}
+%   Neskončno zaporedje kompleksnih števil, označeno z $\omega = (\omega_1, \omega_2, \ldots)$,
+%   se imenuje \emph{$\omega$-kompleks}.\footnote{To ime je izmišljeno.}
+%
+%   Črni blok zgoraj je tam namenoma. Označuje, da \LaTeX{} ni znal vrstice prelomiti pravilno
+%   in vas na to opozarja. Preoblikujte stavek ali mu pomagajte deliti problematično besedo z
+%   ukazom \verb|\hyphenation{an-ti-ko-mu-ta-ti-ven}| v preambuli.
+% \end{definicija}
+% \begin{trditev}[Znano ime ali avtor]
+%   \label{trd:obstoj-omega}
+%   Obstaja vsaj en $\omega$-kompleks.
+% \end{trditev}
+% \begin{proof}
+%   Naštejmo nekaj primerov:
+%   \begin{align}
+%     \omega &= (0, 0, 0, \dots), \label{eq:zero-kompleks} \\
+%     \omega &= (1, i, -1, -i, 1, \ldots), \nonumber \\
+%     \omega &= (0, 1, 2, 3, \ldots). \nonumber \qedhere  % postavi QED na zadnjo vrstico enačbe
+%   \end{align}
+% \end{proof}
+%
+% \section{Tehnični napotki za pisanje}
+%
+% \subsection{Sklicevanje in citiranje}
+% Za sklice uporabljamo \verb|\ref|, za sklice na enačbe \verb|\eqref|, za citate \verb|\cite|. Pri
+% sklicevanju in citiranju sklicano številko povežemo s prejšnjo besedo z nedeljivim presledkom
+% $\sim$, kot npr.\ \verb|iz trditve~\ref{trd:obstoj-omega} vidimo|.
+%
+% \begin{primer}
+%   Zaporedje~\eqref{eq:zero-kompleks} iz dokaza trditve~\ref{trd:obstoj-omega} na
+%   strani~\pageref{trd:obstoj-omega} lahko najdemo tudi v Spletni enciklopediji zaporedij~\cite{oeis}.
+%   Citiramo lahko tudi bolj natančno~\cite[trditev 2.1, str.\ 23]{lebedev2009introduction}.
+% \end{primer}
+%
+% \subsection{Okrajšave}
+% Pri uporabi okrajšav \LaTeX{} za piko vstavi predolg presledek, kot npr. tukaj. Zato se za vsako
+% piko, ki ni konec stavka doda presledek običajne širine z ukazom \verb*|\ |, kot npr.\ tukaj.
+% Primerjaj z okrajšavo zgoraj za razliko.
+%
+% \subsection{Vstavljanje slik}
+% Sliko vstavimo v plavajočem okolju \texttt{figure}. Plavajoča okolja \emph{plavajo} po tekstu, in
+% jih lahko postavimo na vrh strani z opcijskim parametrom `\texttt{t}', na lokacijo, kjer je v kodi s
+% `\texttt{h}', in če to ne deluje, potem pa lahko rečete \LaTeX u, da ga \emph{res} želite tukaj,
+% kjer ste napisali, s `\texttt{h!}'. Lepo je da so vstavljene slike vektorske (recimo \texttt{.pdf}
+% ali \texttt{.eps} ali \texttt{.svg}) ali pa \texttt{.png} visoke resolucije (več kot
+% \unit[300]{dpi}).  Pod vsako sliko je napis in na vsako sliko se skličemo v besedilu. Primer
+% vektorske slike je na sliki~\ref{fig:sample}. Vektorsko sliko prepoznate tako, da močno
+% zoomate v sliko, in še vedno ostane gladka. Več informacij je na voljo na
+% \url{https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions}. Če so slike bitne, kot na
+% primer slika~\ref{fig:image}, poskrbite, da so v dovolj visoki resoluciji.
+%
+% \begin{figure}[h]
+%   \centering
+%   \includegraphics[width=0.6\textwidth]{images/sample.pdf}
+% % \caption[caption za v kazalo]{Dolg caption pod sliko}
+%   \caption[Primer vektorske slike.]{Primer vektorske slike z oznakami v enaki pisavi, kot jo
+%      uporablja \LaTeX{}.  Narejena je s programom Inkscape, \LaTeX{} oznake so importane v
+%      Inkscape iz pomožnega PDF.}
+%   \label{fig:sample}
+% \end{figure}
+%
+% \begin{figure}[h]
+%   \centering
+%   \includegraphics[width=0.8\textwidth]{images/image.png}
+%   \caption[Primer bitne slike.]{Primer bitne slike, izvožene iz Matlaba. Poskrbite, da so slike v
+%   dovolj visoki resoluciji in da ne vsebujejo prosojnih elementov (to zahteva PDF/A-1b format).}
+%   \label{fig:image}
+% \end{figure}
+%
+% \subsection{Kako narediti stvarno kazalo}
+% Dodate ukaze \verb|\index{polje}| na besede, kjer je pojavijo, kot tukaj\index{tukaj}.
+% Več o stvarnih kazalih je na voljo na \url{https://en.wikibooks.org/wiki/LaTeX/Indexing}.
+%
+% \subsection{Navajanje literature}
+% Članke citiramo z uporabo \verb|\cite{label}|, \verb|\cite[text]{label}| ali pa več naenkrat s
+% \verb|\cite\{label1, label2}|. Tudi tukaj predhodno besedo in citat povežemo z nedeljivim presledkom
+% $\sim$. Na primer~\cite{chen2006meshless,liu2001point}, ali pa \cite{kibriya2007empirical}, ali pa
+% \cite[str.\ 12]{trobec2015parallel}, \cite[enačba (2.3)]{pereira2016convergence}.
+% Vnosi iz \verb|.bib| datoteke, ki niso citirani, se ne prikažejo v seznamu literature, zato jih
+% tukaj citiram.~\cite{vene2000categorical}, \cite{gregoric2017stopniceni}, \cite{slak2015induktivni},
+% \cite{nsphere}, \cite{kearsley1975linearly}, \cite{STtemplate}, \cite{NunbergerTand}, \cite{vanoosten2008realizability}.
 
 \end{document}
