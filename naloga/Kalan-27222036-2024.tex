@@ -143,11 +143,117 @@ pogledati nekaj kriptografskih osnov. Bolj komplicirane stvari bodo opisane spro
 poglavja je predstaviti stvari, ki so predpogoj za branje kakršnegakoli kriptografskega 
 besedila.
 
+\subsection{Zgoščevalne funkcije}
+V grobem so (kriptografske) \textit{zgoščevalne funkcije} funkcije, ki prejmejo poljubno dolg binarni 
+niz (ki lahko predstalja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima 
+vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. V grobem si od zgoščevalnih 
+funkcij želimo naslednje lastnosti:
+\begin{itemize}
+    \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enakega 
+        odgovora. 
+    \item \textbf{Učinkovitost} pomeni, da lahko računalnih izračuna poljubno zgostitev v doglednem 
+        času.
+    \item \textbf{Enosmernost} pomeni, da iz predložene zgostitve zelo težko ugotovimo, kater niz 
+        je funkcija prejela kot vhod.
+    \item \textbf{Skoraj brez trčenj} pomeni, da je verjetnost, da imata dva izraza enako zgostitev,
+        majhna. Želimo tudi, da je zelo težko najti dva niza z enako zgostitvijo.
+\end{itemize}
+
+\begin{primer}
+    Ena izmed najbolj znanih zgostitvenih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure 
+    Hashing Algorithm} (slov.\ varen zgostitveni algoritem), $256$ pa predstavlja dolžino zgostitve. 
+    Pogostokrat to ime zasledimo pri nameščanju programske opreme, služi kot avtentikator, da smo res 
+    naložili pravo stvar.
+
+    Za primer si lahko ogledamo zgostitvi dveh podobnih nizov, \textit{Ljubljana} in \textit{Ljubljena}. 
+    Kljub podobnosti bomo videli, da sta rezultata popolnoma drugačna, kar si tudi želimo pri zgostitvenih 
+    funkcijah.
+    \begin{verbatim}
+    SHA-256(Ljubljana) =
+    b7f147d8b4a6703a951336654355071f9752385f85d0860379e99b484aee7a82
+
+    SHA-256(Ljubljena) =
+    995d2d8ffb40e1838219e65dd2c665701ba34a90e11f7195a4b791838b6787fe
+    \end{verbatim}
+    Za preglednost nismo prevajali besed v binarne nize, to bi storili npr.\ z \texttt{ASCII} ali \texttt{UTF-8}
+    tabelo. Prav tako smo rezultat napisali v šestnajstiškem sistemu, saj je tako krajši.
+\end{primer}
+
+\subsubsection{Model slučajnega oraklja}
 
 \subsection{Kriptografija javnega ključa}
-\subsection{Zgoščevalne funkcije}
+Prve šifre, ki smo jih uporabljaji ljudje, so bile \textit{simetrične}, kar pomeni, da sta osebi 
+za komunikacijo obe morali poznati skriven \textit{ključ}, ki je definiral, kako je bila šifra 
+ustvarjena. 
 
-\subsection{Kriptografski podpisi}
+\begin{primer}[Cezarjeva šifra]
+    Ena najbolj znanih šifer, ki izvira iz Antičnega Rima, je \textit{Cezrjeva šifra}. Njen ključ 
+    je število, ki je krajše od dolžine naše abecede, v Cezarjevem primeru je bilo to število $3$.
+    Šifra potem deluje tako, da vsako črko zamaknemo za toliko mest v abecedi, kolikor definira 
+    ključ. Npr.\ za slovensko abecedo, bi šifra zamaknila črke:
+    \begin{verbatim}
+        A B C Č D E F G H I J K L M N O P R S Š T U V Z Ž
+        Č D E F G H I J K L M N O P R S Š T U V Z Ž A B C
+    \end{verbatim}
+    To bi izraz \texttt{JAVNI KLJUČ} preslikalo v \texttt{MČARL NOMŽF}. Cezarjeva šifra se imenuje 
+    tudi \textit{zamična šifra}.
+\end{primer}
+
+V prejšnjem stoletju pa se je pojavila alternativa, imenovana \textit{asimetrična kriptografija}, oz.\
+\textit{kriptografija javnega ključa}. Glavna prednost te je, da osebi za komunikacijo ne rabita 
+poznati enakega skrivnega ključa, vendar ima vsak od njiju par ključev, ki ju imenujemo \textit{javni 
+ključ} (angl.\ \textit{public key}) in \textit{zasebni ključ} (angl.\ \textit{secret/private key})in 
+označimo kot par $(\text{pk}, \text{sk})$. Vsaka oseba objavi svoj javni ključ in poskrbi, da nihče 
+ne izve, kaj je njen zasebni ključ. 
+
+Šifriranje potem poteka tako, da pridobimo javni ključ od osebe, s katero želi komunicirati, ga uporabi
+za šifriranje in objavi šifrirano sporočilo. Lastnik ustreznega zasebnega ključa (vsakemu javnemu pripada 
+natanko en zasebni) potem pridobi šifrirano sporočilo in ga z zasebnim ključem odšifrira. Kriptosistemi 
+delujejo na način, da lahko sporočilo, šifrirano z javnim ključem odšifrira samo ustrezen zasebni ključ. 
+Tako zagotovimo varno komunikacijo. 
+
+\begin{primer}[RSA]
+    En prvih algoritmov javnega ključa, ki se uporablja še danes, je \textit{RSA}. Njegova varnost izhaja 
+    iz (domnevne) težavnosti problema iskanja prafaktorjev. Svoj ključ definiramo tako, da si izberemo dve 
+    (zelo veliki) praštevili $p$ in $q$, ter ju zmnožimo v $n = pq$. Za primer vzemimo $p = 23$ in 
+    $q = 17$. $n$ je potem enak $391$. Izbrati si moramo še eksponent $e$, vzemimo npr. $e = 3$. Naš 
+    javni ključ je potem par 
+    $$ 
+    (n, e) = (391, 3).
+    $$
+    Postopek šifriranja poteka tako, da oseba, s katero komuniciramo, izbere sporočilo $m$, npr.\ 
+    $m = 10$, pridobi naš javni ključ, in izračuna šifro $c$ kot
+    $$   
+    c = m^e \bmod{n} = 10^3 \bmod{n} = 218.
+    $$
+    Dogovoriti se moramo še o zasebnem ključu. Za to bomo potrebovali eksponent za odšifriranje $d$,
+    tako da bo veljalo 
+    $$
+    (m^e)^d \equiv 1 \pmod{\varphi(n)},
+    $$ 
+    kjer $\varphi$ označuje Eulerjevo funkcijo fi. Iščemo torej multiplikativni inverz eksponenta 
+    $e$, modulo $\varphi(n)$. V našem primeru je to $d = 235$. Zasebni ključ je potem 
+    $$ 
+    (p, q, d) = (23, 17, 235). 
+    $$
+    Iz zasebnega ključa torej lahko kadarkoli izračunamo javnega, saj enostavno zmnožimo $p$ in $q$ 
+    ter izračunamo inverz, v splošnem pa iz $n$ učinkovito ne moremo pridobiti faktorjev $p$ in $q$,
+    kar nam daje varnost.
+
+    Ko prejmemo šifrirano sporočilo $c$, ga odšifriramo tako, da izračunamo
+    $$
+    m = c^d \bmod{n} = 218^{235} \bmod{391} = 10.   
+    $$
+\end{primer}
+
+Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega ključa omogočila tudi 
+\textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo e-pošto ali dostopamo do katerekoli 
+spletne strani. Delujejo na podoben način, kot šifriranje z javnim ključem, le da najprej uporabimo 
+zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Ponavadi sta šifrianje 
+in podisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, za katerega lahko oseba, 
+s katero komuniciramo preveri, da je res prišlo od nas.
+
+\subsection{Digitalni podpisi}
 Ideja \textit{kriptografskih} ali \textit{digitalnih} podpisov je, da služijo kot izboljšava človeškega 
 ročnega podpisa. Za razliko od ročnega podpisa, lahko z digitalnim dosežemo pravo identifikacijo 
 posameznika, ki temelji na njegovem zasebnem ključu. Tako smo lahko za digitalno podpisan dokument 
@@ -184,8 +290,8 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
             $$ 
             V(\text{pk}, m, \sigma) = 
             \begin{cases}
-                veljaven; \sigma = S(\text{sk}, m), \\
-                neveljaven; \sigma \neq S(\text{sk}, m).
+                veljaven, & \sigma = S(\text{sk}, m), \\
+                neveljaven, & \sigma \neq S(\text{sk}, m).
             \end{cases}
             $$
     \end{itemize}
@@ -197,9 +303,15 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 
 \subsubsection{Primer: Schnorrov podpis}
 
+\subsection{Drugo}
+Merklova drevesa, dokazi brez razkritja znanja, slučajni oraklji, fiat-shamirjeva hevristika,
+
 \section{Matematično ozadje}
 \subsection{Modularna aritmetika}
+kongruence, modulo,
+
 \subsection{Multiplikativne grupe modulo $n$}
+multiplikativni inverz, red elementa, diskretni logaritem
 
 \section{Pregled skupinskih podpisov}
 
