@@ -13,7 +13,7 @@
 \avtor{Tim Kalan}
 
 % - naslov dela v slovenščini
-\naslov{Skupinsko generirani podpisi}
+\naslov{Večstranski podpisi}
 
 % - naslov dela v angleščini
 \title{Multisignatures}
@@ -146,22 +146,46 @@ besedila.
 \subsection{Zgoščevalne funkcije}
 V grobem so (kriptografske) \textit{zgoščevalne funkcije} funkcije, ki prejmejo poljubno dolg binarni 
 niz (ki lahko predstalja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima 
-vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. V grobem si od zgoščevalnih 
+vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. Namen zgoščevalnih funkcij je 
+za dokument ustvariti unikaten niz, ki zelo verjetno identiificira dokument. V grobem si od zgoščevalnih 
 funkcij želimo naslednje lastnosti:
 \begin{itemize}
-    \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enakega 
-        odgovora. 
-    \item \textbf{Učinkovitost} pomeni, da lahko računalnih izračuna poljubno zgostitev v doglednem 
-        času.
+    \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
+        zgostitve. 
+    \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
+        času. Izračun zgostitve mora biti računsko učinkovit.
     \item \textbf{Enosmernost} pomeni, da iz predložene zgostitve zelo težko ugotovimo, kater niz 
-        je funkcija prejela kot vhod.
+        je funkcija prejela kot vhod. Tej lastnosti pravimo tudi \textit{odpornost na prasliko}.
+    \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
+        je zelo težko najdemo drug niz z enako zgostitvijo.
     \item \textbf{Skoraj brez trčenj} pomeni, da je verjetnost, da imata dva izraza enako zgostitev,
         majhna. Želimo tudi, da je zelo težko najti dva niza z enako zgostitvijo.
+    \item \textbf{Učinek plazu} pomeni, da majhna sprememba v vhodnem nizu povzroči veliko spremembo 
+        v zgostitvi.
 \end{itemize}
+
+\begin{definicija} 
+\label{def:hash}
+    \textbf{Kriptografska zgoščevalna funkcija} $H: \{0, 1\}^* \rightarrow \{0, 1\}^n$ je funkcija, 
+    ki slika binarne nize $m$ poljubne dolžine v njihove \textbf{zgostitve} $H(m)$, tj.\ binarne nize 
+    vnaprej določene dolžine $n$. Zadoščati mora naslednjim lastnostim:
+    \begin{itemize}
+        \item (določenost) $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
+        \item (učinkovitost) Izračun funkcije $H$ mora biti računsko učinkovit.
+        \item (odpornost na prasliko) Če poznamo zgostitev $h$ je računsko neizvedljivo najti 
+            niz $m$, da velja $h = H(m)$.
+        \item (odpornost na drugo prasliko) Če poznamo niz $m_1$ je računsko neizvedljivo najti 
+            zgostitev $m_2$, da velja $H(m_1) = H(m_2)$.
+        \item (odpornost na trčenja) Računsko neizvedljivo je najti dva niza $m_1$ in $m_2$, 
+            da velja $H(m_1) = H(m_2)$.
+        \item (učinek plazu) Vsaka sprememba vhoda povzroči, veliko spremembo v zgostitvi. 
+            Vsak bit zgostitve se spremeni z verjetnostjo vsaj $1/2$.
+    \end{itemize}
+\end{definicija}
 
 \begin{primer}
     Ena izmed najbolj znanih zgostitvenih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure 
-    Hashing Algorithm} (slov.\ varen zgostitveni algoritem), $256$ pa predstavlja dolžino zgostitve. 
+    Hash Algorithm} (slov.\ varen zgostitveni algoritem), $256$ pa predstavlja dolžino zgostitve. 
     Pogostokrat to ime zasledimo pri nameščanju programske opreme, služi kot avtentikator, da smo res 
     naložili pravo stvar.
 
@@ -178,8 +202,6 @@ funkcij želimo naslednje lastnosti:
     Za preglednost nismo prevajali besed v binarne nize, to bi storili npr.\ z \texttt{ASCII} ali \texttt{UTF-8}
     tabelo. Prav tako smo rezultat napisali v šestnajstiškem sistemu, saj je tako krajši.
 \end{primer}
-
-\subsubsection{Model slučajnega oraklja}
 
 \subsection{Kriptografija javnega ključa}
 Prve šifre, ki smo jih uporabljaji ljudje, so bile \textit{simetrične}, kar pomeni, da sta osebi 
@@ -297,28 +319,106 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
     \end{itemize}
 \end{definicija}
 
-\subsubsection{Ustvarjanje ključa}
-\subsubsection{Podpisovanje}
-\subsubsection{Preverjanje podpisa}
+\subsection{Varnost}
+Glavna stvar, ki nas zanima pri obravnavi kateregakoli kriptosistema, je njegova \textit{varnost}. 
+Ker je cilj digitalnih podpisov sogovorniku zagotoviti, da sporočilo res pošiljamo mi, nas glede 
+varnosti najbolj skrbi, da bi \textit{napadalec} lahko ponaredil naš podpis in nam s tem ukradel 
+identiteto. Pri tem je lahko uspešen na več nivojih, ki so od najmanj do najbolj škodljivega:
 
-\subsubsection{Primer: Schnorrov podpis}
+\begin{itemize}
+    \item \textbf{Eksistencialno ponarejanje} (angl. \textit{existential forgery}) pomeni, da napadalec 
+        lahko ponaredi vsaj en podpis. To pomeni, da lahko najde vsaj en par $(m, \sigma)$, da 
+        velja $V(\text{pk}, m, \sigma) = veljaven$.
+    \item \textbf{Selektivno ponarejanje} (angl. \textit{selective forgery}) pomeni, da lahko napadalec 
+        z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga mi še nismo 
+        podpisali. Torej, če napadalcu nekdo predloži spročilo $m$, lahko z nezanemarljivo verjetnostjo 
+        najde podpis $\sigma$, da velja $V(\text{pk}, m, \sigma) = veljaven$.
+    \item \textbf{Popoln zlom} (angl. \textit{total break}) pomeni, da je napadalec ugotovil naš 
+        zasebni ključ in s tem podpisovalni algoritem. V našem imenu lahko podpiše karkoli.
+\end{itemize}
 
-\subsection{Drugo}
-Merklova drevesa, dokazi brez razkritja znanja, slučajni oraklji, fiat-shamirjeva hevristika,
+Poleg zgoraj definiranih \textit{ciljev napadalca}, lahko za vsak kriptosistem definiramo tudi
+\textit{model napada}, in pa \textit{tip varnosti}, ki ga zagotavlja shema. Varnost večine shem za 
+digitalne podpise temelji na (domnevni) težavnosti določenih matematičnih problemov.
 
-\section{Matematično ozadje}
-\subsection{Modularna aritmetika}
-kongruence, modulo,
+Stinson~\cite{stinson2023crypto} definira naslednje modele napada:
+\begin{itemize}
+    \item \textbf{Napad samo s ključem} je napad, kjer napadalec pozna samo naš javni ključ $\text{pk}$. 
+        Pozna torej algoritem za preverjanje podpisov $V$.
+    \item \textbf{Napad z znanimi sporočili} je napad, kjer napadalec poseduje seznam parov sporočil 
+        in njihovih podpisov $(m_1, \sigma_1), (m_2, \sigma_2), \dots$, kjer za vsak $i$ velja 
+        $\sigma_i = S(\text{sk}, m_i)$.
+    \item \textbf{Napad z izbranimi sporočili} je napad, kjer nam napadalec da seznam sporočil $m_1,
+        m_2, \dots$, mi pa mu vrnemo seznam podpisov, da za vsak $i$ velja $\sigma_i = S(\text{sk}, 
+        m_i)$.
+\end{itemize}
 
-\subsection{Multiplikativne grupe modulo $n$}
-multiplikativni inverz, red elementa, diskretni logaritem
+Ostane nam še predled varnosti, ki jo lahko pričakujemo oz.\ zahtevamo od sheme za podpisovanje. 
+Takšna shema ne more biti \textit{brezpogojno varna}, kar bi pomenilo, da je tudi z neomejenimi 
+računskimi zmožnostmi nemogoče ponarediti podpis. To je zato, ker lahko napadalec sistematično 
+preveri vse podpise za neko sporočilo s pomočjo algoritma $V$, dokler ne najde pravega. Pričakujemo 
+pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti ponaredka v doglednem času,
+če ima omejene računske sposobnosti, ali pa \textit{dokazljivo varnost}, kar pomeni, da lahko 
+varnost prevedemo na težavnost nekega matematičnega problema.
+
+\section{Schnorrov podpis}
+Eden izmed najenostavnejših, dokazano varnih podpisov je ravno \textit{Schnorrov podpis}. Kot vsi 
+podpisi, tudi ta potrebuje tri algoritme: za generiranje ključa, podpisovanje in preverjanje 
+podpisa. 
+
+Za generiranje para ključev, je potrebno najprej generirati dve praštevili $p$ in $q$, tako da $q$ 
+deli $p-1$. Potem je potrebno izbrati element $g$ iz multiplikativne grupe modulo $p$, torej 
+$g \in \Z_p^*$, ki je reda $q$. Za konec je potreben še izbor naključnega števila $s \in [0, q - 1]$
+in izračun 
+$$ 
+I = g^s \bmod p.
+$$
+Ko vse to opravimo, smo uspešno ustvarili par ključev
+\begin{align*}
+\text{pk} &= (p, q, g, I), \\
+\text{sk} &= s.
+\end{align*}
+
+Za podpis sporočila $m$ moramo imeti dostop do varne kriptografske zgoščevalne funkcije $H$. Za varno 
+funkcijo smatramo vsako, ki zadošča lastnostim iz definicije~\ref{def:hash}. Potem moramo generirati 
+naključno število $r \in [0, q-1]$ in izračunati \textit{zavezo} 
+$$ 
+X = g^r \bmod p.
+$$ 
+Ta korak je podoben zadnjemu delu generiranja ključev, le da je skrivni del ključa $s$ uporabljen 
+večkrat, $r$ pa mora biti generiran vsakič znova. Potem z uporabo funkcije $H$ izračunamo 
+\textit{izziv} 
+$$
+e = H(X || m),
+$$ 
+kjer $||$ označuje stikanje nizov. Za konec je potrebno izračunati še 
+$$ 
+y = es + r \bmod q, 
+$$
+podpis sporočila $m$ pa je potem par $(X, y)$ oz.\ 
+$$ 
+S(s, m) = (X, y).
+$$
+
+Za preverjanje veljavnosti podpisa $(X', y')$ sporočila $m$, je potrebno izračunati 
+$$ 
+e' = H(X' || m)
+$$
+in preveriti, če velja 
+$$ 
+g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod p.
+$$ 
+v primeru, da gre za veljaven podpis, se leva stran prepiše v 
+$$ 
+g^{y'} = g^{es + r \bmod q}
+$$
 
 \section{Pregled skupinskih podpisov}
 
-\section{Skupinsko generirani podpisi na podlagi Schnorrovega podpisa}
+\section{Večstranski Schnorrov podpis}
 Povzeto po~\cite{micali2001asm}.
 
-\section{Skupinsko generirani podpisi v splošnem}
+\section{Večstranski podpisi v splošnem}
 
 % \section{Integrali po \texorpdfstring{$\omega$}{ω}-kompleksih}
 % \subsection{Definicija}
