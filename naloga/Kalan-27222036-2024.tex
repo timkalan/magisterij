@@ -326,14 +326,14 @@ varnosti najbolj skrbi, da bi \textit{napadalec} lahko ponaredil naš podpis in 
 identiteto. Pri tem je lahko uspešen na več nivojih, ki so od najmanj do najbolj škodljivega:
 
 \begin{itemize}
-    \item \textbf{Eksistencialno ponarejanje} (angl. \textit{existential forgery}) pomeni, da napadalec 
+    \item \textbf{Eksistencialno ponarejanje} (angl.\ \textit{existential forgery}) pomeni, da napadalec 
         lahko ponaredi vsaj en podpis. To pomeni, da lahko najde vsaj en par $(m, \sigma)$, da 
         velja $V(\text{pk}, m, \sigma) = veljaven$.
-    \item \textbf{Selektivno ponarejanje} (angl. \textit{selective forgery}) pomeni, da lahko napadalec 
+    \item \textbf{Selektivno ponarejanje} (angl.\ \textit{selective forgery}) pomeni, da lahko napadalec 
         z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga mi še nismo 
         podpisali. Torej, če napadalcu nekdo predloži spročilo $m$, lahko z nezanemarljivo verjetnostjo 
         najde podpis $\sigma$, da velja $V(\text{pk}, m, \sigma) = veljaven$.
-    \item \textbf{Popoln zlom} (angl. \textit{total break}) pomeni, da je napadalec ugotovil naš 
+    \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da je napadalec ugotovil naš 
         zasebni ključ in s tem podpisovalni algoritem. V našem imenu lahko podpiše karkoli.
 \end{itemize}
 
@@ -379,6 +379,12 @@ Ko vse to opravimo, smo uspešno ustvarili par ključev
 \text{sk} &= s.
 \end{align*}
 
+Ideja v ozadju teh števil je, da $p$ določa multiplikativno grupo števil $\Z_p^*$. Za podpis je 
+potrebno najti podgrupo, katere red je praštevilo, je pa vseeno dovolj velika, da omogoča varnost. 
+Red te podgrupe je $q$, določa pa jo generator $g$. 
+
+KAKO DOBIMO PARAMETRE??
+
 Za podpis sporočila $m$ moramo imeti dostop do varne kriptografske zgoščevalne funkcije $H$. Za varno 
 funkcijo smatramo vsako, ki zadošča lastnostim iz definicije~\ref{def:hash}. Potem moramo generirati 
 naključno število $r \in [0, q-1]$ in izračunati \textit{zavezo} 
@@ -412,8 +418,67 @@ v primeru, da gre za veljaven podpis, se leva stran prepiše v
 $$ 
 g^{y'} = g^{es + r \bmod q}
 $$
+desna pa 
+$$ 
+X' \cdot I^{e'} = g^r \bmod p \cdot (g^s \bmod p)^r = 
+$$
+
+\subsection{Varnost Schnorrovega podpisa}
 
 \section{Pregled skupinskih podpisov}
+Ko pridemo do podpisovanja skupin, si lahko zamislimo več različnih rešitev. Micali v ~\cite{micali2001asm} 
+definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
+\begin{itemize}
+    \item \textbf{Prilagodljivost} (angl.\ \textit{flexibility}): Popolnoma prilagodljiv podpis skupine
+        je takšen, ki ga lahko proizvede katerakoli podskupina originalne skupine podpisnikov. Ko je podpis 
+        preverjen, se mora tisti, ki ga je preveril odločiti, če je ustrezen del skupine podal svoj podpis. 
+        Popolnoma neprilagodljiv podpis bi bil takšen, ki ga lahko v imenu skupine ustvari katerkoli član.
+    \item \textbf{Odgovoronost} (angl.\ \textit{accountability}): Če lahko iz podpisa ugotovimo, kateri člani 
+        so sodelovali pri ustvarjanju, nam podpis omogoča odgovornost. Ta lastnost je lahko zaželena, če 
+        se želimo prepričati, ali je ustrezen del skupine sodeloval pri podpisu (npr.\ ali je pri podpisovanju 
+        sodeloval generalni direktor podjetja). V drugih primerih pa si želimo anonimnost posameznih članov 
+        (npr.\ če bi generiranje podpisa predstavljalo nekakšno glasovanje, bi želeli vedeti samo, koliko 
+        članov je sodelovalo).
+\end{itemize}
+
+V nadaljevanju bomo skupino potencialnih podpisnikov (torej podpisnikov, ki imajo možnost sodelovati pri 
+podpisovanju) označili z $G = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
+generiral samo del skupine $S \subseteq G$.
+
+\subsection{Skupinski podpisi}
+\textit{Skupinski podpis} (angl.\ \textit{group signature}) v imenu celotne skupine $G$ ustvari en 
+anonimen član. To torej pomeni, da je podpis popolnoma neprilagodljiv, saj ni možno prisiliti skupine,
+da bi podpis ustvaril več kot en član. Prav tako v splošnem noben član, niti tisti, ki preverja podpis,
+ne more ugotoviti, kdo je podpis ustvaril. Da skupinski podpisi omogočijo vsaj delno odgovornost, 
+skupina določi \textit{vodjo skupine}, ki ima možnost razkriti identiteto podpisnika, če pride do 
+težav. V tem primeru seveda vodja predstavlja atraktivno tarčo za napad.
+
+\subsection{Pragovni podpisi}
+Če želimo zagotoviti, da se s podpisom strinja zadosten delež skupine, lahko uporabimo \textit{pragovni 
+podpis} (angl.\ \textit{threshold signature}). Ta nam omogoča določeno mero prilagodljivosti, saj lahko 
+katerkoli zadosten delež skupine ustvari podpis. Še vedno je nemogoče upoštevati morebitno hierarhično
+strukturo skupine. Pragovni podpisi omogočajo tudi popolno anonimnost podpisnikov, in s tem torej 
+nično odgovornost. Intuicija tu je, da večina pragovnih podpisov temelji na interpolaciji polinoma 
+$(l - 1)$-stopnje z $l$ točkami. Po interpolaciji se informacija o tem, točno katere točke smo uporabili, 
+izgubi.
+
+\subsection{Večstranski podpisi}
+Za nekatere uporabe podpisov, bi si od njih želeli podobne lastnosti, kot jih ima večstranski ročen podpis. 
+Pri njem lahko hitro preberemo podpisnike, torej imamo popolno prilagodljivost. Vidimo lahko seznam 
+podpisnikov, torej lahko presodimo, če so med njimi tisti, ki smo jih želeli. Prav tako podpisniki nosijo 
+popolno odgovornost, saj na papirju piše njihovo ime. 
+
+Podoben učinek bi z digitalnimi podpisi lahko dosegli, če bi namesto enega podpisa skupine, od članov 
+zbrali individualne podpise in jih nanizali v seznam. Dobili bi torej digitalni podpis skupine, ki 
+ponuja popolno prilagodljivost in odgovornost. Težava je samo, da je dolžina podpisa (in s tem čas 
+preverjanja) proporcionalna številu podpisnikov. \textit{Večstranski podpisi} (angl.\ textit{multisignatures})
+ohranijo lastnosti seznama podpisov, rezultat sheme je pa en sam podpis, ki je enako dolg ne glede 
+na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. So torej odlična posplošitev 
+ročnih podpisov skupin, ki vseeno ohrani učinkovito preverjanje.
+
+DEFINICIJA?
+
+\subsection{Agregirani podpisi}
 
 \section{Večstranski Schnorrov podpis}
 Povzeto po~\cite{micali2001asm}.
