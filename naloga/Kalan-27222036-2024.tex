@@ -143,6 +143,49 @@ pogledati nekaj kriptografskih osnov. Bolj komplicirane stvari bodo opisane spro
 poglavja je predstaviti stvari, ki so predpogoj za branje kakršnegakoli kriptografskega 
 besedila.
 
+\subsection{Aritmetika v $\Z_p^*$}
+V kriptografiji imamo pogosto opravka z multiplikativnimi grupami, najenostavnejša med njimi (in 
+tudi tradicionalno največ uporabljena) je \textit{multiplikativna grupa naravnih števil modulo $p$} 
+$\Z_p^*$. Njeni elementi so števila v $\{0, 1, \dots, p - 1\}$, ki so tuja številu $p$. V posebnem 
+primeru, ko je $p$ praštevilo, so to torej števila \{1, 2, \dots, p - 1\} in je red grupe 
+$\text{ord}(\Z_p^*) = |\Z_p^*| = p - 1$. Operacija v tej grupi je, kot ime že nakazuje, množenje 
+modulo $p$.
+
+Spomnimo se, da je red elementa $g$ najmanjše naravno število $q$, da velja $g^q \equiv 1 \pmod p$, 
+kjer je $1$ enota za množenje. V primeru, da je $p$ praševilo, je grupa grupa $\Z_p^*$ \textit{ciklična}, 
+kar pomeni, da v njej obstaja element $g$, katerega red je enak redu grupe, torej $\text{ord}(g) = p - 1$.
+V tem primeru se $g$ imenuje \textit{generator}.
+
+\begin{primer}[Grupa $\Z_{11}^*$]
+Ker je $11$ praštevilo, v grupi $\Z_{11}^*$ obstaja generator, oz.\ je grupa ciklična z redom $10 = 
+11 - 1$. Z zaporednim računanjem potenc lahko vidimo, da je $\text{ord}(2) = 10$, torej je $2$ 
+generator.
+
+\begin{minipage}{0.45\textwidth}
+    \begin{align*}
+        2^1 &\equiv 2 \pmod{11} \\
+        2^2 &\equiv 4 \pmod{11} \\
+        2^3 &\equiv 8 \pmod{11} \\
+        2^4 &\equiv 5 \pmod{11} \\
+        2^5 &\equiv 10 \pmod{11} 
+    \end{align*}
+\end{minipage}
+\begin{minipage}{0.45\textwidth}
+    \begin{align*}
+        2^6 &\equiv 9 \pmod{11} \\
+        2^7 &\equiv 7 \pmod{11} \\
+        2^8 &\equiv 3 \pmod{11} \\
+        2^9 &\equiv 6 \pmod{11} \\
+        2^{10} &\equiv 1 \pmod{11} 
+    \end{align*}
+\end{minipage}
+
+\end{primer}
+
+\begin{opomba}
+    Spomnimo se \textit{kongruence}: $a \equiv b \pmod m \iff m \text{ }|\text{ } a - b$.
+\end{opomba}
+
 \subsection{Zgoščevalne funkcije}
 V grobem so (kriptografske) \textit{zgoščevalne funkcije} funkcije, ki prejmejo poljubno dolg binarni 
 niz (ki lahko predstalja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima 
@@ -381,18 +424,25 @@ Ko vse to opravimo, smo uspešno ustvarili par ključev
 
 Ideja v ozadju teh števil je, da $p$ določa multiplikativno grupo števil $\Z_p^*$. Za podpis je 
 potrebno najti podgrupo, katere red je praštevilo, je pa vseeno dovolj velika, da omogoča varnost. 
-Red te podgrupe je $q$, določa pa jo generator $g$. 
+Red te podgrupe je $q$, določa pa jo generator $g$. Iz varnostnih razlogov mora $p$ imeti $2048$ 
+bitov, $q$ pa $224$. Čeprav je grupa $\Z_p^*$ zelo velika, je Schnorrov podpis vseeno učinkovit, 
+saj večinoma deluje znotraj podgurpe, ki jo generira $g$.
 
 KAKO DOBIMO PARAMETRE??
 
-Za podpis sporočila $m$ moramo imeti dostop do varne kriptografske zgoščevalne funkcije $H$. Za varno 
-funkcijo smatramo vsako, ki zadošča lastnostim iz definicije~\ref{def:hash}. Potem moramo generirati 
-naključno število $r \in [0, q-1]$ in izračunati \textit{zavezo} 
+Poleg parametrov $p, q$ in $g$, morata podpisnik in preverjalec določiti oz.\ imeti dostop do varne 
+kriptografske zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
+ki zadošča lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije definira velikost 
+končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg $2 \log_2 q$ bitov~\cite{
+stinson2023crypto}.
+
+Za podpis enega sporočila mora podpisnik generirati naključno število $r \in [0, q-1]$ in izračunati 
+\textit{zavezo} 
 $$ 
 X = g^r \bmod p.
 $$ 
 Ta korak je podoben zadnjemu delu generiranja ključev, le da je skrivni del ključa $s$ uporabljen 
-večkrat, $r$ pa mora biti generiran vsakič znova. Potem z uporabo funkcije $H$ izračunamo 
+večkrat, $r$ pa mora biti generiran za vsako sporočilo znova. Potem z uporabo funkcije $H$ izračunamo 
 \textit{izziv} 
 $$
 e = H(X || m),
@@ -411,17 +461,59 @@ $$
 e' = H(X' || m)
 $$
 in preveriti, če velja 
-$$ 
-g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod p.
-$$ 
-v primeru, da gre za veljaven podpis, se leva stran prepiše v 
-$$ 
-g^{y'} = g^{es + r \bmod q}
-$$
-desna pa 
-$$ 
-X' \cdot I^{e'} = g^r \bmod p \cdot (g^s \bmod p)^r = 
-$$
+\begin{equation}
+    g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod p. \label{eq:schnorr-ver}
+\end{equation}
+Za to moramo uporabiti nekaj lastnosti cikličnih grup in modularne aritmetike.
+\begin{trditev}
+\label{trd:mod-q}
+    Naj bosta $p$ in $q$ praštevili, $q \text{ }|\text{ } p - 1$. Naj bo $g$ element grupe $\Z_p^*$ 
+    reda $q$, kar pomeni, da je $g^q \equiv 1 \pmod p$. Naj bo $k$ naravno število. Potem velja 
+    $$ 
+    g^k \bmod p = g^{k \bmod q} \bmod p.
+    $$
+\end{trditev}
+\begin{dokaz}
+    Po osnovnem izreku o deljenju naravnih števil, lahko $k$ na en sam način zapišemo kot $k = nq + r$, 
+    kjer velja $n \in \N, r < q$.
+
+    Leva stran enačbe se potem prepiše 
+    \begin{align*}
+        g^k \bmod p &= g^{nq + r} \bmod p = \\ 
+                    &= (g^q)^n g^r \bmod p = \\ 
+                    &= 1^n g^r \bmod p = \\ 
+                    &= g^r \bmod p.
+    \end{align*}
+    Desna stran pa se prepiše kot 
+    \begin{align*}
+        g^{k \bmod q} \bmod p &= g^{(nq + r) \bmod q} \bmod p = \\ 
+                              &= g^r \bmod p.
+    \end{align*}
+    Ker sta obe strani enaki, je trditev dokazana.
+\end{dokaz}
+
+Po trditvi~\ref{trd:mod-q} lahko levo stran enačbe za preverjanje Schnorrovega podpisa~\eqref{eq:schnorr-ver}
+prepišemo
+\begin{align*}
+    g^{y'} \bmod p &= g^{es + r \bmod q} \bmod p = \\ 
+                   &= g^{es + r} \bmod p. 
+\end{align*}
+Za pretvorbo desne strani moramo uporabiti dve lastnosti modularnega računa, ki pravita 
+\begin{align}
+    a^b \bmod p &= (a \bmod p)^b \bmod p, \label{eq:mod-exp} \\
+    a \cdot b \bmod p &= (a \bmod p) \cdot (b \bmod p) \bmod p. \label{eq:mod-prod}
+\end{align}
+Potem lahko prepišemo
+\begin{align*}
+X' \cdot I^{e'} \bmod p &= g^r \bmod p \cdot (g^s \bmod p)^e \bmod p = \\
+                        &= (g^r \bmod p) \cdot (g^{es} \bmod p) \bmod p = \\ 
+                        &= g^{es + r} \bmod p,
+\end{align*}
+kjer smo pri prehodu v drugo vrstico uporabili lastnost~\eqref{eq:mod-exp}, pri prehodu v tretjo 
+pa lastnost~\eqref{eq:mod-prod}. Ker se obe strani ujemata za veljavne podpisne vrednosti, ta enačba 
+res preveja Schnorrov podpis.
+
+KAKO PA POKAŽEMO, DA SE ZA NAPAČNE VREDNOSTI NE UJEMA??
 
 \subsection{Varnost Schnorrovega podpisa}
 
@@ -476,7 +568,7 @@ ohranijo lastnosti seznama podpisov, rezultat sheme je pa en sam podpis, ki je e
 na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. So torej odlična posplošitev 
 ročnih podpisov skupin, ki vseeno ohrani učinkovito preverjanje.
 
-DEFINICIJA?
+DEFINICIJA??
 
 \subsection{Agregirani podpisi}
 
