@@ -498,12 +498,58 @@ prepišemo
     g^{y'} \bmod p &= g^{es + r \bmod q} \bmod p = \\ 
                    &= g^{es + r} \bmod p. 
 \end{align*}
-Za pretvorbo desne strani moramo uporabiti dve lastnosti modularnega računa, ki pravita 
-\begin{align}
-    a^b \bmod p &= (a \bmod p)^b \bmod p, \label{eq:mod-exp} \\
-    a \cdot b \bmod p &= (a \bmod p) \cdot (b \bmod p) \bmod p. \label{eq:mod-prod}
-\end{align}
-Potem lahko prepišemo
+Za pretvorbo desne strani moramo uporabiti nekaj lastnosti modularne aritmetike.
+
+\begin{trditev}
+    Naj bodo $a$, $b$ in $p$ naravna števila. Potem za modularno množenje in potenciranje velja
+    \begin{align}
+        a \cdot b \bmod p &= (a \bmod p) \cdot (b \bmod p) \bmod p, \label{eq:mod-prod} \\
+        a^b \bmod p &= (a \bmod p)^b \bmod p. \label{eq:mod-exp} 
+    \end{align}
+\end{trditev}
+\begin{dokaz}
+    $a$ in $b$ lahko po osnovnem izreku o deljenju naravinih števil na en sam način zapišemo kot 
+    \begin{align*}
+        a &= n_a p + r_a, \\
+        b &= n_b p + r_a,
+    \end{align*}
+    kjer velja $r_a < p$.
+    
+    \eqref{eq:mod-prod}: Levo stran preoblikujemo
+    \begin{align*}
+        a \cdot b \bmod p &= (n_a p + r_a) \cdot (n_b p + r_b) \bmod p = \\
+                          &= (n_a n_b p^2 + n_a p r_b + n_b p r_a + r_a r_b) \bmod p = \\
+                          &= r_a r_b \bmod p,
+    \end{align*}
+    desno pa
+    \begin{align*}
+        (a \bmod p) \cdot (b \bmod p) \bmod p &= (n_a p + r_a \bmod p) \cdot (n_b p + r_b \bmod p) \bmod p = \\
+                          &= r_a r_b \bmod p.
+    \end{align*}
+    Ker se strani ujemata, je trditev dokazana.
+
+    \eqref{eq:mod-exp}: Ker je potenciranje samo zaporedna uporaba množenj, lahko trditev pokažemo z 
+    indukcijo na $b$ in enačbo~\eqref{eq:mod-prod}:
+    \begin{itemize}
+        \item $b = 2$: Primer, ko je $b = 1$ (ali $b = 0$) je trivialen, če pa je $b = 2$, pa se 
+            problem reducira v 
+            $$ 
+            a \cdot a \bmod p \stackrel{?}{=} (a \bmod p) \cdot (a \bmod p) \bmod p,
+            $$
+            kar drži neposredno po enačbi~\eqref{eq:mod-prod}.
+        \item $n \rightarrow n + 1$: Predpostavimo, da enačba~\eqref{eq:mod-exp} drži za $b = n$ (I.P.). 
+            Ko je $b = n + 1$, dobimo 
+            \begin{align*}
+                a^{n + 1} \bmod p &= a^n a \bmod p = \\ 
+                                  &\stackrel{\eqref{eq:mod-prod}}{=} (a^n \bmod p) (a \bmod p) \bmod p = \\
+                                  &\stackrel{\text{I.P.}}{=} (a \bmod p)^n (a \bmod p) \bmod p = \\
+                                  &= (a \bmod p)^{n + 1} \bmod p.
+            \end{align*}
+    \end{itemize}
+    S tem je indukcija končana in trditev dokazana.
+\end{dokaz}
+
+Desno stran enačbe~\eqref{eq:schnorr-ver} torej lahko prepišemo
 \begin{align*}
 X' \cdot I^{e'} \bmod p &= g^r \bmod p \cdot (g^s \bmod p)^e \bmod p = \\
                         &= (g^r \bmod p) \cdot (g^{es} \bmod p) \bmod p = \\ 
@@ -516,6 +562,41 @@ res preveja Schnorrov podpis.
 KAKO PA POKAŽEMO, DA SE ZA NAPAČNE VREDNOSTI NE UJEMA??
 
 \subsection{Varnost Schnorrovega podpisa}
+Najbolj očitna nevarnost kateregakoli kriptosistema z javnimi ključi bi bila možnost izračuna zasebnega 
+ključa iz javnega. Slednji je dostopen vsem, zato bi lahko kdorkoli pridobil zasebni ključ, kar 
+popolnoma izniči pomen šifriranja ali podpisovanja. 
+
+Pri Schnorrovem podpisu je javni ključ poleg parametrov uporabljene grupe $p, q$ in $g$, še število 
+$I$, izračunano kot 
+$$ 
+I = g^s \bmod p.
+$$
+Za izračun je torej neposredno uporabljen zasebni ključ $s$. Zaradi notacije bi morda kdo hitro pomislil, 
+da lahko zgornjo enačbo obrnemo in $s$ izračunamo kot 
+$$ 
+s = \log_g(I) \bmod p.
+$$
+Taki izračuni v grupah $\Z_p^*$ žal niso tako enostavni, prišli smo do koncepta \textit{diskretnega 
+logaritma}.
+
+\begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
+    Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
+    grupe $G$. Naj velja $g^x = h$. $x$ Potem imenujemo \textbf{Diskretni logaritem (DL)}.
+
+    Zamislimo si igro, kjer izzivalec in nasprotnik kot vhod prejmeta opis grupe $G$ (torej $q$ in 
+    $g \in G$). Izzivalec potem izbere naključen element $\alpha \in G$ in izračuna $h = g^{\alpha}$.
+    $h$ pošlje nasprotniku, le-ta pa mora odgovoriti nazaj z elementom $\alpha$. To igro imenujemo 
+    \textbf{problem diskretnega logaritma (PDL)} (angl.\ \textit{discrete logarithm problem}).
+
+    Pri tej igri nas zanima verjetnost pravilnega odgovora nasprotnika, ki je računsko omejen. S tem 
+    mislimo, da ima na voljo polinomsko mnogo časa (glede na velikost grupe). Če je grupa $G$ takšna, 
+    da je verjetnost zanemarljiva, pravimo, da za grupo $G$ drži \textit{predpostavka diskretnega 
+    logaritma}.
+\end{definicija}
+
+Izkaže se, da za grupe, kot je $\Z_p^*$, ne poznamo učinkovitega algoritma za izračun diskretnega 
+logaritma, torej v njih drži predpodstavka DL. To torej pomeni, da ob pridobljenem javnem ključu, 
+napadalec ne more učinkovito izračunati zasebnega.
 
 \section{Pregled skupinskih podpisov}
 Ko pridemo do podpisovanja skupin, si lahko zamislimo več različnih rešitev. Micali v ~\cite{micali2001asm} 
@@ -551,8 +632,11 @@ podpis} (angl.\ \textit{threshold signature}). Ta nam omogoča določeno mero pr
 katerkoli zadosten delež skupine ustvari podpis. Še vedno je nemogoče upoštevati morebitno hierarhično
 strukturo skupine. Pragovni podpisi omogočajo tudi popolno anonimnost podpisnikov, in s tem torej 
 nično odgovornost. Intuicija tu je, da večina pragovnih podpisov temelji na interpolaciji polinoma 
-$(l - 1)$-stopnje z $l$ točkami. Po interpolaciji se informacija o tem, točno katere točke smo uporabili, 
-izgubi.
+$(l - 1)$-stopnje z $l$ točkami. Podpis je potem ustvarjen s pomočjo vrednosti polinoma v neki točki. 
+Po interpolaciji se informacija o tem, točno katere točke smo uporabili, izgubi. Take podpise imenujemo 
+tudi \textit{$l$-od-$L$ sheme}. Primer uporabe je odklepanje sefa v banki. Recimo, da ne zaupamo samo 
+osebi z odklepanjem in želimo, da je prisotnih $l$ od $L$ pooblaščenih oseb, ni nam pa važno, katerih. 
+Tu je pragovni podpis odlična rešitev.
 
 \subsection{Večstranski podpisi}
 Za nekatere uporabe podpisov, bi si od njih želeli podobne lastnosti, kot jih ima večstranski ročen podpis. 
