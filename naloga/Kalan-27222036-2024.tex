@@ -85,6 +85,7 @@ the content and not the structure of your work.}
 % naložite dodatne pakete, ki jih potrebujete
 \usepackage{units}        % fizikalne enote kot \unit[12]{kg} s polovico nedeljivega presledka, glej primer v kodi
 \usepackage{graphicx}     % za slike
+\usepackage{subcaption}
 % \usepackage{tikz}
 % VEČ ZANIMIVIH PAKETOV
 % \usepackage{array}      % več možnosti za tabele
@@ -417,8 +418,9 @@ pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti pona
 varnost prevedemo na težavnost nekega matematičnega problema.
 
 \section{Schnorrov podpis}
-Eden izmed najenostavnejših, dokazano varnih podpisov je ravno \textit{Schnorrov podpis}. Kot vsi 
-podpisi, tudi ta potrebuje tri algoritme: za generiranje ključa, podpisovanje in preverjanje 
+\label{sec:schnorr}
+Eden izmed najenostavnejših, dokazano varnih podpisov je ravno \textit{Schnorrov podpis}~\cite{schnorr1989sig}.
+Kot vsi podpisi, tudi ta potrebuje tri algoritme: za generiranje ključa, podpisovanje in preverjanje 
 podpisa. 
 
 Za generiranje para ključev, je potrebno najprej generirati dve praštevili $p$ in $q$, tako da $q$ 
@@ -720,16 +722,16 @@ sporočilom $M$.
             protokol, pri izvedbi morajo sodelovati vsi člani $S$. Po uspešni izvedbi lahko en od članov 
             objavi podpis $\sigma$.
             $$ 
-            \mathcal{S}_i((id_1, \dots, id_K), (\text{pk}_1, \dots, \text{pk}_K), m, \text{sk}_i) = \sigma,
+            \mathcal{S}_i((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \text{sk}_i) = \sigma,
             $$
-            kjer je $K$ velikost podskupine $S$, $(id_1, \dots, id_K)$ pa identifikacijske številke 
+            kjer je $l$ velikost podskupine $S$, $(id_1, \dots, id_l)$ pa identifikacijske številke 
             članov.
         \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
             preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $G$. 
             Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
             morebiten podpis $\sigma$. Algoritem potem vrne
             $$ 
-            \mathcal{V}((id_1, \dots, id_K), (\text{pk}_1, \dots, \text{pk}_K), m, \sigma) = 
+            \mathcal{V}((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \sigma) = 
             \begin{cases}
                 veljaven, & \sigma = , \\
                 neveljaven, & \sigma \neq .
@@ -808,9 +810,155 @@ vključno z napadalcem.
     naključno izbrana funkcija med vsemi funkcijami, ki slikajo med $\{0, 1\}^*$ in $\{0, 1\}^{k_2}$.
 \end{definicija}
 
-\subsection{Dokazi brez razkritja znanja}
-\subsection{Fiat-Shamirjeva hevristika}
-\subsection{Varnost}
+\subsection{Konstrukcija večstranskega Schnorrovega podpisa}
+Večstranska verzija temelji na Schnorrovem podpisu, predstavljenemu v poglavju~\ref{sec:schnorr}. 
+Ideja konstrukcije je, da začnemo z naivno verzijo, nato pa rešimo njene probleme, kar nas 
+privede do formalne definicije v razdelku~\ref{sec:def_multi_schnorr} in dokaza v 
+razdelku~\ref{sec:proof_multi_schnorr}.
+
+\subsubsection{Naivna verzija}
+Vsi podpisniki v skupini $G$ poznajo skupne parametre $p, q$ in $g$. Vsak podpisnik $P_i$ si 
+neodvisno in naključno izbere $s_i \in [0, \dots q-1]$ in izračuna 
+$$ 
+I_i = g^{s_i} \bmod p.
+$$
+Tako vsak podpisnik ustvari svoj par ključev
+\begin{align*}
+    \text{pk}_i &= (p, q, g, I_i), \\
+    \text{sk}_i &= s_i.
+\end{align*}
+
+Poljubna podskupina $S =\{P_{id_1}, \dots, P_{id_l}\}$ skupine $G$ podpiše sporočilo $m$ s tremi 
+krogi komunikacije:
+\begin{enumerate}
+    \item Vsak podpisnik $P_i$ iz podskupine $S$ si izbere naključen element $r_i \in [0, q-1]$ 
+        in izračuna zavezo 
+        $$ 
+        X_i = g^{r_i} \bmod p.
+        $$
+        Podpisniki potem pošljejo svoje zaveze izbranemu podpisniku $D$. 
+    \item $D$ izračuna \textit{skupno zavezo} 
+        $$ 
+        \tilde{X} = (X_{id_1} \cdot X_{id_2} \cdot \cdots \cdot X_{id_l}) \bmod p.
+        $$
+        in jo pošlje vsem podpisnikom.
+    \item Vsak podpisnik s pomočjo slučajnega oraklja izračuna izziv 
+        $$ 
+        e = H(\tilde{X} || m || S)
+        $$
+        in svoje \textit{individualne podpise} 
+        $$ 
+        y_i = e s_i + r_i \bmod q.
+        $$
+        Individualni podpisi so potem spet poslani podpisniku $D$, ta pa sedaj lahko 
+        izračuna 
+        $$ 
+        \tilde{y} = (y_{id_1} + y_{id_2} + \cdots + y_{id_l}) \bmod q 
+        $$
+        in vrne končen večstranski podpis
+        $$ 
+        \sigma = (\tilde{X}, \tilde{y}).
+        $$
+\end{enumerate}
+
+Preverjanje veljavnosti podpisa je podobno kot pri navadnemu Schnorrovemu podpisu. Da preverimo 
+podpis $(\tilde{X}', \tilde{y}')$ sporočila $m$ najprej izračunamo 
+$$ 
+e' = H(\tilde{X}' || m || S)
+$$ 
+in preverimo, če velja 
+$$
+g^{\tilde{y}'} \stackrel{?}{\equiv} \tilde{X}' \cdot \left(\prod_{P_i \in S} I_i \right)^{e'} \pmod p.
+$$
+
+\subsubsection{Generiranje parametrov: Predpostavka DL}
+Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo. 
+Prvi problem je generiranje skupnih parametrov javnega ključa $p, q$ in $g$. Ker si podpisniki 
+delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za parametre uporabiti 
+nek dogovorjen način uporabe $H$. Napadalec bo tako poznal točen postopek ustvarjanja skupnih 
+parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo, 
+da to ne predstavlja nevarnosti, in generiranje parametrov dodamo k predpostavki diskretnega 
+logaritma za večstranske podpise. 
+
+\begin{definicija}[Predpostavka diskretnega logaritma pri ASM]
+\label{def:asm_dlp}
+    Predpostavka o varnosti je poleg standardnega PDL tu razširjena še z algoritmom za pridobivanje 
+    deljenih parametrov in jo lahko zapišemo:
+    \begin{itemize}
+        \item \textit{Parametri}: Sledeč verjetnostni algoritem $Gen(k)$ teče v pričakovanem polinomskem času: 
+            \begin{verbatim}
+            dokler q ni praštevilo in p ni praštevilo:
+                q <- naključno izbran k-bitni niz
+                p <- 2 * q + 1
+            vrni p, q
+            \end{verbatim}
+        \item \textit{Težavnost PDL}: Naj bo $A$ algoritem, ki za svoje parametre sprejme 
+            \begin{itemize}
+                \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
+                \item naključni element $g \in \Z_p^*$ reda $q$,
+                \item naključni element $I$ iz podgrupe $\Z_p^*$, ki jo generira $g$.
+            \end{itemize}
+            Naj $p_k^A$ označuje verjetnost, da $A$ vrne $s \in [0, q - 1]$, tako da velja
+            $$
+            I \equiv g^s \pmod p.
+            $$
+            Potem za vsak verjetnostni algoritem $A$, ki teče v polinomskem času, za vsako konstanto 
+            $c > 0$ in za vsak dovolj velik $k$ velja 
+            $$ 
+            p_k^A < k^{-c}.
+            $$
+    \end{itemize}
+\end{definicija}
+
+Če torej predpostavimo~\ref{def:asm_dlp} (kar mora veljati za varnost), nas prvi problem ne skrbi več. 
+
+\subsubsection{Napad na generiranje ključev: Dokazi brez razkritja znanja}
+Naslednja težava nastopi v obliki napada na generiranje ključev. Ker napadalec nadzoruje vso komunikacijo, 
+si lahko privošči vstopiti v podpisovanje kot eden izmed igralcev $P_L$, in lahko zadnji generira svoj
+par ključev. Če si torej izbere naključen $s \in [0, q- 1]$, lahko izračuna svoj javni ključ kot 
+$$ 
+I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \pmod p.
+$$
+To mu omogoča, da se podpisuje v imenu celotne podskupine $S$.
+
+Za rešitev tega problema potrebujemo nekaj novih kriptografskih orodij. Prvo izmed njih so 
+\textbf{dokazi brez razkritja znanja} (angl.\ \textit{zero-knowledge proofs}). Za intuicijo si najprej 
+poglejmo primer. 
+
+\begin{primer}[Jama Ali Babe~\cite{quisquater1990children}]
+    V zgodbi o Jami Ali Babe nastopata Ana in Bojan. Živita ob Jami Ali Babe, ki je v obliki prstana. 
+    Pri vhodu sta na levo in desno vidni dve poti, ki se kasneje združita, vendar prehod preprečujejo 
+    vrata, ki jih lahko odpre samo skrivno geslo. Ana je ugotovila, kaj to geslo je, vendar ga ne želi 
+    povedati Bojanu, vseeno pa ga želi prepričati, da geslo pozna. 
+
+    Da Ana Bojanu dokaže svoje znanje, si zamisli igro. Najprej bo ona odšla v jamo po eni izmed poti. 
+    Potem bo v jamo vstopil Bojan in povedal, če želi da se Ana vrne po levi ali desni poti. Če se 
+    bo Ana dovolj velikokrat vrnila po poti, ki jo je povedal Bojan (in nikoli po napačni), bo lahko 
+    z veliko verjetnostjo prepričan, da Ana res pozna geslo. Primer enega kroga protokola je prikazan 
+    na sliki~\ref{fig:alibaba}. 
+    \begin{figure}[h]
+      \centering
+        \begin{subfigure}{0.28\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp1.png}
+        \end{subfigure}
+        \hspace{0.25cm}
+        \begin{subfigure}{0.25\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp2.png}
+        \end{subfigure}
+        \hspace{0.25cm}
+        \begin{subfigure}{0.25\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp3.png}
+        \end{subfigure}
+        \caption[Jama Ali Babe.]{Igra Ane in Bojana v jami Ali Babe.}
+        \label{fig:alibaba}
+    \end{figure}
+\end{primer}
+
+\subsection{Definicija večstranskega Schnorrovega podpisa}
+\label{sec:def_multi_schnorr}
+
+\subsection{Varnost večstranskega Schnorrovega podpisa}
+\label{sec:proof_multi_schnorr}
 
 \section{Večstranski podpisi v splošnem}
 
