@@ -128,12 +128,21 @@ the content and not the structure of your work.}
 % katerem razdelku.
 Odkar se je na svetu pojavil koncept (ročnega) podpisa, je večina primerov uporabe temeljila na
 pridobivanju podpisov več deležnikov. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih 
-držav Amerike. SLIKA?. 
+držav Amerike~\ref{fig:declaration}. 
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{images/declaration.jpg}
+% \caption[caption za v kazalo]{Dolg caption pod sliko}
+  \caption[Deklaracija neodvisnosti Združenih držav Amerike.]{Deklaracija neodvisnosti Združenih 
+  držav Amerike s podpisi podpornikov spodaj.}
+  \label{fig:declaration}
+\end{figure}
 
 V prejšnjem stoletju je vzpon računalnika in napredek v kriptografiji privedel do \textit{digitalnih
 podpisov}. Ti odlično nadomeščajo ročni podpis, prav tako omogočajo, da se skupina podpiše tako, 
 da vsak član poda svoj podpis. Vendar tu lahko z malo matematike poskrbimo, da se skupina lahko 
-podpiše tako, da vsi člani skupaj oddajo en sam podpis, ki priča o podpisu celotne skupine. Tako 
+podpiše na način, da vsi člani skupaj oddajo en sam podpis, ki priča o podpisu celotne skupine. Tako 
 razbremenimo preverjalca podpisov, kar je ključno v sistemih, kjer je računska moč omejena ali 
 pa draga (npr.\ pri tehnologiji veriženja blokov).
 
@@ -186,6 +195,8 @@ generator.
     Spomnimo se \textit{kongruence}: $a \equiv b \pmod m \iff m \text{ }|\text{ } a - b$.
 \end{opomba}
 
+\subsection{Pridobivanje velikih naključnih praštevil}
+
 \subsection{Zgoščevalne funkcije}
 V grobem so (kriptografske) \textit{zgoščevalne funkcije} funkcije, ki prejmejo poljubno dolg binarni 
 niz (ki lahko predstalja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima 
@@ -227,13 +238,13 @@ funkcij želimo naslednje lastnosti:
 \end{definicija}
 
 \begin{primer}
-    Ena izmed najbolj znanih zgostitvenih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure 
-    Hash Algorithm} (slov.\ varen zgostitveni algoritem), $256$ pa predstavlja dolžino zgostitve. 
+    Ena izmed najbolj znanih zgoščevalnih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure 
+    Hash Algorithm} (slov.\ varen zgoščevalni algoritem), $256$ pa predstavlja dolžino zgostitve. 
     Pogostokrat to ime zasledimo pri nameščanju programske opreme, služi kot avtentikator, da smo res 
     naložili pravo stvar.
 
     Za primer si lahko ogledamo zgostitvi dveh podobnih nizov, \textit{Ljubljana} in \textit{Ljubljena}. 
-    Kljub podobnosti bomo videli, da sta rezultata popolnoma drugačna, kar si tudi želimo pri zgostitvenih 
+    Kljub podobnosti bomo videli, da sta rezultata popolnoma drugačna, kar si tudi želimo pri zgoščevalnih 
     funkcijah.
     \begin{verbatim}
     SHA-256(Ljubljana) =
@@ -335,28 +346,29 @@ na kriptografiji javnega ključa. Ker je podpis nastal s pomočjo podpisnikovega
 lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 
 \begin{definicija}
-    \textbf{Digitalni} ali \textbf{kriptografski podpis} $\mathcal{S} = (G, S, V)$ je trojica 
-    učinkovitih algoritmov $G$ za ustvarjanje ključa, $S$ za podpisovanje in $V$ za preverjanje 
-    podpisa. Definirana je nad končno množico možnih sporočil $\mathcal{M}$, vrnjeni podpis pa 
-    leži v v končni množici podpisov $\Sigma$.
+\label{def:digisig}
+    \textbf{Digitalni} ali \textbf{kriptografski podpis} $\mathcal{S} = (\mathcal{G}, \mathcal{S}, 
+    \mathcal{V})$ je trojica učinkovitih algoritmov $\mathcal{G}$ za ustvarjanje ključa, $\mathcal{S}$ 
+    za podpisovanje in $\mathcal{V}$ za preverjanje podpisa. Definirana je nad končno množico možnih 
+    sporočil $\mathcal{M}$, vrnjeni podpis pa leži v v končni množici podpisov $\Sigma$.
     \begin{itemize}
-        \item $G$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
+        \item $\mathcal{G}$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
             ki ne prejme nobenega argumenta. $\text{pk}$ je javni kljč za preverjanje avtentičnosti 
             podpisa, $\text{sk}$ pa je zasebni ključ za podpisovanje. 
-        \item $S$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$ 
+        \item $\mathcal{S}$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$ 
             in sporočilo $m$, vrne pa podpis $\sigma$ spročila $m$ z zasebnim ključem $\text{sk}$ 
             oz.\ 
             $$ 
-            \sigma = S(\text{sk}, m).
+            \sigma = \mathcal{S}(\text{sk}, m).
             $$
-        \item $V$ je determinističen algoritem, ki preverja veljavnost podpisov. Za svoje arugmente 
+        \item $\mathcal{V}$ je determinističen algoritem, ki preverja veljavnost podpisov. Za svoje arugmente 
             prejme javni ključ $\text{pk}$, sporočilo $m$ in podpis $\sigma$, vrne $veljaven$, če je podpis 
             veljaven in $neveljaven$, sicer. Velja torej
             $$ 
-            V(\text{pk}, m, \sigma) = 
+            \mathcal{V}(\text{pk}, m, \sigma) = 
             \begin{cases}
-                veljaven, & \sigma = S(\text{sk}, m), \\
-                neveljaven, & \sigma \neq S(\text{sk}, m).
+                veljaven, & \sigma = \mathcal{S}(\text{sk}, m), \\
+                neveljaven, & \sigma \neq \mathcal{S}(\text{sk}, m).
             \end{cases}
             $$
     \end{itemize}
@@ -371,11 +383,11 @@ identiteto. Pri tem je lahko uspešen na več nivojih, ki so od najmanj do najbo
 \begin{itemize}
     \item \textbf{Eksistencialno ponarejanje} (angl.\ \textit{existential forgery}) pomeni, da napadalec 
         lahko ponaredi vsaj en podpis. To pomeni, da lahko najde vsaj en par $(m, \sigma)$, da 
-        velja $V(\text{pk}, m, \sigma) = veljaven$.
+        velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
     \item \textbf{Selektivno ponarejanje} (angl.\ \textit{selective forgery}) pomeni, da lahko napadalec 
         z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga mi še nismo 
         podpisali. Torej, če napadalcu nekdo predloži spročilo $m$, lahko z nezanemarljivo verjetnostjo 
-        najde podpis $\sigma$, da velja $V(\text{pk}, m, \sigma) = veljaven$.
+        najde podpis $\sigma$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
     \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da je napadalec ugotovil naš 
         zasebni ključ in s tem podpisovalni algoritem. V našem imenu lahko podpiše karkoli.
 \end{itemize}
@@ -387,19 +399,19 @@ digitalne podpise temelji na (domnevni) težavnosti določenih matematičnih pro
 Stinson~\cite{stinson2023crypto} definira naslednje modele napada:
 \begin{itemize}
     \item \textbf{Napad samo s ključem} je napad, kjer napadalec pozna samo naš javni ključ $\text{pk}$. 
-        Pozna torej algoritem za preverjanje podpisov $V$.
+        Pozna torej algoritem za preverjanje podpisov $\mathcal{V}$.
     \item \textbf{Napad z znanimi sporočili} je napad, kjer napadalec poseduje seznam parov sporočil 
         in njihovih podpisov $(m_1, \sigma_1), (m_2, \sigma_2), \dots$, kjer za vsak $i$ velja 
-        $\sigma_i = S(\text{sk}, m_i)$.
+        $\sigma_i = \mathcal{S}(\text{sk}, m_i)$.
     \item \textbf{Napad z izbranimi sporočili} je napad, kjer nam napadalec da seznam sporočil $m_1,
-        m_2, \dots$, mi pa mu vrnemo seznam podpisov, da za vsak $i$ velja $\sigma_i = S(\text{sk}, 
+        m_2, \dots$, mi pa mu vrnemo seznam podpisov, da za vsak $i$ velja $\sigma_i = \mathcal{S}(\text{sk}, 
         m_i)$.
 \end{itemize}
 
-Ostane nam še predled varnosti, ki jo lahko pričakujemo oz.\ zahtevamo od sheme za podpisovanje. 
+Ostane nam še pregled varnosti, ki jo lahko pričakujemo oz.\ zahtevamo od sheme za podpisovanje. 
 Takšna shema ne more biti \textit{brezpogojno varna}, kar bi pomenilo, da je tudi z neomejenimi 
 računskimi zmožnostmi nemogoče ponarediti podpis. To je zato, ker lahko napadalec sistematično 
-preveri vse podpise za neko sporočilo s pomočjo algoritma $V$, dokler ne najde pravega. Pričakujemo 
+preveri vse podpise za neko sporočilo s pomočjo algoritma $\mathcal{V}$, dokler ne najde pravega. Pričakujemo 
 pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti ponaredka v doglednem času,
 če ima omejene računske sposobnosti, ali pa \textit{dokazljivo varnost}, kar pomeni, da lahko 
 varnost prevedemo na težavnost nekega matematičnega problema.
@@ -434,7 +446,8 @@ Poleg parametrov $p, q$ in $g$, morata podpisnik in preverjalec določiti oz.\ i
 kriptografske zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
 ki zadošča lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije definira velikost 
 končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg $2 \log_2 q$ bitov~\cite{
-stinson2023crypto}.
+stinson2023crypto}. Tu se pokaže glavna prednost Schnorrovega podpisa. Vrača relativno kratke podpise, 
+hkrati pa lahko izkoristi velikost grupe $\Z_p^*$ za varnost.
 
 Za podpis enega sporočila mora podpisnik generirati naključno število $r \in [0, q-1]$ in izračunati 
 \textit{zavezo} 
@@ -639,6 +652,7 @@ osebi z odklepanjem in želimo, da je prisotnih $l$ od $L$ pooblaščenih oseb, 
 Tu je pragovni podpis odlična rešitev.
 
 \subsection{Večstranski podpisi}
+\label{sec:multisig}
 Za nekatere uporabe podpisov, bi si od njih želeli podobne lastnosti, kot jih ima večstranski ročen podpis. 
 Pri njem lahko hitro preberemo podpisnike, torej imamo popolno prilagodljivost. Vidimo lahko seznam 
 podpisnikov, torej lahko presodimo, če so med njimi tisti, ki smo jih želeli. Prav tako podpisniki nosijo 
@@ -647,17 +661,156 @@ popolno odgovornost, saj na papirju piše njihovo ime.
 Podoben učinek bi z digitalnimi podpisi lahko dosegli, če bi namesto enega podpisa skupine, od članov 
 zbrali individualne podpise in jih nanizali v seznam. Dobili bi torej digitalni podpis skupine, ki 
 ponuja popolno prilagodljivost in odgovornost. Težava je samo, da je dolžina podpisa (in s tem čas 
-preverjanja) proporcionalna številu podpisnikov. \textit{Večstranski podpisi} (angl.\ textit{multisignatures})
+preverjanja) proporcionalna številu podpisnikov. \textit{Večstranski podpisi} (angl.\textit{multisignatures})
 ohranijo lastnosti seznama podpisov, rezultat sheme je pa en sam podpis, ki je enako dolg ne glede 
-na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. So torej odlična posplošitev 
-ročnih podpisov skupin, ki vseeno ohrani učinkovito preverjanje.
+na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. Tega s seznamom podpisov 
+ni mogoče doseči, saj tako dolžina podpisa, kot čas preverjanja podpisa rasteta linearno s številom 
+podpisnikov (vsak doda en podpis seznamu, ki ga je potrebno preveriti). Večstranski podpisi so torej 
+odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito preverjanje.
 
-DEFINICIJA??
+\begin{primer}
+    Recimo, da imamo nek organ, ki izdaja certifikate avtentičnosti uporabnikov (npr.\ potrjuje 
+    avtentičnost javnih ključev). Za večjo robustnost in varnost, je lahko ta organ razporejen 
+    na več strežnikov. Tako preprečimo razpad sistema v primeru izpada enega strežnika. Zato je 
+    torej tudi pomembno, da certifikacijo uporabnika potrdi nekaj strežnikov, ne pa nujno vsi. 
+    Tu lahko torej neka podskupina vseh strežnikov organa skupaj izda en večstranski podpis, ki 
+    potrjuje avtentičnost uporabnika.
+\end{primer}
 
 \subsection{Agregirani podpisi}
 
 \section{Večstranski Schnorrov podpis}
-Povzeto po~\cite{micali2001asm}.
+Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali 
+formalni dokaz varnosti. Zamislili so si večstranski podpis, ki temelji na Schnorrovem in ga poimenovali 
+\textit{večstranski podpis podskupine z odvoronostjo} (angl.\ \textit{Accountable-Subgroup Multisignature 
+(ASM)}). V tem razdelku predstavimo njihov model, podpis in argument varnosti.
+
+\subsection{Večstranski podpis podskupine z odgovornostjo}
+Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le bolj formalno definira idejo 
+večstarnskega podpisa, predstavljeno v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega 
+podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $G$, brez potrebe po 
+\textit{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. 
+Generiranje ključev je torej popolnoma v domeni skupine $G$. Podpis, ki ga ustvari $S$ predstavlja 
+splošno preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine stoji za (torej podpisuje) 
+sporočilom $M$.
+
+\begin{definicija}[Večstranski podpis (podskupine z odgovornostjo)] 
+    Skupina $G$ je sestavljena iz $L$ podpisnikov, torej
+    $$ 
+    G = P_1, P_2, \dots, P_L.
+    $$
+    Podpisnik predstavlja verjetnostni Turingov stroj, omejen s polinomskim časom. Vsak podpisnik pozna 
+    svojo identifikacijsko številko (eno od števil $1, \dots, L$) in pa \textit{varnostni parameter} $k$, 
+    ki je enak za vse podpisnike.
+
+    Kot vsi digitalni podpisi~\ref{def:digisig}, ima tudi ta tri glavne komponente: 
+    \begin{itemize}
+        \item $\mathcal{G}$ je algoritem za ustvarjanje ključev. Za neko skupino podpisnikov $G$ je pognan samo 
+            enkrat, na začetku sodelovanja. Vsak podpisnik $i$ dobi kot vhod seznam vseh podpisnikov v $G$ 
+            in požene $\mathcal{G}$, ki vrne par ključev $(\text{pk}_i, \text{sk}_i)$. Zapišemo lahko torej 
+            $$ 
+            \mathcal{G}_i(L) = (\text{pk}_i, \text{sk}_i),
+            $$
+            kjer smo brez škode za splošnost predpostavili, da velikost skupine $L$ enolično opiše 
+            skupino $G$.
+        \item $\mathcal{S}$ je algoritem za podpisovanje. Pognan je vsakič, ko neka podskupina $S$ želi 
+            ustvariti podpis. Vsak podpisnik kot vhod prejme seznam vseh podpisnikov $S$, njihove 
+            javne ključe $\text{pk}_j$, kjer $j$ teče po identifikacijskih številkah vseh članov $S$, 
+            sporočilo $m$ in lasten zasebni ključ $\text{sk}_i$. Algoritem $\mathcal{S}$ je porazdeljen 
+            protokol, pri izvedbi morajo sodelovati vsi člani $S$. Po uspešni izvedbi lahko en od članov 
+            objavi podpis $\sigma$.
+            $$ 
+            \mathcal{S}_i((id_1, \dots, id_K), (\text{pk}_1, \dots, \text{pk}_K), m, \text{sk}_i) = \sigma,
+            $$
+            kjer je $K$ velikost podskupine $S$, $(id_1, \dots, id_K)$ pa identifikacijske številke 
+            članov.
+        \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
+            preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $G$. 
+            Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
+            morebiten podpis $\sigma$. Algoritem potem vrne
+            $$ 
+            \mathcal{V}((id_1, \dots, id_K), (\text{pk}_1, \dots, \text{pk}_K), m, \sigma) = 
+            \begin{cases}
+                veljaven, & \sigma = , \\
+                neveljaven, & \sigma \neq .
+            \end{cases}
+            $$
+    \end{itemize}
+\end{definicija}
+
+\subsubsection{Robustnost, varnost in napadalec}
+Definiran večstranski podpis ni robusten. To pomeni, da v primeru izpada enega od podpisnikov $P_i$, 
+ki je del podskupine $S$, ta ne more ustvariti večstranskega podpisa. Podpis še vedno lahko ustvari 
+$S \setminus \{P_i\}$. To dejstvo nam dovoli definicijo napadalca, ki ima zelo velik vpliv na celoten 
+sistem, saj ne iščemo robustnosti. 
+
+\begin{definicija}[Napadalec pri ASM]
+    Napadalec v modelu večstranskih podpisov podskupine z odgovornostjo ima naslednje zmožnosti:
+    \begin{itemize}
+        \item Ima popoln nadzor nad vsemi komunikacijskmi kanali med člani skupine $G$. Lahko bere, 
+            spreminja in preprečuje dostavo vseh sporočil. Prav tako lahko v imenu kateregakoli 
+            podpisnika pošlje sporočilo.
+        \item Kadarkoli lahko \textit{pokvari} kateregakoli podpisnika. Ko je igralec pokvarjen, 
+            napadalec izve celotno stanje igralca, vključno z vsemi skrivnostmi.
+        \item Nadzira lahko vhod algoritma za ustvarjanje ključev $\mathcal{G}$ za vse podpisnike. 
+            Vsakemu lahko poda drugačno skupino $G$.
+        \item Od kateregakoli nepokvarjenega igralca lahko kadarkoli zahteva podpis nekega sporočila 
+            skupaj s podskupino, ki jo določi napadalec. To je \textit{napad z izbranim sporočilom 
+            in podskupino}.
+    \end{itemize}
+\end{definicija}
+
+Zaradi obširnih zmožnosti napadalca, ta lahko kadarkoli prepreči podpis sporočila. Naš cilj, kar se 
+tiče varnosti, je, da preprečimo eksistencialno ponarejanje podpisa. Želimo torej, da napadalec ni 
+zmožen ponarediti podpisa za katerololi sporočilo v imenu katerekoli podskupine.
+
+\begin{definicija}[Varnost pri ASM]
+    Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
+    Naj bo $F$ napadalec, ki je omejen s polinomskim časom v parametru $k$. Naj bo $p$ verjetnost, da 
+    F vrne trojico $(\sigma, m, S)$, za katero velja: 
+    \begin{itemize}
+        \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
+        \item Obstaja nepokvarjen igralec $P$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
+            sporočila $m$ s strani skupine $S$.
+    \end{itemize}
+    Shemi za večstranske 
+    podpise podskupine z odgovornostjo bomo rekli, da je \textit{varna}, če velja 
+    $$ 
+    p < k^{-c}.
+    $$
+\end{definicija}
+
+Kot ponavadi pri digitalnih podpisih, tudi tu predpostavimo, da preverjalec podpisov lahko vedno 
+pridobi prave javne ključe podpisnikov iz $S$. Zaradi močnega napadalca pri ASM, lahko tudi pridemo 
+v situacijo, ko podpisnik $P_1$ ne ve, kdo je zares podpisnik $P_2$. Tukaj predpostavimo, da preverjalec
+natančno ve, kdo je $P_2$ v resnici, in lahko pridobi ustrezen javni ključ. 
+
+\subsubsection{Model slučajnega oraklja}
+Ko obravnavamo varnost kriptosistemov, ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
+Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu 
+je na voljo. Občasno se znajdemo v primeru, ko moramo za dokaz varnosti sprejeti dodatne predppostavke. 
+V tem primeru se znajdemo v alternativnih modelih kriptografije. 
+
+Ko imamo opravka z zgoščevalnimi funkcijami, je pogosto potrebno sprejeti dodatne predpostavke, da lahko 
+pokažemo varnost. Specifično, ko imamo opravka z zgoščevalno funkcijo $H: A \rightarrow B$ predpostavimo, 
+da je bila ta funkcija izbrana naključno med vsemi funkcijami, ki slikajo $A$ v $B$. To idealizirano 
+verzijo zgoščevalne funkcije imenujemo \textbf{slučajni orakelj} (angl.\ \textit{random oracle}).
+
+\textbf{Model slučajnega oraklja} (angl.\ \textit{random oracle model}) je model kriptografije, kjer poleg 
+standardnih predpostavk, vsako uporabo zgoščevalne funkcije nadomestimo s slučajnim 
+orakljem~\cite{boneh2023appcry}. Predpostavimo, da imajo do oraklja dostop vsi vpleteni v kriptosistem, 
+vključno z napadalcem.
+
+\begin{definicija}[Slučajni oraklelj pri ASM]
+    Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega 
+    oraklja. Zato predpostavimo, da je $k_2$ še en varnostni parameter. Vsi člani skupine $G$ in 
+    napadalec imajo dostop do slučajnega oraklja $H: \{0, 1\}^* \rightarrow \{0, 1\}^{k_2}$, ki je 
+    naključno izbrana funkcija med vsemi funkcijami, ki slikajo med $\{0, 1\}^*$ in $\{0, 1\}^{k_2}$.
+\end{definicija}
+
+\subsection{Dokazi brez razkritja znanja}
+\subsection{Fiat-Shamirjeva hevristika}
+\subsection{Varnost}
 
 \section{Večstranski podpisi v splošnem}
 
