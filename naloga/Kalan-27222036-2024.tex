@@ -104,10 +104,10 @@ the content and not the structure of your work.}
 % \renewcommand\listingscaption{Program}
 
 % Za pisanje psevdokode
-% \usepackage{algpseudocode}  % za psevdokodo
-% \usepackage{algorithm}
-% \floatname{algorithm}{Algoritem}
-% \renewcommand{\listalgorithmname}{Kazalo algoritmov}
+\usepackage{algpseudocode}  % za psevdokodo
+\usepackage{algorithm}
+\floatname{algorithm}{Algoritem}
+\renewcommand{\listalgorithmname}{Kazalo algoritmov}
 
 % deklarirajte vse matematične operatorje, da jih bo LaTeX pravilno stavil
 % \DeclareMathOperator{\...}{...}
@@ -893,13 +893,28 @@ logaritma za večstranske podpise.
     Predpostavka o varnosti je poleg standardnega PDL tu razširjena še z algoritmom za pridobivanje 
     deljenih parametrov in jo lahko zapišemo:
     \begin{itemize}
-        \item \textit{Parametri}: Sledeč verjetnostni algoritem $Gen(k)$ teče v pričakovanem polinomskem času: 
-            \begin{verbatim}
-            dokler q ni praštevilo in p ni praštevilo:
-                q <- naključno izbran k-bitni niz
-                p <- 2 * q + 1
-            vrni p, q
-            \end{verbatim}
+        \item \textit{Parametri}: Verjetnostni algoritem $Gen(k)$~\ref{alg:gen} teče v pričakovanem 
+            polinomskem času: 
+            % \begin{verbatim}
+            % dokler q ni praštevilo in p ni praštevilo:
+            %     q <- naključno izbran k-bitni niz
+            %     p <- 2 * q + 1
+            % vrni p, q
+            % \end{verbatim}
+            \begin{algorithm}
+                \caption{Algoritem $Gen(k)$ za generiranje praštevil.}
+                \label{alg:gen}
+                \begin{algorithmic}
+                    \State $q \gets \text{naključno izbran $k$-bitni niz}$
+                    \State $p \gets 2q + 1$
+                    \While{$q$ ni praštevilo in $p$ ni praštevilo}
+                        \State $q \gets \text{naključno izbran $k$-bitni niz}$
+                        \State $p \gets 2q + 1$
+                    \EndWhile
+                    \State \Return{$p, q$}
+                \end{algorithmic}
+                
+            \end{algorithm}
         \item \textit{Težavnost PDL}: Naj bo $A$ algoritem, ki za svoje parametre sprejme 
             \begin{itemize}
                 \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
@@ -1081,15 +1096,127 @@ po~\cite{micali2000csproofs}.
     vrednosti $x_1, x_2, \dots, x_L$, potem lahko dokaže zavezo eni vrednosti $x_i$ ($1 \le i \le L$)
     tako, da preverjalcu $B$ pove $1 + \lceil \log L \rceil$ vrednosti: $x_i$ in pa \textbf{overjevalno 
     pot}, torej vrednosti, shranjene v sestrskih vozliščih vseh vozlišč na poti med vključno $x_i$ in 
-    izključno korenom.
+    korenom (brez korena, ki ga $B$ že pozna).
 \end{trditev}
 
 \begin{dokaz}
-    
+    Trditev lahko dokažemo z indukcijo na globino Merklovega drevesa $d$. Naj bo $x$ vrednost, za katero
+    želimo dokazati zavezo in $w_1, w_2, \dots, w_d$ overjevalna pot.
+    \begin{itemize}
+        \item $d = 2$: Če je globina drevesa $2$, želimo pokazati, da moramo poleg $x$ povemo samo eno  
+            dodatno vrednost. Ta vrednost je torej zgostitev $x$-ove sosednje vrednosti $y$. Ko $B$ izračuna
+            $H(x || y)$, je to že koren, in lahko vrednost primerja z zabeleženo.
+        \item $n \rightarrow n + 1$: Predpostavimo torej, da za globino drevesa $n$ lahko preverimo zavezo s 
+            podanimi $1 + d$ vrednostmi. To nam omogoča izračuna vrednosti v enem od korenovih otrok v 
+            drevesu globine $n + 1$, po indukcijski predpostavki. Če poznamo še vrednost drugega otroka, je 
+            možen izračun korena.
+    \end{itemize}
 \end{dokaz}
+
+Merklova drevesa lahko sedaj uporabimo, da naredimo večstranski podpis bolj učinkovit. Podpisniki
+še vedno predložijo dokaze znanja prek Schnorrovega podpisa, po izmenjavi dokazov pa vsak izračuna 
+Merklovo drevo z listi $I_1, I_2, \dots, I_L$. To drevo bo torej globine $\log L$. Za svoj javni 
+ključ potem vsak podpisnik $P_i$ nastavi $I_i$ in overjevalno pot za $I_i$. Ker je ponavadi $I_i$ 
+veliko daljši od dolžine zgostitev, in ker je v overjevalni poti le $\log L$ zgostitev, se ključ 
+ne podaljša veliko (npr.\, če je $I_i$ dolg $2000$ bitov in so zgostitve $200$-bitne, bo $1000$ 
+podpisnikov ustvarilo ključe, dolge manj od $4000$ bitov, torej manj kot dvakrat daljše).
+
+Ko sedaj preverjalec preverja podpis sporočila $m$ s strani $S$, lahko za vsakega podpisnika 
+izračuna vrednost korena Merklovega drevesa in preveri, da se vse ujemajo. Obstoj enega nepokvarjenega
+podpisnika tako prisili vse pokvarjene, da uporabljajo prave ključe (ali pa najdejo trk v 
+zgoščevalni funkciji, kar je izjemno težko). S to spremembo smo tako uspešno ohranili podpise 
+varne in časovno učinkovite.
 
 \subsection{Definicija večstranskega Schnorrovega podpisa}
 \label{sec:def_multi_schnorr}
+Sedaj smo pripravili vse potrebno, da podamo natančno definicijo končne sheme. 
+
+\subsubsection{Skupni parametri}
+Vsi podpisniki se strinjajo o skupnem varnostnem parametru $k$ in sekundarnem varnostnem parametru
+$k'$, ki je deterministično izračunan iz $k$ (ponavadi kar $k' = 100$). Za velikost $L$ skupine podpisnikov
+$G$ predpostavimo, da je polinomska v $k$.
+
+Shemo obravnavamo v modelu slučajnega oraklja, tako da imajo vsi podpisniki dostop do slučajnega
+oraklja $H$. Na dogovorjen način ga uporabijo, da ustvarijo pet neodvisnih orakljev
+\begin{align*}
+    H_1, H_2: \{0, 1\}^* &\rightarrow \{0, 1\}, \\
+    H_3, H_5: \{0, 1\}^* &\rightarrow \{0, 1\}^{k'}, \\
+    H_4: \{0, 1\}^* &\rightarrow \{0, 1\}^{2k'}.
+\end{align*}
+Prav tako predpostavimo, da imajo vsi podpisniki dostop do algoritma $Gen(k)$~\ref{alg:gen}.
+
+Za lažjo obravnavo si izberemo še enega izmed podpisnikov, in ga označimo z $D$. Ta podpisnik bo 
+vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. $D$ lahko tudi predstavlja vse podpisnike, 
+a je opis sheme malce lažji, če si izberemo enega.
+
+\subsubsection{Generiranje ključev}
+Vsi podpisniki morajo sami generirati parametre $p, q$ in $g$. Za prva dva uporabijo algoritem 
+$Gen(k)$~\ref{alg:gen}. Za izvor naključnosti uporabijo zaporedje $H_1(2^k), H_1(2^k + 1), \dots$.
+Za generiranje elementa $g$ reda $q$ uporabijo izvor naključnosti $H_2(2^k), H_2(2^k + 1), \dots$.
+
+Ko ima vsak podpisnik $P_i$ ($1 \le i \le L$) na voljo skupne parametre, si izbere svoj zasebni 
+ključ $s_i \in [0, q - 1]$ in izračuna
+$$ 
+I_i = g^{s_i} \bmod p.
+$$
+Do tu je postopek enak, kot pri naivni verziji. Da preprečimo napad na generiranje ključev, mora 
+vsak podpisnik na tem mestu izbrati naključen $r_i \in [0, q- 1]$ in izračunati zavezo
+$$ 
+X_i = g^{r_i} \bmod p.
+$$
+Potem si podpisniki med seboj izmenjajo vrednosti $(X_i, I_i)$. Vsak na tem mestu lahko izračuna
+\begin{align*}
+    e &= H_3(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L), \\
+    y_i &= e s_i + r_i,
+\end{align*}
+in pošlje $y_i$ vsem ostalim podpisnikom. Vsak podpisnik je na tem mestu prejel Schnorrove podpise
+(in s tem dokaze znanja brez razkritja znanja) zasebnih ključev vse ostalih podpisnikov. Na tem mestu
+mora torej $P_i$ preveriti veljavnost vseh podpisov $(X_j, y_j)$ vseh ostalih podpisnikov $P_j$ 
+($1 \le j \le L$). To stori s standardnim izračunom za preverjanje Schnorrovega podpisa~\eqref{eq:schnorr-ver}: 
+$$
+g^{y_j} \stackrel{?}{\equiv} X_j \cdot I_j^{e} \pmod p.
+$$
+
+Ko podpisnik $P_i$ ugotovi, da so vsi podpisi veljavni, lahko izračuna Merklovo drevo, ki ima v 
+listih po vrsti razporejene $I_1, I_2, \dots, I_L$ in za svojo zgoščevalno funkcijo uporablja $H_4$.
+Ko je drevo izračunano, $P_i$ prebere overjevalno pot $\text{pot}_i$ svojega ključa $I_i$ in vrne 
+javni ključ
+$$ 
+\text{pk}_i = (p, q, g, I_i, \text{pot}_i).
+$$
+
+\subsubsection{Podpisovanje}
+Naj bo $S = \{P_{id_1}, P_{id_2}, \dots, P_{id_l}\}$ podksupina velikosti $l$ skupine $G$, ki želi 
+večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikacije:
+\begin{enumerate}
+    \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ si izbere naključno število $r_j \in [0, q - 1]$ 
+        in izračuna zavezo
+        $$ 
+        X_j = g^{r_j} \bmod p.
+        $$
+        Zavezo $X_j$ nato pošlje podpisniku $D$.
+    \item $D$ izračuna skupno zavezo
+        $$ 
+        \tilde{X} = (X_1 \cdot X_2 \cdot \cdots \cdot X_l) \bmod p
+        $$
+        in jo pošlje vsem podpisnikom $P_{id_j} (1 \le j \le l)$.
+    \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ izračuna
+        \begin{align*}
+            e &= H_5(\tilde{X} || m || S), \\
+            y_j &= e s_j + r_j
+        \end{align*}
+        in pošlje $y_j$ podpisniku $D$.
+\end{enumerate}
+Na tem mestu ima $D$ vse kar rabi, da dokonča podpis. Najprej izračuna
+$$ 
+\tilde{y} = (y_1 + y_2 + \cdots + y_l) \bmod q
+$$
+in nato vrne končni podpis
+$$
+\sigma = (\tilde{X}, \tilde{y}).
+$$
+
+\subsubsection{Preverjanje}
 
 \subsection{Varnost večstranskega Schnorrovega podpisa}
 \label{sec:proof_multi_schnorr}
