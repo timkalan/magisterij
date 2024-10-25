@@ -86,7 +86,12 @@ the content and not the structure of your work.}
 \usepackage{units}        % fizikalne enote kot \unit[12]{kg} s polovico nedeljivega presledka, glej primer v kodi
 \usepackage{graphicx}     % za slike
 \usepackage{subcaption}
-% \usepackage{tikz}
+\usepackage{tikz}
+\usetikzlibrary{shapes,calc,positioning,arrows,}
+
+\pgfarrowsdeclarecombine{twotriang}{twotriang}%    double headed arrow
+{stealth'}{stealth'}{stealth'}{stealth'} 
+
 % VEČ ZANIMIVIH PAKETOV
 % \usepackage{array}      % več možnosti za tabele
 % \usepackage[list=true,listformat=simple]{subcaption}  % več kot ena slika na figure, omogoči slika 1a, slika 1b
@@ -226,7 +231,7 @@ funkcij želimo naslednje lastnosti:
     vnaprej določene dolžine $n$. Zadoščati mora naslednjim lastnostim:
     \begin{itemize}
         \item (določenost) $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
-        \item (učinkovitost) Izračun funkcije $H$ mora biti računsko učinkovit.
+        \item (učinkovitost) Izračun funkcije $H$ mora biti računsko učinkovit (v polinomskem času).
         \item (odpornost na prasliko) Če poznamo zgostitev $h$ je računsko neizvedljivo najti 
             niz $m$, da velja $h = H(m)$.
         \item (odpornost na drugo prasliko) Če poznamo niz $m_1$ je računsko neizvedljivo najti 
@@ -594,6 +599,9 @@ $$
 Taki izračuni v grupah $\Z_p^*$ žal niso tako enostavni, prišli smo do koncepta \textit{diskretnega 
 logaritma}.
 
+\subsubsection{Schnorrova identifikacijska shema}
+\subsubsection{Pretvorba identifikacijske sheme v digitalni podpis}
+
 \begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
     Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
     grupe $G$. Naj velja $g^x = h$. $x$ Potem imenujemo \textbf{Diskretni logaritem (DL)}.
@@ -721,11 +729,11 @@ sporočilom $M$.
             sporočilo $m$ in lasten zasebni ključ $\text{sk}_i$. Algoritem $\mathcal{S}$ je porazdeljen 
             protokol, pri izvedbi morajo sodelovati vsi člani $S$. Po uspešni izvedbi lahko en od članov 
             objavi podpis $\sigma$.
-            $$ 
-            \mathcal{S}_i((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \text{sk}_i) = \sigma,
-            $$
-            kjer je $l$ velikost podskupine $S$, $(id_1, \dots, id_l)$ pa identifikacijske številke 
-            članov.
+            % $$ 
+            % \mathcal{S}((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \text{sk}_i) = \sigma,
+            % $$
+            % kjer je $l$ velikost podskupine $S$, $(id_1, \dots, id_l)$ pa identifikacijske številke 
+            % članov.
         \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
             preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $G$. 
             Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
@@ -733,8 +741,8 @@ sporočilom $M$.
             $$ 
             \mathcal{V}((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \sigma) = 
             \begin{cases}
-                veljaven, & \sigma = , \\
-                neveljaven, & \sigma \neq .
+                veljaven, & \sigma = podpis(S, m), \\
+                neveljaven, & \sigma \neq podpis(S, m).
             \end{cases}
             $$
     \end{itemize}
@@ -848,7 +856,7 @@ krogi komunikacije:
         $$
         in svoje \textit{individualne podpise} 
         $$ 
-        y_i = e s_i + r_i \bmod q.
+        y_{id_i} = e s_{id_i} + r_{id_i} \bmod q.
         $$
         Individualni podpisi so potem spet poslani podpisniku $D$, ta pa sedaj lahko 
         izračuna 
@@ -914,7 +922,7 @@ logaritma za večstranske podpise.
 
 \subsubsection{Napad na generiranje ključev: Dokazi brez razkritja znanja}
 Naslednja težava nastopi v obliki napada na generiranje ključev. Ker napadalec nadzoruje vso komunikacijo, 
-si lahko privošči vstopiti v podpisovanje kot eden izmed igralcev $P_L$, in lahko zadnji generira svoj
+si lahko privošči vstopiti v podpisovanje kot eden izmed podpisnikov $P_L$, in lahko zadnji generira svoj
 par ključev. Če si torej izbere naključen $s \in [0, q- 1]$, lahko izračuna svoj javni ključ kot 
 $$ 
 I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \pmod p.
@@ -936,7 +944,7 @@ poglejmo primer.
     bo Ana dovolj velikokrat vrnila po poti, ki jo je povedal Bojan (in nikoli po napačni), bo lahko 
     z veliko verjetnostjo prepričan, da Ana res pozna geslo. Primer enega kroga protokola je prikazan 
     na sliki~\ref{fig:alibaba}. 
-    \begin{figure}[h]
+    \begin{figure}[h!]
       \centering
         \begin{subfigure}{0.28\textwidth}
             \includegraphics[width=\textwidth]{images/zkp1.png}
@@ -953,6 +961,132 @@ poglejmo primer.
         \label{fig:alibaba}
     \end{figure}
 \end{primer}
+
+Dokazi brez razkritja znanja so torej orodje, s katerim lahko pokažemo, da nekaj vemo, brez da bi 
+izdali skrivnost. V osnovi so to interaktivni protokoli med \textit{dokazovalcem} in \textit{preverjalcem}. 
+Dokazovalec želi preverjalca prepričati, da pozna skrivnost, brez da bi mu jo izdal. Taki protokoli 
+sodijo med \textbf{interaktivne dokaze}, kar pomeni, da zadoščajo dvema lastnostima:
+\begin{itemize}
+    \item \textbf{Polnost} (angl.\ \textit{completeness}): Če trditev, ki se dokazuje,
+        drži, potem bo preverjalec sprejel dokaz dokazovalca (če noben od njiju ne bo goljufal).
+    \item \textbf{Trdnost} (angl.\ \textit{soundness}): Če trditev, ki se dokazuje, ne
+        drži, potem noben dokazovalec (tudi tak, ki goljufa) ne more predložiti dokaza, ki bi 
+        ga preverjalec sprejel, razen z zelo majhno verjetnostjo.
+\end{itemize}
+Poleg teh dveh lastnosti, mora dokaz brez razkritja znanja zadoščati še eni, o njej govori že samo ime:
+\begin{itemize}
+    \item \textbf{Brez razkritja znanja} (angl.\ \textit{zero-knowledge}): Če trditev, ki se dokazuje, 
+        drži, potem noben preverjalec (tudi tak, ki goljufa) ne bo iz dokaza izvedel ničesar več, 
+        kot samo to, da trditev drži.
+\end{itemize}
+
+\begin{opomba}
+    Dokazi brez razkritja znanja niso zares dokazi v matematičnem smislu. Vedno obstaja določena verjetnost, 
+    da lahko goljuvif dokazovalec prepriča iskrenega preverjalca o trditvi, ki ne drži.
+\end{opomba}
+
+SIGMA PROTOCOLS, PROOF OF KNOWLEDGE FIAT-SHAMIR??
+
+Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg 
+svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ 
+glede na javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $I_i$ modulo $g$. 
+Ta dokaz je neinteraktiven, saj obravnavmo model slučajnega oraklja in lahko uporabimo Fiat-Shamirjevo 
+hevristiko.
+
+Ker tovrstni dokazi brez preverjalca nimajo smisla, se na tej točki vredno vprašati, kdo bo preverjal 
+veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe. 
+Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka 
+sprememba podaljša javne ključe in privede do izgube učinkoitosti. Preverjanje veljavnosti podpisa 
+bo sedaj poleg dveh modularnih potenciranj potrebovalo še dodatnih $2|S|$, saj je potrebno preveriti 
+vse dokaze javnih ključev. Posamezni preverjalec podpisov lahko sicer dodatno delo opravi le enkrat 
+za vsako skupino, če natančno beleži rezulate preverjanja dokazov.
+
+\subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
+Za dokaz varnosti je potrebno, da lahko simulator v polinomskem času za vsakega pokvarjenega igralca $P_j$
+pridobi diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, 
+da če $P_j$ dokaz izračuna s $q$ klici slučajnjega oraklja, potem simulator uspešno pridobi diskretni 
+logaritem z verjetnostjo največ $1/q$. Torej, če je $k$ pokvarjenih podpisnikov, bo simulator 
+uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo polinomski simulator, je 
+igralcev lahko največ logaritemsko mnogo.
+
+KAJ POMENI LOGARITEMSKO MNOGO??
+
+Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$ 
+in tudi zavezo $X_i$. Potem si izmenjajo $I_i$ in $X_i$. Vsak podpisnik lahko sedaj izračuna 
+\textit{skupni izziv} 
+$$ 
+e = H(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L).
+$$
+Podpisniki za dokaz znanja sedaj uporabijo Schnorrov podpis $e$ s svojim parom ključev. 
+A TO PRAVILNO RAZUMEM??
+To pomeni, da za generiranje dokazov $k$ pokvarjenih igralcev sedaj rabi le $kq$ klicev oraklja, 
+torej je polinomski simulator uspešen z verjetnostjo $1/kq$. To omogoča, da je podpisnikov več 
+kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo, saj mora sedaj vsak podpisnik 
+v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa tudi vse javne ključe 
+soigralcev in njihove zaveze. Brez teh podatkov namreč dokaz znanja ni preverljiv. To pomeni, da je 
+za katerokoli podskupino $S$ velikost ključa proporcionalna velikosti celotne skupine $G$. Poleg 
+tega mora sedaj preverjalec preveriti, da se vsi vektorji javnih ključev ujemajo. V primerjavi 
+z osnovno naivno idejo, kjer je preverjalec potreboval le $|S|$ navadnih Schnorrovih javnih ključev, 
+je v tej izvedbi velikost javnega ključa nedopusno velika.
+
+Da nazaj pridobimo učinkovit podpis, se lahko zanesemo na slučajnega oraklja in kriptografsko 
+orodje, imenovano \textbf{Merklovo drevo} (angl.\ \textit{Merkle tree}). V osnovi je to 
+\textit{binarno drevo}, torej drevo, kjer ima vsako vozlišče največ dva otroka. Ideja je, da v liste 
+shranimo katerekoli podatke. Drevo potem gradimo navzgor tako, da v vsako vozlišče shranimo zgostitev 
+stika zgostitev levega in desnega otroka. Tako nadaljujemo do korena. Pomembno je, da je za pridobivanje 
+zgostitev uporabljena zgoščevalna funkcija, ki je skoraj brez trčenj ali pa slučajni orakelj. Osnovna 
+struktura je prikazana na sliki~\ref{fig:merkle}.
+\begin{figure}[h!]
+  \centering
+  \begin{tikzpicture}[<-, >=stealth', auto, semithick,
+   level/.style={sibling distance=60mm/#1}]
+
+  \node [rectangle,draw] {$H(H(H(x_1) || H(x_2)) || H(H(x_3) || H(x_4)))$}
+    child {node [rectangle,draw] {$H(H(x_1) || H(x_2))$}
+        child {node [rectangle,draw] {$H(x_1)$}
+            child {node [rectangle,draw] {$x_1$}}
+        }
+        child {node [rectangle,draw] {$H(x_2)$}
+            child {node [rectangle,draw] {$x_2$}}
+        } 
+    }
+    child {node [rectangle,draw] {$H(H(x_3) || H(x_4))$}
+        child {node [rectangle,draw] {$H(x_3)$}
+            child {node [rectangle,draw] {$x_3$}}
+        } 
+        child {node [rectangle,draw] {$H(x_4)$}
+            child {node [rectangle,draw] {$x_4$}}
+        }
+    };
+  \end{tikzpicture}
+  \caption[Merklovo drevo.]{Primer Merklovega drevesa s štirimi listi. Imamo torej $4$ vhodne podatke
+    $x_1, x_2, \dots, x_4$, na vsakem nivoju drevesa se izračuna stik in zgostitev. Ustvarjeno s 
+    pomočjo~\cite{SOtikz}.}
+  \label{fig:merkle}
+\end{figure}
+
+Pomembno je opaziti, da če zgoščevalna funkcija ustvarja zgostitve, dolge $k$ bitov, bodo toliko 
+dolgi vsi podatki, ki jih hranijo vsa vozlišča drevesa. Za Merklova drevesa je ključno, da je v primeru 
+varne zgoščevalne funkcije računsko zelo težko spremeniti katerokoli vrednost v drevesu, brez da bi se 
+spremenila vrednost v korenu. Enako velja za spremembe vhodnih podatkov. Merklova drevesa nam torej 
+omogočajo, da se zavežemo $L$ vrednostim $x_1, x_2, \dots, x_L$ tako, da enostavno vrnemo en sam 
+$k$-bitni niz. To storimo tako, da shranimo $x_1, x_2, \dots, x_L$ v liste drevesa in izračunamo koren. 
+Vrednostim se zavežemo tako, da preverjalcu damo vrednost korena. Ko mu kasneje želimo razkriti vrednosti, 
+mu jih enostavno povemo, on pa lahko z izračunom drevesa preveri, da so vrednosti prave. Povzeto 
+po~\cite{micali2000csproofs}.
+
+\begin{trditev}[Overjevalna pot~\cite{micali2000csproofs}]
+    Naj bo $A$ zavezovalec, ki se želi zavezati vrednostim $x_1, x_2, \dots, x_L$ preverjalcu $B$. Če 
+    se $A$ zaveže tako, da $B$ pove vrednost korena Merklovega drevesa, izračunanega na podlagi 
+    vrednosti $x_1, x_2, \dots, x_L$, potem lahko dokaže zavezo eni vrednosti $x_i$ ($1 \le i \le L$)
+    tako, da preverjalcu $B$ pove $1 + \lceil \log L \rceil$ vrednosti: $x_i$ in pa \textbf{overjevalno 
+    pot}, torej vrednosti, shranjene v sestrskih vozliščih vseh vozlišč na poti med vključno $x_i$ in 
+    izključno korenom.
+\end{trditev}
+
+\begin{dokaz}
+    
+\end{dokaz}
 
 \subsection{Definicija večstranskega Schnorrovega podpisa}
 \label{sec:def_multi_schnorr}
