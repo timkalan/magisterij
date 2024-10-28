@@ -1091,6 +1091,7 @@ mu jih enostavno povemo, on pa lahko z izračunom drevesa preveri, da so vrednos
 po~\cite{micali2000csproofs}.
 
 \begin{trditev}[Overjevalna pot~\cite{micali2000csproofs}]
+\label{trd:overjevalna_pot}
     Naj bo $A$ zavezovalec, ki se želi zavezati vrednostim $x_1, x_2, \dots, x_L$ preverjalcu $B$. Če 
     se $A$ zaveže tako, da $B$ pove vrednost korena Merklovega drevesa, izračunanega na podlagi 
     vrednosti $x_1, x_2, \dots, x_L$, potem lahko dokaže zavezo eni vrednosti $x_i$ ($1 \le i \le L$)
@@ -1217,6 +1218,35 @@ $$
 $$
 
 \subsubsection{Preverjanje}
+Preverjanje je podobno naivni verziji, le da je potrebno dodatno preveriti ustreznost Merklovih
+korenov. Če torej preverjalec želi preveriti veljavnost podpisa $\sigma = (\tilde{X}, \tilde{y})$
+sporočila $m$, moramo predpostaviti, da lahko dostopa do vseh javnih ključev $\{\text{pk}_{id_1},
+\text{pk}_{id_2}, \dots, \text{pk}_{id_l}\}$ vseh podpisnikov $S = \{P_{id_1}, P_{id_2}, \dots, 
+P_{id_l}\}$.
+
+Najprej mora preverjalec preveriti, da se vseh $l$ izvodov skupnih parametrov $p, q$ in $g$ ujema.
+Da dokončno potrdi veljavnost in ustreznost javnih ključev, za vsakega podpisnika $P_{id_j} (1 \le
+j \le l)$ s pomočjo $I_{id_j}$ in $\text{pot}_{id_j}$ izračuna vrednost $V_{id_j}$ v korenu 
+Merklovega drevesa, kot prikazano v trditvi~\ref{trd:overjevalna_pot}. Ko izračuna vse vrednosti
+$V_{id_j}$, mora preveriti, da so vse enake. 
+
+Ko se preverjalec prepriča o veljavnosti ključev, postopa podobno kot pri naivni verziji. Najprej
+mora izračunati
+$$
+\tilde{I}_S = (I_{id_1} \cdot I_{id_2} \cdot \cdots \cdot I_{id_l}) \bmod p.
+$$
+Če si dosledno beleži izračune, lahko preverjalec ta del preverjanja podpisa opravi le enkrat za
+vsako skupino podpisnikov $S$.
+
+Potem mora preverjalec izračunati izziv s pomočjo slučajnega oraklja
+$$
+e = H_5(\tilde{X} || m || S)
+$$
+in preveriti, če velja
+$$
+g^{\tilde{y}} \stackrel{?}{\equiv} \tilde{X} \tilde{I}_S^e \pmod p.
+$$
+ZAKAJ TO DELA??
 
 \subsection{Varnost večstranskega Schnorrovega podpisa}
 \label{sec:proof_multi_schnorr}
