@@ -122,6 +122,8 @@ the content and not the structure of your work.}
 \newcommand{\C}{\mathbb C}
 \newcommand{\Q}{\mathbb Q}
 
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{\uppercase{#1}??}}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZAČETEK VSEBINE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -447,7 +449,7 @@ Red te podgrupe je $q$, določa pa jo generator $g$. Iz varnostnih razlogov mora
 bitov, $q$ pa $224$. Čeprav je grupa $\Z_p^*$ zelo velika, je Schnorrov podpis vseeno učinkovit, 
 saj večinoma deluje znotraj podgurpe, ki jo generira $g$.
 
-KAKO DOBIMO PARAMETRE??
+\todo{kako dobimo parametre}
 
 Poleg parametrov $p, q$ in $g$, morata podpisnik in preverjalec določiti oz.\ imeti dostop do varne 
 kriptografske zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
@@ -521,6 +523,7 @@ prepišemo
 Za pretvorbo desne strani moramo uporabiti nekaj lastnosti modularne aritmetike.
 
 \begin{trditev}
+\label{trd:mod-mn-pt}
     Naj bodo $a$, $b$ in $p$ naravna števila. Potem za modularno množenje in potenciranje velja
     \begin{align}
         a \cdot b \bmod p &= (a \bmod p) \cdot (b \bmod p) \bmod p, \label{eq:mod-prod} \\
@@ -579,7 +582,7 @@ kjer smo pri prehodu v drugo vrstico uporabili lastnost~\eqref{eq:mod-exp}, pri 
 pa lastnost~\eqref{eq:mod-prod}. Ker se obe strani ujemata za veljavne podpisne vrednosti, ta enačba 
 res preveja Schnorrov podpis.
 
-KAKO PA POKAŽEMO, DA SE ZA NAPAČNE VREDNOSTI NE UJEMA??
+\todo{kako pa pokažemo, da se za napačne vrednosti ne ujema}
 
 \subsection{Varnost Schnorrovega podpisa}
 Najbolj očitna nevarnost kateregakoli kriptosistema z javnimi ključi bi bila možnost izračuna zasebnega 
@@ -1000,7 +1003,7 @@ Poleg teh dveh lastnosti, mora dokaz brez razkritja znanja zadoščati še eni, 
     da lahko goljuvif dokazovalec prepriča iskrenega preverjalca o trditvi, ki ne drži.
 \end{opomba}
 
-SIGMA PROTOCOLS, PROOF OF KNOWLEDGE FIAT-SHAMIR??
+\todo{sigma protocols, proof of knowledge fiat-shamir}
 
 Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg 
 svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ 
@@ -1024,7 +1027,7 @@ logaritem z verjetnostjo največ $1/q$. Torej, če je $k$ pokvarjenih podpisniko
 uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo polinomski simulator, je 
 igralcev lahko največ logaritemsko mnogo.
 
-KAJ POMENI LOGARITEMSKO MNOGO??
+\todo{kaj pomeni logaritemsko mnogo}
 
 Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$ 
 in tudi zavezo $X_i$. Potem si izmenjajo $I_i$ in $X_i$. Vsak podpisnik lahko sedaj izračuna 
@@ -1033,7 +1036,7 @@ $$
 e = H(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L).
 $$
 Podpisniki za dokaz znanja sedaj uporabijo Schnorrov podpis $e$ s svojim parom ključev. 
-A TO PRAVILNO RAZUMEM??
+\todo{a to pravilno razumem}
 To pomeni, da za generiranje dokazov $k$ pokvarjenih igralcev sedaj rabi le $kq$ klicev oraklja, 
 torej je polinomski simulator uspešen z verjetnostjo $1/kq$. To omogoča, da je podpisnikov več 
 kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo, saj mora sedaj vsak podpisnik 
@@ -1243,10 +1246,33 @@ $$
 e = H_5(\tilde{X} || m || S)
 $$
 in preveriti, če velja
-$$
+\begin{equation}
+\label{eq:asm-check}
 g^{\tilde{y}} \stackrel{?}{\equiv} \tilde{X} \tilde{I}_S^e \pmod p.
-$$
-ZAKAJ TO DELA??
+\end{equation}
+
+Če je torej podpis $\sigma = (\tilde{X}, \tilde{y})$ veljaven podpis sporočila $m$, lahko levo stran
+enačbe~\eqref{eq:asm-check} zapišemo kot
+\begin{align*}
+    g^{\tilde{y}} \bmod p &= g^{(y_1 + y_2 + \cdots + y_l) \bmod q} \bmod p \\
+                          &\stackrel{\ref{trd:mod-q}}{=} g^{y_1 + y_2 + \cdots + y_l} \bmod p \\
+                          &= g^{e s_1 + r_1 + e s_2 + r_2 + \cdots + e s_l + r_l} \bmod p \\
+                          &= g^{r_1 + r_2 + \cdots r_l} g^{e (s_1 + s_2 + \cdots s_l)} \bmod p,
+\end{align*}
+desno pa po trditvi~\ref{trd:mod-mn-pt}
+\begin{align*}
+    \tilde{X} \tilde{I}_S^e \bmod p &= ((X_1 \cdot X_2 \cdot \cdots \cdot X_l) \bmod p)
+        ((I_{id_1} \cdot I_{id_2} \cdot \cdots \cdot I_{id_l}) \bmod p)^e \bmod p \\
+    &=((g^{r_1} \bmod p \cdot g^{r_2} \bmod p \cdot \cdots \cdot g^{r_l} \bmod p) \bmod p) \cdot \\
+    &\cdot ((g^{s_1} \bmod p \cdot g^{s_2} \bmod p \cdot \cdots \cdot g^{s_l} \bmod p) \bmod p)^e \bmod p \\
+    &\stackrel{\ref{trd:mod-mn-pt}}{=} (g^{r_1} \cdot g^{r_2} \cdot \cdots \cdot g^{r_l}) \bmod p) 
+        ((g^{s_1} \cdot g^{s_2} \cdot \cdots \cdot g^{s_l}) \bmod p)^e \bmod p \\
+    &\stackrel{\ref{trd:mod-mn-pt}}{=} (g^{r_1} \cdot g^{r_2} \cdot \cdots \cdot g^{r_l}) 
+        (g^{s_1} \cdot g^{s_2} \cdot \cdots \cdot g^{s_l})^e \bmod p \\
+    &= g^{r_1 + r_2 + \cdots r_l} g^{e (s_1 + s_2 + \cdots s_l)} \bmod p.
+\end{align*}
+Ker se leva in desna stran ujemata, enačba~\eqref{eq:asm-check} pravilno preveri pravilnost večstranskega
+Schnorrovega podpisa.
 
 \subsection{Varnost večstranskega Schnorrovega podpisa}
 \label{sec:proof_multi_schnorr}
