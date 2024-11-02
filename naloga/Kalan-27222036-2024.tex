@@ -383,6 +383,7 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 \end{definicija}
 
 \subsection{Varnost}
+\label{sec:varnost}
 Glavna stvar, ki nas zanima pri obravnavi kateregakoli kriptosistema, je njegova \textit{varnost}. 
 Ker je cilj digitalnih podpisov sogovorniku zagotoviti, da sporočilo res pošiljamo mi, nas glede 
 varnosti najbolj skrbi, da bi \textit{napadalec} lahko ponaredil naš podpis in nam s tem ukradel 
@@ -758,6 +759,7 @@ $S \setminus \{P_i\}$. To dejstvo nam dovoli definicijo napadalca, ki ima zelo v
 sistem, saj ne iščemo robustnosti. 
 
 \begin{definicija}[Napadalec pri ASM]
+\label{def:asm-napadalec}
     Napadalec v modelu večstranskih podpisov podskupine z odgovornostjo ima naslednje zmožnosti:
     \begin{itemize}
         \item Ima popoln nadzor nad vsemi komunikacijskmi kanali med člani skupine $G$. Lahko bere, 
@@ -778,16 +780,17 @@ tiče varnosti, je, da preprečimo eksistencialno ponarejanje podpisa. Želimo t
 zmožen ponarediti podpisa za katerololi sporočilo v imenu katerekoli podskupine.
 
 \begin{definicija}[Varnost pri ASM]
+\label{def:asm-varnost}
     Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
     Naj bo $F$ napadalec, ki je omejen s polinomskim časom v parametru $k$. Naj bo $p$ verjetnost, da 
-    F vrne trojico $(\sigma, m, S)$, za katero velja: 
+    $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
     \begin{itemize}
         \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
         \item Obstaja nepokvarjen igralec $P$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
             sporočila $m$ s strani skupine $S$.
     \end{itemize}
     Shemi za večstranske 
-    podpise podskupine z odgovornostjo bomo rekli, da je \textit{varna}, če velja 
+    podpise podskupine z odgovornostjo bomo rekli, da je \textbf{varna}, če velja 
     $$ 
     p < k^{-c}.
     $$
@@ -1025,9 +1028,9 @@ pridobi diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritj
 da če $P_j$ dokaz izračuna s $q$ klici slučajnjega oraklja, potem simulator uspešno pridobi diskretni 
 logaritem z verjetnostjo največ $1/q$. Torej, če je $k$ pokvarjenih podpisnikov, bo simulator 
 uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo polinomski simulator, je 
-igralcev lahko največ logaritemsko mnogo.
+igralcev lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
 
-\todo{kaj pomeni logaritemsko mnogo}
+\todo{kaj pomeni logaritemsko mnogo - je to prav}
 
 Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$ 
 in tudi zavezo $X_i$. Potem si izmenjajo $I_i$ in $X_i$. Vsak podpisnik lahko sedaj izračuna 
@@ -1276,6 +1279,71 @@ Schnorrovega podpisa.
 
 \subsection{Varnost večstranskega Schnorrovega podpisa}
 \label{sec:proof_multi_schnorr}
+Dokazati si želimo, da je shema, definirana v zgornjem razdelku~\ref{sec:def_multi_schnorr} \textit{varna},
+torej ustreza pogojem definicije varnosti~\ref{def:asm-varnost}, kjer ima napadalec $F$ sposobnosti,
+definirane v~\ref{def:asm-napadalec}. Varnost torej pomeni, da je preprečeno eksistencialno ponarejanje,
+zaradi napadalčevega nadzora nad komunikacijskim omrežjem pa si lahko privošči napad z izbranimi sporočili.
+Še več, ker se ukvarjamo z večstranskimi podpisi, si napadalec lahko izbere še podskupino, ki bo 
+sporočilo podpisovala.
+
+Zaradi kompleksnosti napadalca, dokaz varnosti poteka tako, da najprej dokažemo ekvivalentnost med
+šibkejšim napadalcem $F'$ in prvotnim napadalcem $F$, potem pa dokažemo varnot v primeru šibkega
+napadalca $F'$.
+
+\subsubsection{Šibek napadalec}
+Za enostavnejšo analizo definiramo \textbf{šibkega napadalca} (ali nasprotnika) (angl.\ 
+\textit{weak adversary}) $F'$. Ta še vedno izvaja napad z izbranim sporočilom in podskupino, 
+ima pa bistveno manj privilegijev, kot prvotni nasprotnik $F$.
+
+Šibek nasprotnik deluje podobno kot $F$, le da ne more na katerikoli točki pokvariti igralcev. To
+mora storiti pred začetkom podpisovanja. $F'$ si torej pred podpisovanjem izbere množico igralcev,
+in jih pokvari. Nadzira torej komunikacije, ki jih ti igralci prejmejo, in bere komunikacije, ki
+jih pošljejo. Med drugim lahko za vhode v algoritme teh igralcev izbere poljubne vrednosti. Omenimo
+še, da je pokvarjenih igralcev lahko največ $l - 1$, sicer ne ostane več noben legitimen podpisnik,
+in napad nima smisla.
+
+Kot za napadalce $F$, tudi tu definiramo, kaj pomeni, da je shema varna.
+
+\begin{definicija}[Šibka varnost]
+    Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
+    Naj bo $F'$ šibek napadalec, ki je omejen s polinomskim časom v parametru $k$. Naj bo $p$ 
+    verjetnost, da $F'$ vrne trojico $(\sigma, m, S)$, za katero velja: 
+    \begin{itemize}
+        \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
+        \item Obstaja nepokvarjen igralec $P$ iz skupine $S$, od katerega $F'$ ni zahteval podpisa 
+            sporočila $m$ s strani skupine $S$.
+    \end{itemize}
+    Shemi za večstranske 
+    podpise podskupine z odgovornostjo bomo rekli, da je \textbf{varna}, če velja 
+    $$ 
+    p < k^{-c}.
+    $$
+\end{definicija}
+
+Sedej imamo vse potrebno, da dokažemo ekvivalentnost šibke varnosti in varnosti, in s tem
+ekvivalentnost šibkega napadalca in napadalca.
+
+\begin{izrek}
+    Naj bo $Q$ tak polinom, da je katerkoli varnostni parameter $k$ za velikost $L$ skupine podpisnikov
+    $G$ velja
+    $$
+    L < Q(k).
+    $$
+    Potem je večstranski Schnorrov podpis iz razdelka~\ref{sec:def_multi_schnorr} varen natanko
+    tedaj, ko je šibko varen.
+\end{izrek}
+
+\begin{dokaz}
+    Ker se definicija varnosti in šibke varnosti razlikuje le v uporabi napadalca $F$ ali šibkega
+    napadalca $F'$, je potrebno pokazati le, da sta $F$ in $F'$ ekvivalentna.
+
+    $(\Rightarrow)$: Predpostavimo, da podpis ni šibko varen. Ker ima napadalec $F$ vse zmožnosti,
+    ki jih ima napadalec $F'$ (in še mnogo več), potem podpis tudi ni varen.
+
+    $(\Leftarrow)$: Predpostavimo, da podpis ni varen.
+\end{dokaz}
+
+\subsubsection{Dokaz varnosti}
 
 \section{Večstranski podpisi v splošnem}
 
