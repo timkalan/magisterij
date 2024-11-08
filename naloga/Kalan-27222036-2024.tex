@@ -1395,6 +1395,45 @@ varna.
 \end{dokaz}
 
 \subsubsection{Dokaz varnosti}
+Ker sta napadalec in šibek napadalec ekvivalentna, je dovolj pokazati varnost v primeru šibkega
+napadalca.
+
+\begin{izrek}[Varnost večstranskega Schnorrovega podpisa]
+    Če drži predpostavka diskretnega logaritma pri ASM~\ref{def:asm_dlp}, je večstranski Schnorrov
+    podpis, definiran v razdelku~\ref{sec:def_multi_schnorr}, varen.
+\end{izrek}
+
+Želimo torej pokazati, da če obstaja šibek napadalec, ki je omejen s polinomskim časom v parametru
+$k$, potem obstaja nek algoritem $A$, ki prav tako teče v polinomskem času, s katerim lahko prekršimo
+predpostavko o diskretnem logaritmu pri ASM. Bolj specifično, prekršimo lahko predpostavko o
+težavnosti PDL. $A$ je torej algoritem, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
+da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira podpisovanje za šibkega napadalca,
+ki vrne ponarejen podpis, iz katerega $A$ lahko razbere diskretni logaritem, ki ga išče.
+
+Bolj specifično, med svojim delovanjem šibki napadalec opravlja dve vrsti poizvedb. Prva je
+\textit{zgoščevalna poizvedba}, kjer napadalec pošlje slučajnemu oraklju nek niz, ta pa mu odgovori
+z njegovo zgostitvijo. $A$ lahko simulira odgovor na tovrstne poizvedbe z vračanjem naključnih odgovorov.
+
+Druga vrsta poizvedb je \textit{podpisovalna poizvedba}, kjer napadalec podpisniku $P_i$ (ki ga je 
+izbral na začetku) pošlje sporočilo $m$ in skupino $S$, ta pa mu nazaj pošlje zavezo $X_i$. Potem
+mora napadalec igrati vlogo podpisnika $D$, ki agregira informacije. Podpisniku $P_i$ pošlje skupno
+zavezo $\tilde{X}$, nazaj pa dobi $y_i$. Podpisovalne poizvedbe torej potekajo v dveh krogih in
+predstavljajo izvedbo napada z izbranim sporočilom in podskupino.
+
+Za lažjo konstrukcijo algoritma $A$, je smotrno šibkega napadalca $F'$ še dodatno poenostaviti. Naj
+$q_{zgoščevalna}$ označuje največje število zgoščevalnih poizvedb, ki jih opravi $F'$, $q_{podpisovalna}$
+pa največje število podpisovalnih. Poenostavljen napadalec $\mathcal{F}$ deluje popolnoma enako kot $F'$,
+le da pred drugim krogom podpisovalne poizvedbe $\mathcal{F}$ najprej pošlje zgoščevalno poizvedbo slučajnemu
+oraklju $H_5$ z vhodom $(\tilde{X}, m, S)$. Podobno, preden $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}, 
+\tilde{y})$ sporočila $m_F$, najprej opravi zgoščevalno poizedbo pri slučajnemu oraklju $H_5$ z
+vhodom $(\tilde{X}, m_F, S)$. Tako $\mathcal{F}$ vsaki podpisovalni poizvedbi in ponaredku dodeli
+zgostitev. Ker opravi $q_{podpisovalna}$ podpisovalnih poizvedb in $q_{zgoščevalna} + q_{podpisovalna} + 1$
+zgoščevalnih in ker $F'$ po predpostavki teče v polinomskem času, tudi $\mathcal{F}$ teče v
+polinomskem času. Dodatno predpostavimo še, da $\mathcal{F}$ po vsaki zgoščevalni poizvedbi shrani
+odgovor, zato vsako zgoščevalno poizvedbo za določen vhod opravi le enkrat. Število klicev oraklja
+$H_5$ označimo s $q_H$.
+
+\todo{bomo kaj omenili, zakaj je fino, da $A$ dela na podlagi $\mathcal{F}$}
 
 \section{Varnost večstranskih podpisov v splošnem}
 \section{MuSig2}
