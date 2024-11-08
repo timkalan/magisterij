@@ -49,16 +49,16 @@ the content and not the structure of your work.}
 \klasifikacija{94A60, 11T71}
 
 % - ključne besede, ki nastopajo v delu, ločene s \sep
-\kljucnebesede{digitalni podpis\sep kriptografija}
+\kljucnebesede{kriptografija\sep digitalni podpis\sep Schnorrov podpis\sep večstranski podpis}
 
 % - angleški prevod ključnih besed
-\keywords{digital signature\sep cryptography} % angleški prevod ključnih besed
+\keywords{cryptography\sep digital signature\sep Schnorr signature\sep multisignature} % angleški prevod ključnih besed
 
 % - neobvezna zahvala
-\zahvala{
-  Neobvezno.
-  Zahvaljujem se \dots
-}
+% \zahvala{
+%   Neobvezno.
+%   Zahvaljujem se \dots
+% }
 
 % - program dela, ki ga napiše mentor z osnovno literaturo
 \programdela{
@@ -143,7 +143,7 @@ držav Amerike~\ref{fig:declaration}.
   \includegraphics[width=0.5\textwidth]{images/declaration.jpg}
 % \caption[caption za v kazalo]{Dolg caption pod sliko}
   \caption[Deklaracija neodvisnosti Združenih držav Amerike.]{Deklaracija neodvisnosti Združenih 
-  držav Amerike s podpisi podpornikov spodaj.}
+  držav Amerike s podpisi podpornikov spodaj. Vir slike Wikipedia~\cite{doi}.}
   \label{fig:declaration}
 \end{figure}
 
@@ -978,7 +978,7 @@ poglejmo primer.
         \begin{subfigure}{0.25\textwidth}
             \includegraphics[width=\textwidth]{images/zkp3.png}
         \end{subfigure}
-        \caption[Jama Ali Babe.]{Igra Ane in Bojana v jami Ali Babe.}
+        \caption[Jama Ali Babe.]{Igra Ane in Bojana v jami Ali Babe. Vir slike Wikipedia~\cite{zkp}.}
         \label{fig:alibaba}
     \end{figure}
 \end{primer}
@@ -1292,17 +1292,23 @@ napadalca $F'$.
 
 \subsubsection{Šibek napadalec}
 Za enostavnejšo analizo definiramo \textbf{šibkega napadalca} (ali nasprotnika) (angl.\ 
-\textit{weak adversary}) $F'$. Ta še vedno izvaja napad z izbranim sporočilom in podskupino, 
-ima pa bistveno manj privilegijev, kot prvotni nasprotnik $F$.
+\textit{weak adversary}) $F'$. Njegov cilj je enak nasprotniku $F$. Želi si torej ponarediti podpis
+s pomočjo napada z izbranim sporočilom in podskupino. Izbere si lahko torej podpisnika, in od njega
+zahteva podpis izbranega sporočila skupaj z izbrano podskupino $S$. Napadalca se razlikujeta v tem,
+da je $F'$ bistveno šibkejši, oz.\ ima manj nadzora nad potekom podpisovanja.
 
-Šibek nasprotnik deluje podobno kot $F$, le da ne more na katerikoli točki pokvariti igralcev. To
-mora storiti pred začetkom podpisovanja. $F'$ si torej pred podpisovanjem izbere množico igralcev,
-in jih pokvari. Nadzira torej komunikacije, ki jih ti igralci prejmejo, in bere komunikacije, ki
-jih pošljejo. Med drugim lahko za vhode v algoritme teh igralcev izbere poljubne vrednosti. Omenimo
-še, da je pokvarjenih igralcev lahko največ $l - 1$, sicer ne ostane več noben legitimen podpisnik,
-in napad nima smisla.
+Šibek napadalec nima zmožnosti pokvariti podpisnikov. Vse, kar lahko stori $F'$ je, da si preden skupina
+generira svoje ključe, izbere podpisnika $P_i$, ki ga bo napadal. Edina interakcija, ki je potem dovoljena
+šibkemu napadalcu, je s podpisnikom $P_i$. Ko je podpisnik napaden, mora zanj $F'$ priskrbeti vse vhode
+za algoritme in vse vhodna sporočila, ki jih prejme. Prav tako lahko vidi vsa poslana sporočila
+podpisnika. Ko so vsi ključi generirani, $F'$ izvede napad z izbranim sporočilom in podskupino na
+podpisnika $P_i$.
 
-Kot za napadalce $F$, tudi tu definiramo, kaj pomeni, da je shema varna.
+Ker mora šibek napadalec za izbranega podpisnika predložiti vse vhode in komunikacijo, lahko vidimo
+delovanje šibkega napadalca kot delovanje napadalca, ki pokvari vse podpisnike, razen podpisnika $P_i$.
+V obeh primerih bo podpisnik $P_i$ v podpisu sodeloval le z napadalcem, ki zanj nadzoruje celoten
+potek podpisovanja. Ta povezava tipov napadalcev je formalno opisana v izreku~\ref{izr:šibka-varnost}.
+Pred dokazom izreka pa moramo, tako kot za napadalca $F$, tudi tu definirati kaj pomeni varnost sheme.
 
 \begin{definicija}[Šibka varnost]
     Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
@@ -1324,8 +1330,9 @@ Sedej imamo vse potrebno, da dokažemo ekvivalentnost šibke varnosti in varnost
 ekvivalentnost šibkega napadalca in napadalca.
 
 \begin{izrek}
-    Naj bo $Q$ tak polinom, da je katerkoli varnostni parameter $k$ za velikost $L$ skupine podpisnikov
-    $G$ velja
+\label{izr:šibka-varnost}
+    Naj bo $Q$ tak polinom, da je pri poljubno izbranem varnostnem parametru $k$ za velikost $L$ 
+    skupine podpisnikov $G$ velja
     $$
     L < Q(k).
     $$
@@ -1338,14 +1345,59 @@ ekvivalentnost šibkega napadalca in napadalca.
     napadalca $F'$, je potrebno pokazati le, da sta $F$ in $F'$ ekvivalentna.
 
     $(\Rightarrow)$: Predpostavimo, da podpis ni šibko varen. Ker ima napadalec $F$ vse zmožnosti,
-    ki jih ima napadalec $F'$ (in še mnogo več), potem podpis tudi ni varen.
+    ki jih ima napadalec $F'$ (in še mnogo več), potem podpis tudi ni varen. Še več, če $F$ pokvari
+    vse podpisnike razen tistega, ki ga napada $F'$, lahko popolnoma simulira delovanje $F'$ za
+    napadenega podpisnika.
 
-    $(\Leftarrow)$: Predpostavimo, da podpis ni varen.
+    $(\Leftarrow)$: Predpostavimo, da podpis ni varen. Obstaja torej napadalec $F$, ki je omejen
+    s polinomskim čason v parametru $k$ in uspešno izvede napad z izbranim sporočilom in podskupino.
+    Na tej točki omenimo še, da je za smiselen ponaredek podpisa potrebno, da pri podpisovanju sodeluje
+    vsaj en nepokvarjen podpisnik. Sicer je napadalec edini ki podpisuje, zato varnost sheme ni ogrožena.
+    Če pa pri podpisovanju sodeluje iskren podpisnik, in napadalec uspešno ustvari ponaredek, pa
+    to kaže na težave v varnosti.
+    
+    Konstruirajmo šibkega napadalca $F'$, ki deluje tako, da pred začetkom podpisovanja izbere naključnega
+    podpisnika $P_i$ ($1 \le i \le L$) za tarčo svojega napada. $F'$ se torej za podpisnika $P_i$ postavi
+    v vlogo vseh ostalih podpisnikov. $F'$ lahko torej $F$ simulira delovanje vseh podpisnikov razen
+    $P_i$. Če se $F$ odloči pokvariti kateregakoli podpisnika, ki ni $P_i$, mu lahko $F'$ posreduje
+    potrebne zasebne informacije. Podobno tudi, če si $F$ izbere podpisnika (razen $P_i$) za tarčo napada z
+    izbarnim sporočilom in podskupino. V primeru, da je tarča napada $P_i$, $F'$ prejme zahtevek za
+    napad od $F$ in ga posreduje podpisniku $P_i$, ta pa normalno pošlje svoj odgovor napadalcu $F$.
+
+    Ko $F$ konča svoj napad, vrne trojico $(\sigma, m, S)$. Če je to veljaven ponaredek, jo vrne tudi
+    šibek napadalec $F'$. Če ponaredek ni veljaven, če $P_i$ ni eden izmed podpisnikov v $S$, ali pa
+    če je $P_i$ tekom podpisovanja pokvarjen s strani $F$, je šibek napadalec neuspešen pri svojem napadu.
+    Poglejmo si verjetnost, da $F'$ uspe pri svojem napadu:
+    \begin{align*}
+          &\text{Pr}(\text{$F'$ vrne veljaven ponaredek}) = \\
+        = &\text{Pr}(\text{$F$ vrne veljaven ponaredek } \cap \text{ $P_i \in S$ in ni pokvarjen}) \\
+        = &\sum_{i=1}^L \text{Pr}(\text{$F'$ izbere $P_i$}) \cdot 
+            \text{Pr}(\text{$F$ vrne veljaven ponaredek } \cap \text{ $P_i \in S$ in ni pokvarjen}) \\
+        = &\sum_{i=1}^L \frac{1}{L} \cdot 
+            \text{Pr}(\text{$P_i \in S$ in ni pokvarjen | $F$ vrne veljaven ponaredek}) \\
+          &\cdot \text{Pr}(\text{$F$ vrne veljaven ponaredek}) \\
+        \geq &\frac{1}{L} \cdot \text{Pr}(\text{$F$ vrne veljaven ponaredek}),
+    \end{align*}
+kjer smo pri prehodu iz tretje v četrto vrstico uporabili lastnost verjetnosti, ki pravi
+$$
+\text{Pr}(A \cap B) = \text{Pr}(A \text{ }|\text{ } B) \cdot \text{Pr}(B),
+$$
+pri prehodu v zadnjo vrstico pa smo upoštevali, da velja
+\begin{equation}
+\label{eq:geq1}
+\sum_{i=1}^L \text{Pr}(\text{$P_i \in S$ in ni pokvarjen | $F$ vrne veljaven ponaredek}) \geq 1.
+\end{equation}
+Neenačba~\eqref{eq:geq1} drži, saj mora pri uspešnem ponarejanju sodelovati vsaj en nepokvajren
+podpisnik. Če torej $F$ vrne veljaven ponaredek, bo vsaj ena od verjetnosti v zgornji vsoti enaka $1$.
+
+Pri ponarejanju je torej $F$ uspešen največ $L$-krat več kot $F'$, kar pomeni, da shema ni šibko
+varna.
 \end{dokaz}
 
 \subsubsection{Dokaz varnosti}
 
-\section{Večstranski podpisi v splošnem}
+\section{Varnost večstranskih podpisov v splošnem}
+\section{MuSig2}
 
 % \section{Integrali po \texorpdfstring{$\omega$}{ω}-kompleksih}
 % \subsection{Definicija}
