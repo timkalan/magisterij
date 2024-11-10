@@ -1399,8 +1399,8 @@ Ker sta napadalec in šibek napadalec ekvivalentna, je dovolj pokazati varnost v
 napadalca.
 
 \begin{izrek}[Varnost večstranskega Schnorrovega podpisa]
-    Če drži predpostavka diskretnega logaritma pri ASM~\ref{def:asm_dlp}, je večstranski Schnorrov
-    podpis, definiran v razdelku~\ref{sec:def_multi_schnorr}, varen.
+    Če drži predpostavka o težavnosti diskretnega logaritma pri ASM~\ref{def:asm_dlp}, je večstranski 
+    Schnorrov podpis, definiran v razdelku~\ref{sec:def_multi_schnorr}, varen.
 \end{izrek}
 
 Želimo torej pokazati, da če obstaja šibek napadalec, ki je omejen s polinomskim časom v parametru
@@ -1431,9 +1431,50 @@ zgostitev. Ker opravi $q_{podpisovalna}$ podpisovalnih poizvedb in $q_{zgoščev
 zgoščevalnih in ker $F'$ po predpostavki teče v polinomskem času, tudi $\mathcal{F}$ teče v
 polinomskem času. Dodatno predpostavimo še, da $\mathcal{F}$ po vsaki zgoščevalni poizvedbi shrani
 odgovor, zato vsako zgoščevalno poizvedbo za določen vhod opravi le enkrat. Število klicev oraklja
-$H_5$ označimo s $q_H$.
+$H_5$ označimo s $q_H$. $A$ bo za delovanje uporabljal napadalce $\mathcal{F}$, saj bo tako za vsak
+potencialni ponaredek in vsak napad prejel predogled rezultata prek zgostitve, ki jo vrne $H_5$.
 
-\todo{bomo kaj omenili, zakaj je fino, da $A$ dela na podlagi $\mathcal{F}$}
+$A$ mora torej znati odgovoriti na vse poizvedbe poenostavljenega napadalca $\mathcal{F}$. Na zgoščevalne 
+poizvedbe odgovarja naključno, s pomočjo vnaprej izbranih simuliranih odgovorov $e_1, e_2, \dots, 
+e_{q_H}$ oraklja $H_5$. Odgovor na podpisovalno poizvedbo za podpisnika $P_i$ na vhodu $m$ in $S$
+je malce bolj zapleten. $A$ stori sledeče:
+\begin{enumerate}
+    \item Shrani konfiguracijo poenostavljenega napadalca $\mathcal{F}$.
+    \item \label{rewind} Si izbere naključen odgovor $e_j$ ($1 \le j \le q_H$) oraklja $H_5$, v upanju, da bo to
+        zgostitev, ki bo identificirala to poizvedbo.
+    \item Si izbere naključen $y \in [0, q - 1]$.
+    \item Izračuna 
+        $$
+        X_i = I_i^{-e_j}g^y \bmod p
+        $$
+        in pošlje $X_i$ v odgovor prvega kroga poizvedbe poenostavljenemu napadalcu $\mathcal{F}$.
+    \item Po prejetju $\tilde{X}$ od $\mathcal{F}$ preveri, če $e_j$ ustreza poizvedbi na vhodu
+        $(\tilde{X}, m, S)$. Če ja, vrne $y$, sicer se vrne na korak~\ref{rewind}.
+\end{enumerate}
+Zgornje je primer splošne metode za analiziranje varnosti v kriptografiji, ki se imenuje 
+\textbf{previjanje nazaj} (angl.\ \textit{rewinding}). Popularna je pri analizi dokazov brez razkritja
+znanja in pri dokazih varnosti v modelu slučajnega oraklja. Temelj metode je, da dovoli analizo večih
+naključnih izbir.
+
+V tem primeru je previjanje nazaj nujno potrebno za simuliranje iskrenega podpisnika $P_i$. To je zato,
+ker je izbira $\tilde{X}$ s strani $\mathcal{F}$ tista, ki odloči izziv $e$, ki ga $P_i$ uporabi za
+izračun $y_i$. Algoritem $A$ pa mora zavezo $X_i$ poslati v prvem krogu poizvedbe, preden je znano,
+kaj bo izziv $e$. Zato mora uganiti, kater odgovor oraklja $H_5$ bi bil pravi. Ker je možnih vrednosti
+$q_H$, bo v najslabšem primeru potreboval $q_H$ previjanj.
+
+Sedaj lahko konstruiramo algoritem $A$ na podlagi poenostavljenega napadalca $\mathcal{F}$. $A$ torej
+prejme instanco problema diskretnega logaritma s podatki $p, q, g$ in $I$ (kot definirano v 
+definiciji~\ref{def:asm_dlp}). $P_i$ naj označuje igralca, ki ga poenostavljen napadalec napada
+(to je torej edini nepokvarjeni igralec). Ker ima $A$ absoluten nadzor, lahko brez problema
+nastavi oraklja $H_1$ in $H_2$ tako, da so $p, q$ in $g$ točno deljeni parametri pri večstranskem
+Schnorrovem podpisu. Potem lahko izbere $I_i = I$ in nastavi $H_3$ tako, da lahko dokaže znanje
+diskretnem logaritmu $I_g$ modulo $g$. \todo{to si lahko malo razjasnemo}. Tu naletimo na podoben
+problem, kot pri odgovarjanju na druge kroge podpisovalnih poizvedb. $A$ mora poslati zavezo $X_i$
+preden pozna skupni izziv $e$. Problem ponovno rešimo s previjanjem poenostavljenega napadalca
+$\mathcal{F}$. Previti bo treba največ tolikokrat, kot je poizvedb, ki jih $\mathcal{F}$ pošlje
+$H_3$ (označimo $q_{H_3}$).
+
+Potem lahko $A$ požene $\mathcal{F}$ in odgovarja na njegove poizvedbe kot opisano zgoraj.
 
 \section{Varnost večstranskih podpisov v splošnem}
 \section{MuSig2}
