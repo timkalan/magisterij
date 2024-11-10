@@ -33,7 +33,7 @@
 % \somentorici{...}{...}
 
 % - leto magisterija
-\letnica{2024}
+\letnica{2025}
 
 % - povzetek v slovenščini
 %   V povzetku na kratko opišite vsebinske rezultate dela. Sem ne sodi razlaga
@@ -138,7 +138,7 @@ Odkar se je na svetu pojavil koncept (ročnega) podpisa, je večina primerov upo
 pridobivanju podpisov več deležnikov. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih 
 držav Amerike~\ref{fig:declaration}. 
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \includegraphics[width=0.5\textwidth]{images/declaration.jpg}
 % \caption[caption za v kazalo]{Dolg caption pod sliko}
@@ -160,7 +160,7 @@ pogledati nekaj kriptografskih osnov. Bolj komplicirane stvari bodo opisane spro
 poglavja je predstaviti stvari, ki so predpogoj za branje kakršnegakoli kriptografskega 
 besedila.
 
-\subsection{Aritmetika v $\Z_p^*$}
+\subsection{Aritmetika v \texorpdfstring{$\Z_p^*$}{Zp∗}}
 V kriptografiji imamo pogosto opravka z multiplikativnimi grupami, najenostavnejša med njimi (in 
 tudi tradicionalno največ uporabljena) je \textit{multiplikativna grupa naravnih števil modulo $p$} 
 $\Z_p^*$. Njeni elementi so števila v $\{0, 1, \dots, p - 1\}$, ki so tuja številu $p$. V posebnem 
@@ -965,7 +965,7 @@ poglejmo primer.
     bo Ana dovolj velikokrat vrnila po poti, ki jo je povedal Bojan (in nikoli po napačni), bo lahko 
     z veliko verjetnostjo prepričan, da Ana res pozna geslo. Primer enega kroga protokola je prikazan 
     na sliki~\ref{fig:alibaba}. 
-    \begin{figure}[h!]
+    \begin{figure}[ht]
       \centering
         \begin{subfigure}{0.28\textwidth}
             \includegraphics[width=\textwidth]{images/zkp1.png}
@@ -1006,7 +1006,7 @@ Poleg teh dveh lastnosti, mora dokaz brez razkritja znanja zadoščati še eni, 
     da lahko goljuvif dokazovalec prepriča iskrenega preverjalca o trditvi, ki ne drži.
 \end{opomba}
 
-\todo{sigma protocols, proof of knowledge fiat-shamir}
+\todo{sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
 
 Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg 
 svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ 
@@ -1057,7 +1057,7 @@ shranimo katerekoli podatke. Drevo potem gradimo navzgor tako, da v vsako vozli�
 stika zgostitev levega in desnega otroka. Tako nadaljujemo do korena. Pomembno je, da je za pridobivanje 
 zgostitev uporabljena zgoščevalna funkcija, ki je skoraj brez trčenj ali pa slučajni orakelj. Osnovna 
 struktura je prikazana na sliki~\ref{fig:merkle}.
-\begin{figure}[h!]
+\begin{figure}[ht]
   \centering
   \begin{tikzpicture}[<-, >=stealth', auto, semithick,
    level/.style={sibling distance=60mm/#1}]
@@ -1421,18 +1421,19 @@ zavezo $\tilde{X}$, nazaj pa dobi $y_i$. Podpisovalne poizvedbe torej potekajo v
 predstavljajo izvedbo napada z izbranim sporočilom in podskupino.
 
 Za lažjo konstrukcijo algoritma $A$, je smotrno šibkega napadalca $F'$ še dodatno poenostaviti. Naj
-$q_{zgoščevalna}$ označuje največje število zgoščevalnih poizvedb, ki jih opravi $F'$, $q_{podpisovalna}$
-pa največje število podpisovalnih. Poenostavljen napadalec $\mathcal{F}$ deluje popolnoma enako kot $F'$,
-le da pred drugim krogom podpisovalne poizvedbe $\mathcal{F}$ najprej pošlje zgoščevalno poizvedbo slučajnemu
-oraklju $H_5$ z vhodom $(\tilde{X}, m, S)$. Podobno, preden $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}, 
-\tilde{y})$ sporočila $m_F$, najprej opravi zgoščevalno poizedbo pri slučajnemu oraklju $H_5$ z
-vhodom $(\tilde{X}, m_F, S)$. Tako $\mathcal{F}$ vsaki podpisovalni poizvedbi in ponaredku dodeli
-zgostitev. Ker opravi $q_{podpisovalna}$ podpisovalnih poizvedb in $q_{zgoščevalna} + q_{podpisovalna} + 1$
-zgoščevalnih in ker $F'$ po predpostavki teče v polinomskem času, tudi $\mathcal{F}$ teče v
-polinomskem času. Dodatno predpostavimo še, da $\mathcal{F}$ po vsaki zgoščevalni poizvedbi shrani
-odgovor, zato vsako zgoščevalno poizvedbo za določen vhod opravi le enkrat. Število klicev oraklja
-$H_5$ označimo s $q_H$. $A$ bo za delovanje uporabljal napadalce $\mathcal{F}$, saj bo tako za vsak
-potencialni ponaredek in vsak napad prejel predogled rezultata prek zgostitve, ki jo vrne $H_5$.
+$q_{\text{zgoščevalna}}$ označuje največje število zgoščevalnih poizvedb, ki jih opravi $F'$,
+$q_{\text{podpisovalna}}$ pa največje število podpisovalnih. Poenostavljen napadalec $\mathcal{F}$
+deluje popolnoma enako kot $F'$, le da pred drugim krogom podpisovalne poizvedbe $\mathcal{F}$
+najprej pošlje zgoščevalno poizvedbo slučajnemu oraklju $H_5$ z vhodom $(\tilde{X}, m, S)$. Podobno,
+preden $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}, \tilde{y})$ sporočila $m_F$, najprej opravi
+zgoščevalno poizedbo pri slučajnemu oraklju $H_5$ z vhodom $(\tilde{X}, m_F, S)$. Tako $\mathcal{F}$
+vsaki podpisovalni poizvedbi in ponaredku dodeli zgostitev. Ker opravi $q_{\text{podpisovalna}}$
+podpisovalnih poizvedb in $q_{\text{zgoščevalna}} + q_{\text{podpisovalna}} + 1$ zgoščevalnih in
+ker $F'$ po predpostavki teče v polinomskem času, tudi $\mathcal{F}$ teče v polinomskem času.
+Dodatno predpostavimo še, da $\mathcal{F}$ po vsaki zgoščevalni poizvedbi shrani odgovor, zato vsako
+zgoščevalno poizvedbo za določen vhod opravi le enkrat. Število klicev oraklja $H_5$ označimo s $q_H$.
+$A$ bo za delovanje uporabljal napadalce $\mathcal{F}$, saj bo tako za vsak potencialni ponaredek in
+vsak napad prejel predogled rezultata prek zgostitve, ki jo vrne $H_5$.
 
 $A$ mora torej znati odgovoriti na vse poizvedbe poenostavljenega napadalca $\mathcal{F}$. Na zgoščevalne 
 poizvedbe odgovarja naključno, s pomočjo vnaprej izbranih simuliranih odgovorov $e_1, e_2, \dots, 
