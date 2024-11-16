@@ -169,7 +169,7 @@ $\text{ord}(\Z_p^*) = |\Z_p^*| = p - 1$. Operacija v tej grupi je, kot ime že n
 modulo $p$.
 
 Spomnimo se, da je red elementa $g$ najmanjše naravno število $q$, da velja $g^q \equiv 1 \pmod p$, 
-kjer je $1$ enota za množenje. V primeru, da je $p$ praševilo, je grupa grupa $\Z_p^*$ \textit{ciklična}, 
+kjer je $1$ enota za množenje. V primeru, da je $p$ praštevilo, je grupa grupa $\Z_p^*$ \textit{ciklična},
 kar pomeni, da v njej obstaja element $g$, katerega red je enak redu grupe, torej $\text{ord}(g) = p - 1$.
 V tem primeru se $g$ imenuje \textit{generator}.
 
@@ -207,16 +207,16 @@ generator.
 
 \subsection{Zgoščevalne funkcije}
 V grobem so (kriptografske) \textit{zgoščevalne funkcije} funkcije, ki prejmejo poljubno dolg binarni 
-niz (ki lahko predstalja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima 
+niz (ki lahko predstavlja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima
 vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. Namen zgoščevalnih funkcij je 
-za dokument ustvariti unikaten niz, ki zelo verjetno identiificira dokument. V grobem si od zgoščevalnih 
+za dokument ustvariti unikaten niz, ki zelo verjetno identificira dokument. V grobem si od zgoščevalnih
 funkcij želimo naslednje lastnosti:
 \begin{itemize}
     \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
         zgostitve. 
     \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
         času. Izračun zgostitve mora biti računsko učinkovit.
-    \item \textbf{Enosmernost} pomeni, da iz predložene zgostitve zelo težko ugotovimo, kater niz 
+    \item \textbf{Enosmernost} pomeni, da iz predložene zgostitve zelo težko ugotovimo, kateri niz
         je funkcija prejela kot vhod. Tej lastnosti pravimo tudi \textit{odpornost na prasliko}.
     \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
         je zelo težko najdemo drug niz z enako zgostitvijo.
@@ -271,7 +271,7 @@ za komunikacijo obe morali poznati skriven \textit{ključ}, ki je definiral, kak
 ustvarjena. 
 
 \begin{primer}[Cezarjeva šifra]
-    Ena najbolj znanih šifer, ki izvira iz Antičnega Rima, je \textit{Cezrjeva šifra}. Njen ključ 
+    Ena najbolj znanih šifer, ki izvira iz Antičnega Rima, je \textit{Cezarjeva šifra}. Njen ključ 
     je število, ki je krajše od dolžine naše abecede, v Cezarjevem primeru je bilo to število $3$.
     Šifra potem deluje tako, da vsako črko zamaknemo za toliko mest v abecedi, kolikor definira 
     ključ. Npr.\ za slovensko abecedo, bi šifra zamaknila črke:
@@ -285,15 +285,15 @@ ustvarjena.
 
 V prejšnjem stoletju pa se je pojavila alternativa, imenovana \textit{asimetrična kriptografija}, oz.\
 \textit{kriptografija javnega ključa}. Glavna prednost te je, da osebi za komunikacijo ne rabita 
-poznati enakega skrivnega ključa, vendar ima vsak od njiju par ključev, ki ju imenujemo \textit{javni 
-ključ} (angl.\ \textit{public key}) in \textit{zasebni ključ} (angl.\ \textit{secret/private key})in 
+poznati enakega skrivnega ključa, vendar ima vsak od njiju par ključev, ki ju imenujemo \textbf{javni 
+ključ} (angl.\ \textit{public key}) in \textbf{zasebni ključ} (angl.\ \textit{secret/private key})in 
 označimo kot par $(\text{pk}, \text{sk})$. Vsaka oseba objavi svoj javni ključ in poskrbi, da nihče 
 ne izve, kaj je njen zasebni ključ. 
 
 Šifriranje potem poteka tako, da pridobimo javni ključ od osebe, s katero želi komunicirati, ga uporabi
 za šifriranje in objavi šifrirano sporočilo. Lastnik ustreznega zasebnega ključa (vsakemu javnemu pripada 
-natanko en zasebni) potem pridobi šifrirano sporočilo in ga z zasebnim ključem odšifrira. Kriptosistemi 
-delujejo na način, da lahko sporočilo, šifrirano z javnim ključem odšifrira samo ustrezen zasebni ključ. 
+natanko en zasebni) potem pridobi šifrirano sporočilo in ga z zasebnim ključem dešifrira. Kriptosistemi
+delujejo na način, da lahko sporočilo, šifrirano z javnim ključem dešifrira samo ustrezen zasebni ključ.
 Tako zagotovimo varno komunikacijo. 
 
 \begin{primer}[RSA]
@@ -310,7 +310,7 @@ Tako zagotovimo varno komunikacijo.
     $$   
     c = m^e \bmod{n} = 10^3 \bmod{n} = 218.
     $$
-    Dogovoriti se moramo še o zasebnem ključu. Za to bomo potrebovali eksponent za odšifriranje $d$,
+    Dogovoriti se moramo še o zasebnem ključu. Za to bomo potrebovali eksponent za dešifriranje $d$,
     tako da bo veljalo 
     $$
     (m^e)^d \equiv 1 \pmod{\varphi(n)},
@@ -324,7 +324,7 @@ Tako zagotovimo varno komunikacijo.
     ter izračunamo inverz, v splošnem pa iz $n$ učinkovito ne moremo pridobiti faktorjev $p$ in $q$,
     kar nam daje varnost.
 
-    Ko prejmemo šifrirano sporočilo $c$, ga odšifriramo tako, da izračunamo
+    Ko prejmemo šifrirano sporočilo $c$, ga dešifriramo tako, da izračunamo
     $$
     m = c^d \bmod{n} = 218^{235} \bmod{391} = 10.   
     $$
@@ -334,7 +334,7 @@ Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega klju
 \textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo e-pošto ali dostopamo do katerekoli 
 spletne strani. Delujejo na podoben način, kot šifriranje z javnim ključem, le da najprej uporabimo 
 zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Ponavadi sta šifrianje 
-in podisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, za katerega lahko oseba, 
+in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, za katerega lahko oseba,
 s katero komuniciramo preveri, da je res prišlo od nas.
 
 \subsection{Digitalni podpisi}
@@ -364,12 +364,12 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
             ki ne prejme nobenega argumenta. $\text{pk}$ je javni kljč za preverjanje avtentičnosti 
             podpisa, $\text{sk}$ pa je zasebni ključ za podpisovanje. 
         \item $\mathcal{S}$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$ 
-            in sporočilo $m$, vrne pa podpis $\sigma$ spročila $m$ z zasebnim ključem $\text{sk}$ 
+            in sporočilo $m$, vrne pa podpis $\sigma$ sporočila $m$ z zasebnim ključem $\text{sk}$
             oz.\ 
             $$ 
             \sigma = \mathcal{S}(\text{sk}, m).
             $$
-        \item $\mathcal{V}$ je determinističen algoritem, ki preverja veljavnost podpisov. Za svoje arugmente 
+        \item $\mathcal{V}$ je determinističen algoritem, ki preverja veljavnost podpisov. Za svoje argumente
             prejme javni ključ $\text{pk}$, sporočilo $m$ in podpis $\sigma$, vrne $veljaven$, če je podpis 
             veljaven in $neveljaven$, sicer. Velja torej
             $$ 
@@ -395,7 +395,7 @@ identiteto. Pri tem je lahko uspešen na več nivojih, ki so od najmanj do najbo
         velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
     \item \textbf{Selektivno ponarejanje} (angl.\ \textit{selective forgery}) pomeni, da lahko napadalec 
         z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga mi še nismo 
-        podpisali. Torej, če napadalcu nekdo predloži spročilo $m$, lahko z nezanemarljivo verjetnostjo 
+        podpisali. Torej, če napadalcu nekdo predloži sporočilo $m$, lahko z nezanemarljivo verjetnostjo
         najde podpis $\sigma$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
     \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da je napadalec ugotovil naš 
         zasebni ključ in s tem podpisovalni algoritem. V našem imenu lahko podpiše karkoli.
@@ -448,7 +448,7 @@ Ideja v ozadju teh števil je, da $p$ določa multiplikativno grupo števil $\Z_
 potrebno najti podgrupo, katere red je praštevilo, je pa vseeno dovolj velika, da omogoča varnost. 
 Red te podgrupe je $q$, določa pa jo generator $g$. Iz varnostnih razlogov mora $p$ imeti $2048$ 
 bitov, $q$ pa $224$. Čeprav je grupa $\Z_p^*$ zelo velika, je Schnorrov podpis vseeno učinkovit, 
-saj večinoma deluje znotraj podgurpe, ki jo generira $g$.
+saj večinoma deluje znotraj podgrupe, ki jo generira $g$.
 
 \todo{kako dobimo parametre}
 
@@ -532,7 +532,7 @@ Za pretvorbo desne strani moramo uporabiti nekaj lastnosti modularne aritmetike.
     \end{align}
 \end{trditev}
 \begin{dokaz}
-    $a$ in $b$ lahko po osnovnem izreku o deljenju naravinih števil na en sam način zapišemo kot 
+    $a$ in $b$ lahko po osnovnem izreku o deljenju naravnih števil na en sam način zapišemo kot 
     \begin{align*}
         a &= n_a p + r_a, \\
         b &= n_b p + r_a,
@@ -581,7 +581,7 @@ X' \cdot I^{e'} \bmod p &= g^r \bmod p \cdot (g^s \bmod p)^e \bmod p = \\
 \end{align*}
 kjer smo pri prehodu v drugo vrstico uporabili lastnost~\eqref{eq:mod-exp}, pri prehodu v tretjo 
 pa lastnost~\eqref{eq:mod-prod}. Ker se obe strani ujemata za veljavne podpisne vrednosti, ta enačba 
-res preveja Schnorrov podpis.
+res preverja Schnorrov podpis.
 
 \todo{kako pa pokažemo, da se za napačne vrednosti ne ujema}
 
@@ -622,7 +622,7 @@ logaritma}.
 \end{definicija}
 
 Izkaže se, da za grupe, kot je $\Z_p^*$, ne poznamo učinkovitega algoritma za izračun diskretnega 
-logaritma, torej v njih drži predpodstavka DL. To torej pomeni, da ob pridobljenem javnem ključu, 
+logaritma, torej v njih drži predpostavka DL. To torej pomeni, da ob pridobljenem javnem ključu, 
 napadalec ne more učinkovito izračunati zasebnega.
 
 \section{Pregled skupinskih podpisov}
@@ -632,8 +632,8 @@ definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
     \item \textbf{Prilagodljivost} (angl.\ \textit{flexibility}): Popolnoma prilagodljiv podpis skupine
         je takšen, ki ga lahko proizvede katerakoli podskupina originalne skupine podpisnikov. Ko je podpis 
         preverjen, se mora tisti, ki ga je preveril odločiti, če je ustrezen del skupine podal svoj podpis. 
-        Popolnoma neprilagodljiv podpis bi bil takšen, ki ga lahko v imenu skupine ustvari katerkoli član.
-    \item \textbf{Odgovoronost} (angl.\ \textit{accountability}): Če lahko iz podpisa ugotovimo, kateri člani 
+        Popolnoma neprilagodljiv podpis bi bil takšen, ki ga lahko v imenu skupine ustvari katerikoli član.
+    \item \textbf{Odgovornost} (angl.\ \textit{accountability}): Če lahko iz podpisa ugotovimo, kateri člani 
         so sodelovali pri ustvarjanju, nam podpis omogoča odgovornost. Ta lastnost je lahko zaželena, če 
         se želimo prepričati, ali je ustrezen del skupine sodeloval pri podpisu (npr.\ ali je pri podpisovanju 
         sodeloval generalni direktor podjetja). V drugih primerih pa si želimo anonimnost posameznih članov 
@@ -646,7 +646,7 @@ podpisovanju) označili z $G = P_1, \dots, P_L$, kjer ima skupina $L$ članov. D
 generiral samo del skupine $S \subseteq G$.
 
 \subsection{Skupinski podpisi}
-\textit{Skupinski podpis} (angl.\ \textit{group signature}) v imenu celotne skupine $G$ ustvari en 
+\textbf{Skupinski podpis} (angl.\ \textit{group signature}) v imenu celotne skupine $G$ ustvari en 
 anonimen član. To torej pomeni, da je podpis popolnoma neprilagodljiv, saj ni možno prisiliti skupine,
 da bi podpis ustvaril več kot en član. Prav tako v splošnem noben član, niti tisti, ki preverja podpis,
 ne more ugotoviti, kdo je podpis ustvaril. Da skupinski podpisi omogočijo vsaj delno odgovornost, 
@@ -654,9 +654,9 @@ skupina določi \textit{vodjo skupine}, ki ima možnost razkriti identiteto podp
 težav. V tem primeru seveda vodja predstavlja atraktivno tarčo za napad.
 
 \subsection{Pragovni podpisi}
-Če želimo zagotoviti, da se s podpisom strinja zadosten delež skupine, lahko uporabimo \textit{pragovni 
+Če želimo zagotoviti, da se s podpisom strinja zadosten delež skupine, lahko uporabimo \textbf{pragovni 
 podpis} (angl.\ \textit{threshold signature}). Ta nam omogoča določeno mero prilagodljivosti, saj lahko 
-katerkoli zadosten delež skupine ustvari podpis. Še vedno je nemogoče upoštevati morebitno hierarhično
+katerikoli zadosten delež skupine ustvari podpis. Še vedno je nemogoče upoštevati morebitno hierarhično
 strukturo skupine. Pragovni podpisi omogočajo tudi popolno anonimnost podpisnikov, in s tem torej 
 nično odgovornost. Intuicija tu je, da večina pragovnih podpisov temelji na interpolaciji polinoma 
 $(l - 1)$-stopnje z $l$ točkami. Podpis je potem ustvarjen s pomočjo vrednosti polinoma v neki točki. 
@@ -675,7 +675,7 @@ popolno odgovornost, saj na papirju piše njihovo ime.
 Podoben učinek bi z digitalnimi podpisi lahko dosegli, če bi namesto enega podpisa skupine, od članov 
 zbrali individualne podpise in jih nanizali v seznam. Dobili bi torej digitalni podpis skupine, ki 
 ponuja popolno prilagodljivost in odgovornost. Težava je samo, da je dolžina podpisa (in s tem čas 
-preverjanja) proporcionalna številu podpisnikov. \textit{Večstranski podpisi} (angl.\textit{multisignatures})
+preverjanja) proporcionalna številu podpisnikov. \textbf{Večstranski podpisi} (angl.\textit{multisignatures})
 ohranijo lastnosti seznama podpisov, rezultat sheme je pa en sam podpis, ki je enako dolg ne glede 
 na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. Tega s seznamom podpisov 
 ni mogoče doseči, saj tako dolžina podpisa, kot čas preverjanja podpisa rasteta linearno s številom 
@@ -696,14 +696,14 @@ odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito prev
 \section{Večstranski Schnorrov podpis}
 Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali 
 formalni dokaz varnosti. Zamislili so si večstranski podpis, ki temelji na Schnorrovem in ga poimenovali 
-\textit{večstranski podpis podskupine z odvoronostjo} (angl.\ \textit{Accountable-Subgroup Multisignature 
+\textbf{večstranski podpis podskupine z odvoronostjo} (angl.\ \textit{Accountable-Subgroup Multisignature 
 (ASM)}). V tem razdelku predstavimo njihov model, podpis in argument varnosti.
 
 \subsection{Večstranski podpis podskupine z odgovornostjo}
 Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le bolj formalno definira idejo 
-večstarnskega podpisa, predstavljeno v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega 
+večstranskega podpisa, predstavljeno v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega 
 podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $G$, brez potrebe po 
-\textit{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. 
+\textbf{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. 
 Generiranje ključev je torej popolnoma v domeni skupine $G$. Podpis, ki ga ustvari $S$ predstavlja 
 splošno preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine stoji za (torej podpisuje) 
 sporočilom $M$.
@@ -762,7 +762,7 @@ sistem, saj ne iščemo robustnosti.
 \label{def:asm-napadalec}
     Napadalec v modelu večstranskih podpisov podskupine z odgovornostjo ima naslednje zmožnosti:
     \begin{itemize}
-        \item Ima popoln nadzor nad vsemi komunikacijskmi kanali med člani skupine $G$. Lahko bere, 
+        \item Ima popoln nadzor nad vsemi komunikacijskimi kanali med člani skupine $G$. Lahko bere, 
             spreminja in preprečuje dostavo vseh sporočil. Prav tako lahko v imenu kateregakoli 
             podpisnika pošlje sporočilo.
         \item Kadarkoli lahko \textit{pokvari} kateregakoli podpisnika. Ko je igralec pokvarjen, 
@@ -777,7 +777,7 @@ sistem, saj ne iščemo robustnosti.
 
 Zaradi obširnih zmožnosti napadalca, ta lahko kadarkoli prepreči podpis sporočila. Naš cilj, kar se 
 tiče varnosti, je, da preprečimo eksistencialno ponarejanje podpisa. Želimo torej, da napadalec ni 
-zmožen ponarediti podpisa za katerololi sporočilo v imenu katerekoli podskupine.
+zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupine.
 
 \begin{definicija}[Varnost pri ASM]
 \label{def:asm-varnost}
@@ -804,7 +804,7 @@ natančno ve, kdo je $P_2$ v resnici, in lahko pridobi ustrezen javni ključ.
 \subsubsection{Model slučajnega oraklja}
 Ko obravnavamo varnost kriptosistemov, ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
 Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu 
-je na voljo. Občasno se znajdemo v primeru, ko moramo za dokaz varnosti sprejeti dodatne predppostavke. 
+je na voljo. Občasno se znajdemo v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. 
 V tem primeru se znajdemo v alternativnih modelih kriptografije. 
 
 Ko imamo opravka z zgoščevalnimi funkcijami, je pogosto potrebno sprejeti dodatne predpostavke, da lahko 
@@ -1003,7 +1003,7 @@ Poleg teh dveh lastnosti, mora dokaz brez razkritja znanja zadoščati še eni, 
 
 \begin{opomba}
     Dokazi brez razkritja znanja niso zares dokazi v matematičnem smislu. Vedno obstaja določena verjetnost, 
-    da lahko goljuvif dokazovalec prepriča iskrenega preverjalca o trditvi, ki ne drži.
+    da lahko goljufiv dokazovalec prepriča iskrenega preverjalca o trditvi, ki ne drži.
 \end{opomba}
 
 \todo{sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
@@ -1017,15 +1017,15 @@ hevristiko.
 Ker tovrstni dokazi brez preverjalca nimajo smisla, se na tej točki vredno vprašati, kdo bo preverjal 
 veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe. 
 Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka 
-sprememba podaljša javne ključe in privede do izgube učinkoitosti. Preverjanje veljavnosti podpisa 
+sprememba podaljša javne ključe in privede do izgube učinkovitosti. Preverjanje veljavnosti podpisa 
 bo sedaj poleg dveh modularnih potenciranj potrebovalo še dodatnih $2|S|$, saj je potrebno preveriti 
 vse dokaze javnih ključev. Posamezni preverjalec podpisov lahko sicer dodatno delo opravi le enkrat 
-za vsako skupino, če natančno beleži rezulate preverjanja dokazov.
+za vsako skupino, če natančno beleži rezultate preverjanja dokazov.
 
 \subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
 Za dokaz varnosti je potrebno, da lahko simulator v polinomskem času za vsakega pokvarjenega igralca $P_j$
 pridobi diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, 
-da če $P_j$ dokaz izračuna s $q$ klici slučajnjega oraklja, potem simulator uspešno pridobi diskretni 
+da če $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem simulator uspešno pridobi diskretni 
 logaritem z verjetnostjo največ $1/q$. Torej, če je $k$ pokvarjenih podpisnikov, bo simulator 
 uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo polinomski simulator, je 
 igralcev lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
@@ -1048,7 +1048,7 @@ soigralcev in njihove zaveze. Brez teh podatkov namreč dokaz znanja ni preverlj
 za katerokoli podskupino $S$ velikost ključa proporcionalna velikosti celotne skupine $G$. Poleg 
 tega mora sedaj preverjalec preveriti, da se vsi vektorji javnih ključev ujemajo. V primerjavi 
 z osnovno naivno idejo, kjer je preverjalec potreboval le $|S|$ navadnih Schnorrovih javnih ključev, 
-je v tej izvedbi velikost javnega ključa nedopusno velika.
+je v tej izvedbi velikost javnega ključa nedopustno velika.
 
 Da nazaj pridobimo učinkovit podpis, se lahko zanesemo na slučajnega oraklja in kriptografsko 
 orodje, imenovano \textbf{Merklovo drevo} (angl.\ \textit{Merkle tree}). V osnovi je to 
@@ -1475,7 +1475,90 @@ preden pozna skupni izziv $e$. Problem ponovno rešimo s previjanjem poenostavlj
 $\mathcal{F}$. Previti bo treba največ tolikokrat, kot je poizvedb, ki jih $\mathcal{F}$ pošlje
 $H_3$ (označimo $q_{H_3}$).
 
-Potem lahko $A$ požene $\mathcal{F}$ in odgovarja na njegove poizvedbe kot opisano zgoraj.
+Potem lahko $A$ požene $\mathcal{F}$ in odgovarja na njegove poizvedbe kot opisano zgoraj. Ideja
+dokaza od tu naprej je, da $\mathcal{F}$ vrne ponarejen podpis, nato pa $A$ uporabi previjanje in
+\textbf{lemo o razcepu}~\ref{izr:forking} (angl.\ \textit{forking lemma}), da pridobi še en ponarejen 
+podpis. Iz teh dveh ponaredkov potem lahko izlušči odgovor na problem diskretnega logaritma.
+
+\begin{izrek}[Lema o razcepu~\cite{pointcheval1996forking}]
+\label{izr:forking}
+    Naj bo $F$ verjetnostni Turingov stroj, omejen s polinomskim časom, ki ima na voljo vse javne
+    podatke pri podpisni shemi, pri kateri se pri podpisovanju uporablja zgostitve delnih podpisov
+    in sporočila prek slučajnih orakljev (npr.\ pri Shnorrovem podpisu je ta zgostitev izziv 
+    $e = H(X || m)$). Če lahko $F$  z nezanemarljivo verjetnostjo vrne par $(m, \sigma)$, kjer je $\sigma$ 
+    veljaven podpis sporočila $m$, potem lahko z nezanemarljivo verjetnostjo z enakimi vhodnimi
+    podatki (enakim trakom v Turingovem stroju) in uporabo drugega oraklja, $F$ vrne dva para 
+    $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na drugačnih zgostitvah.
+    \todo{mogoče moram uporabiti definicijo, kjer se vračajo trojke}
+\end{izrek}
+
+Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verjetnosti.
+
+\begin{lema}
+\label{lema:verjetnost}
+    Naj bo $A \subset X \times Y$ dogodek in $0 < \epsilon < 1$. Naj velja $\text{Pr}(A(x, y)) \geq \epsilon$. 
+    Potem obstaja $\Omega \subset X$, tako da \begin{itemize}
+        \item $\text{Pr}(x \in \Omega) > \epsilon / 2$ in
+        \item če je $a \in \Omega$, potem je $\text{Pr}(A(a, y)) \geq \epsilon / 2$.
+    \end{itemize}
+\end{lema}
+
+\begin{dokaz}
+    Definirajmo množico $\Omega$ kot
+    $$
+    \Omega = \{x \in X \text{ }|\text{ Pr}(A(x, y)) \geq \epsilon / 2\}.
+    $$
+    Neposredno iz definicije množice sledi drugi del izreka. Če je $a \in \Omega$, mora zanj veljati
+    $\text{Pr}(A(a, y)) \geq \epsilon / 2$. Za prvi del leme pa uporabimo izrek o popolni verjetnosti, 
+    da $\text{Pr}(A(x, y))$ razdelimo:
+    $$
+    \text{Pr}(A(x, y)) = \text{Pr}(x \in \Omega) \cdot \text{Pr}(A(x, y) \text{ }|\text{ } x \in \Omega) + 
+        \text{Pr}(x \notin \Omega) \cdot \text{Pr}(A(x, y) \text{ }|\text{ } x \notin \Omega)
+    $$
+    Zaradi definicije množice $\Omega$ velja $\text{Pr}(A(x, y) \text{ }|\text{ } x \in \Omega) 
+    \geq \epsilon / 2$ in $\text{Pr}(A(x, y) \text{ }|\text{ } x \notin \Omega) < \epsilon / 2$.
+    Zapišemo lahko torej
+    \begin{align*}
+        \epsilon &\leq \text{Pr}(A(x, y)) \\
+                 &\leq \text{Pr}(x \in \Omega) \cdot 1 + (1 - \text{Pr}(x \in \Omega)) \cdot \epsilon / 2 \\
+                 &= \epsilon / 2 + (1 - \epsilon / 2) \cdot (\text{Pr}(x \in \Omega)).
+    \end{align*}
+    Od tu lahko izrazimo
+    $$
+    \text{Pr}(x \in \Omega) \geq \frac{\epsilon / 2}{1 - \epsilon / 2} > \epsilon / 2,
+    $$
+    s čimer smo pokazali še prvi del leme.
+\end{dokaz}
+
+Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
+
+\begin{dokaz}[Dokaz leme o razcepu]
+    Naj bo $F$ napadalec, ki nima na voljo nobenega sporočila. Naj bo $k$ varnostni parameter obravnavane
+    sheme za podpise. Denimo, da med svojim napadom napadalec $F$ slučajnemu oraklju $H$ pošlje največ
+    polinomsko mnogo poizvedb v parametru $k$. Označimo poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1,
+    \mathcal{Q}_2, \dots, \mathcal{Q}_Q$ (brez škode za splošnost lahko prepdostavimo, da so poizvedbe
+    med seboj različne). Odgovore oraklja označimo z $\rho_1, \rho_2 , \dots, \rho_Q$. 
+
+    Predpostavimo, da lahko za naključno izbran vhodni trak $\omega$ in naključno izbranega oraklja $H$,
+    $F$ vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis sporočila $m$ z nezanemarljivo
+    verjetnostjo. Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila
+    ena izmed poizvedb oraklju prav tista, ki je vsebovala sporočilo in delni podpis, nezanemarljiva.
+    Sicer bi moral $F$ uganiti naključno vrednost. Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta$
+    ($1 < \beta < Q$). Ker je poizvedb polinomsko mnogo v parametru $k$ in je verjetnost uspeha 
+    nezanemarljiva, mora obstajati polinom $P(k)$, za katerega je verjetnost uspeha
+    $$
+    \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek}) \geq \frac{1}{P(k)},
+    $$
+    kjer je poizvedba $\mathcal{Q}_\beta$ res temeljila na sporočilu in delnem podpisu.
+
+    Sedaj lahko za tako $\beta$ po lemi~\ref{lema:verjetnost} definiramo množico $\Omega_\beta$, ki
+    vsebuje tiste naključne trakove $\omega$, za katere je verjetnost uspeha po orakljevih odgovorih
+    $\rho_1, \dots, \rho_Q$ navzdol omejena z $1/2P(k)$. To nam da par $\beta$ in $\omega$, ki ga
+    lahko uporabimo, da prek leme~\ref{lema:verjetnost} definiramo množico $R_{\beta, \omega}$, ki
+    vsebuje tiste $(\rho_1, \dots, \rho_{\beta - 1})$, za katere je verjetnost uspeha po $(\rho_\beta,
+    \dots. \rho_Q)$ večja od $1/4P(k)$.
+    \todo{n vs k, točno kako vmestimo Qbeta}
+\end{dokaz}
 
 \section{Varnost večstranskih podpisov v splošnem}
 \section{MuSig2}
@@ -1484,7 +1567,7 @@ Potem lahko $A$ požene $\mathcal{F}$ in odgovarja na njegove poizvedbe kot opis
 % \subsection{Definicija}
 % \begin{definicija}
 %   Neskončno zaporedje kompleksnih števil, označeno z $\omega = (\omega_1, \omega_2, \ldots)$,
-%   se imenuje \emph{$\omega$-kompleks}.\footnote{To ime je izmišljeno.}
+%   se imenuje \emph{$\omega$-kompleks}.\footnote{To ime je izmišljeno.}z 
 %
 %   Črni blok zgoraj je tam namenoma. Označuje, da \LaTeX{} ni znal vrstice prelomiti pravilno
 %   in vas na to opozarja. Preoblikujte stavek ali mu pomagajte deliti problematično besedo z
