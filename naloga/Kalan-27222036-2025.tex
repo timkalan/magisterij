@@ -1482,14 +1482,17 @@ podpis. Iz teh dveh ponaredkov potem lahko izlušči odgovor na problem diskretn
 
 \begin{izrek}[Lema o razcepu~\cite{pointcheval1996forking}]
 \label{izr:forking}
+    Naj bo $\mathcal{S}$ podpisna shema, ki vrača dvodelne podpise $\sigma = (\sigma_1, \sigma_2)$,
+    kjer $\sigma_2$ temelji na zgostitvi vhodnega sporočila $m$ in $\sigma_1$ (npr.\ pri Shnorrovem 
+    podpisu je ta zgostitev izziv  $e = H(X || m)$). Naj slučajni orakelj $H$ vrača zgostitve
+    dolžine $k$. Velikost privatnega ključa naj bo $n$, tako da velja $k \gg \log(n)$.
+
     Naj bo $F$ verjetnostni Turingov stroj, omejen s polinomskim časom, ki ima na voljo vse javne
-    podatke pri podpisni shemi, pri kateri se pri podpisovanju uporablja zgostitve delnih podpisov
-    in sporočila prek slučajnih orakljev (npr.\ pri Shnorrovem podpisu je ta zgostitev izziv 
-    $e = H(X || m)$). Če lahko $F$  z nezanemarljivo verjetnostjo vrne par $(m, \sigma)$, kjer je $\sigma$ 
-    veljaven podpis sporočila $m$, potem lahko z nezanemarljivo verjetnostjo z enakimi vhodnimi
-    podatki (enakim trakom v Turingovem stroju) in uporabo drugega oraklja, $F$ vrne dva para 
-    $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na drugačnih zgostitvah.
-    \todo{mogoče moram uporabiti definicijo, kjer se vračajo trojke}
+    podatke pri podpisni shemi $\mathcal{S}$. Če lahko $F$ z nezanemarljivo verjetnostjo vrne par 
+    $(m, \sigma)$, kjer je $\sigma$  veljaven podpis sporočila $m$, potem lahko z nezanemarljivo 
+    verjetnostjo z enakimi vhodnimi podatki (enakim trakom v Turingovem stroju) in uporabo drugega 
+    oraklja, $F$ vrne dva para  $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na 
+    drugačnih zgostitvah.
 \end{izrek}
 
 Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verjetnosti.
@@ -1532,33 +1535,124 @@ Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verje
 
 Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
 
-\begin{dokaz}[Dokaz leme o razcepu]
-    Naj bo $F$ napadalec, ki nima na voljo nobenega sporočila. Naj bo $k$ varnostni parameter obravnavane
-    sheme za podpise. Denimo, da med svojim napadom napadalec $F$ slučajnemu oraklju $H$ pošlje največ
-    polinomsko mnogo poizvedb v parametru $k$. Označimo poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1,
-    \mathcal{Q}_2, \dots, \mathcal{Q}_Q$ (brez škode za splošnost lahko prepdostavimo, da so poizvedbe
-    med seboj različne). Odgovore oraklja označimo z $\rho_1, \rho_2 , \dots, \rho_Q$. 
+\begin{dokaz}[Dokaz leme o razcepu~\ref{izr:forking}]
+    Naj bo $F$ napadalec, ki nima na voljo nobenega sporočila. Denimo, da med svojim napadom napadalec 
+    $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb v parametru $n$. Označimo 
+    poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1, \mathcal{Q}_2, \dots, \mathcal{Q}_Q$ (brez škode 
+    za splošnost lahko prepdostavimo, da so poizvedbe med seboj različne). Odgovore oraklja označimo 
+    z $\rho_1, \rho_2 , \dots, \rho_Q$. 
 
     Predpostavimo, da lahko za naključno izbran vhodni trak $\omega$ in naključno izbranega oraklja $H$,
     $F$ vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis sporočila $m$ z nezanemarljivo
     verjetnostjo. Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila
     ena izmed poizvedb oraklju prav tista, ki je vsebovala sporočilo in delni podpis, nezanemarljiva.
     Sicer bi moral $F$ uganiti naključno vrednost. Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta$
-    ($1 < \beta < Q$). Ker je poizvedb polinomsko mnogo v parametru $k$ in je verjetnost uspeha 
-    nezanemarljiva, mora obstajati polinom $P(k)$, za katerega je verjetnost uspeha
+    ($1 < \beta < Q$). Ker je poizvedb polinomsko mnogo v parametru $n$ in je verjetnost uspeha 
+    nezanemarljiva, mora obstajati polinom $P(n)$, za katerega je verjetnost uspeha
     $$
-    \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek}) \geq \frac{1}{P(k)},
+    \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek}) \geq \frac{1}{P(n)},
     $$
-    kjer je poizvedba $\mathcal{Q}_\beta$ res temeljila na sporočilu in delnem podpisu.
+    kjer je poizvedba $\mathcal{Q}_\beta$ res temeljila na sporočilu in delnem podpisu, slučajnost
+    pa izvira iz izbire traku $\omega$ in orakljevih odgovorov $\rho_1, \rho_2, \dots, \rho_Q$.
 
     Sedaj lahko za tako $\beta$ po lemi~\ref{lema:verjetnost} definiramo množico $\Omega_\beta$, ki
     vsebuje tiste naključne trakove $\omega$, za katere je verjetnost uspeha po orakljevih odgovorih
-    $\rho_1, \dots, \rho_Q$ navzdol omejena z $1/2P(k)$. To nam da par $\beta$ in $\omega$, ki ga
-    lahko uporabimo, da prek leme~\ref{lema:verjetnost} definiramo množico $R_{\beta, \omega}$, ki
-    vsebuje tiste $(\rho_1, \dots, \rho_{\beta - 1})$, za katere je verjetnost uspeha po $(\rho_\beta,
-    \dots. \rho_Q)$ večja od $1/4P(k)$.
+    $\rho_1, \dots, \rho_Q$ navzdol omejena z $1/2P(n)$, če res velja $\mathcal{Q}_\beta = (m, \sigma_1)$. 
+    To nam da par $\beta$ in $\omega$, ki ga lahko uporabimo, da ponovno prek leme~\ref{lema:verjetnost} 
+    definiramo množico $R_{\beta, \omega}$, ki vsebuje tiste $(\rho_1, \dots, \rho_{\beta - 1})$, 
+    za katere je verjetnost uspeha po $(\rho_\beta, \dots, \rho_Q)$ s $\mathcal{Q}_\beta = (m, \sigma_1)$ 
+    večja od $1/4P(n)$.
+
+    Sedaj imamo določene $\beta, \omega$ in $(\rho_1, \dots, \rho_{\beta - 1})$, za katere si lahko
+    izberemo dve množici odgovorov $(\rho_\beta, \dots, \rho_Q)$ in $(\rho_\beta', \dots, \rho_Q')$,
+    za kateri $F$ z nezanemraljivo verjetnostjo vrne dva para $(m, \sigma)$ in $(m, \sigma')$, kjer
+    sta $\sigma$ in $\sigma'$ veljavna podpisa sporočila $m$, ki temeljita na drugačnih zgostitvah.
+    Tu smo uporabili pogoj $k \gg \log(n)$, ki nam zagotavlja, da je vsaj $n$ različnih $k$-bitov
+    dolgih odgovorov oraklja $H$.
+
+    Torej, z naključno izbiro $\beta$, $\omega$, $(\rho_1, \dots, \rho_{\beta - 1}), (\rho_\beta, 
+    \dots, \rho_Q)$ in $(\rho_\beta', \dots, \rho_Q')$ lahko z nezanemarljivo verjetnostjo dobimo
+    dva veljavna podpisa $\sigma$ in $\sigma'$ sporočila $m$, ki temeljita na drugačnih zgostitvah.
+
     \todo{n vs k, točno kako vmestimo Qbeta}
 \end{dokaz}
+
+Vrnimo se na dokaz varnosti večstranskega Schnorrovega podpisa. Ostali smo pri algoritmu $A$, ki
+tekom svojega delovanja poganja poenostavljenega napadalca $\mathcal{F}$. 
+
+Denimo, da $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}_0, \tilde{y}_0)$ sporočila $m_0$ s strani 
+podskupine $S_0$. Še več, ponaredek je nastal na podlagi $j_0$-te poizvedbe oraklju $H_5$ z vhodom 
+$(\tilde{X}_0, m_0, S_0)$ in odgovorom $e_{j_0}$. $A$ potem ponastavi napadalca $\mathcal{F}$ nazaj
+na začetek z enakim trakom. Na njegove poizvedbe odgovarja enako kot prej, le na $j_0$-to poizvedbo
+odgovori z novo naključno vrednostjo $e_{j_0}'$.
+
+Označimo število podpisovalnih poizvedb, katerih prvi krog v prvem pogonu napadalec $\mathcal{F}$ 
+opravi pred $j_0$-to zgoščevalno poizvedbo z $r$. To pomeni, da nobena od prvih $r - 1$ podpisovalnih 
+poizvedb ni temeljila na $j_0$-ti zgoščevalni, saj mora za legitimen ponaredek $\mathcal{F}$ dati 
+podpis za sporočilo in skupino, na podlagi katere podpis še ni bil narejen. V drugem pogonu napadalca
+lahko $A$ torej vrne shranjene odgovore na prvih $r - 1$ podpisovalnih poizvedb. Previjanje nazaj 
+je lahko potrebno pri $r$-ti podpisovalni poizvedbi, saj se drugi krog lahko zgodi po $j_0$-ti
+podpisovalni poizvedbi. Verjetnost previjanja je $1 - 1/q_H$, kjer je $1/q_H$ verjetnost, da je
+drugi krog $r$-te podpisovalne poizvedbe izveden na podlagi enake zgoščevalne poizvedbe, kot pri
+prvem pogonu.
+
+Če previjanje pri $r$-ti podpisovalni poizvedbi ni potrebno, potem so pogoji pri $j_0$-ti zgoščevalni
+poizvedbi popolnoma enaki, kot pri prvem pogonu (enak trak napadalca in enake zgoščevalne poizvedbe).
+Od tu lahko zaključimo, da bo tudi $j_0$-ta poizdveba imela enak vhod: $(\tilde{X}_0, m_0, S_0)$, 
+odgovor pa bo seveda drugačen. Če tudi v tem pogonu napadalec $\mathcal{F}$ uspešno vrne ponaredek
+$(\tilde{X}_1, \tilde{y}_1)$ podpisa na sporočilu $m_1$ s strani podskupine $S_1$, ki temelji na 
+poizvebi $j_0$, potem smo lahko prepričani, da velja $m_1 = m_0, S_1 = S_0$ in $\tilde{X}_1, = \tilde{X}_0$.
+
+Ključno, enačbi za preverjanje podpisov potem lahko zapišemo kot
+\begin{align*}
+    g^{\tilde{y}_0} &\equiv \tilde{X}_0 \tilde{I}_{S_0}^{e_{j_0}} \pmod p, \\
+    g^{\tilde{y}_1} &\equiv \tilde{X}_1 \tilde{I}_{S_1}^{e_{j_0}'}
+        \equiv \tilde{X}_0 \tilde{I}_{S_0}^{e_{j_0}'} \pmod p.
+\end{align*}
+Opazimo, da lahko izrazimo $\tilde{X}_0$ na dva načina, ki ju enačimo:
+$$
+\tilde{X}_0 \equiv g^{\tilde{y}_0}(\tilde{I}_{S_0}^{e_{j_0}})^{-1}
+    \equiv g^{\tilde{y}_1}(\tilde{I}_{S_0}^{e_{j_0}'})^{-1} \pmod p.
+$$
+Če premečemo dobljeno enačbo, dobimo
+$$
+\tilde{I}_{S_0}^{- e_{j_0}'} \tilde{I}_{S_0}^{e_{j_0}} \equiv g^{\tilde{y}_0}(g^{\tilde{y}_1})^{-1} \pmod p,
+$$
+kar nam omogoča izraziti $\tilde{I}_{S_0}$ kot
+$$
+\tilde{I}_{S_0} \equiv g^{(\tilde{y}_0 - \tilde{y}_1) (e_{j_0} - e_{j_0}')^{-1}} \pmod p.
+$$
+To torej pomeni, da $A$ lahko izračuna diskretni logaritem $\tilde{I}_{S_0}$ kot 
+$(\tilde{y}_0 - \tilde{y}_1) (e_{j_0} - e_{j_0}')^{-1}$. Še vedno pa nismo pri koncu, saj to ni
+diskretni logaritem, ki nas zanima. Če podpisnike iz $S_0$ označimo $S_0 = \{P_{i_1}, \dots, P_{i_l}\}$,
+potem je 
+$$
+\tilde{I}_{S_0} = \prod_{j=1}^l I_{i_j},
+$$
+kjer je vrednost, katere diskretni logaritem želimo izračunati, $I_i$, nujno ena izmed $I_{i_j}$, 
+saj mora biti del skupine $S_0$. $A$ mora sedaj pridobiti diskretne logaritme vseh ostalih $I_{i_j}$
+in jih odšteti iz diskretnega logaritma $\tilde{I}_{S_0}$. Tu uporabimo dejstvo, da mora $P_i$ med
+generiranjem ključev pridobiti dokaze znanja brez razkritja znanja o diskretnih logaritmih vseh $I_{i_j}$,
+razen za $i_j = i$. Ker te dokaze prejme $P_i$, jih mora zanj generirati napadalec $\mathcal{F}$. Tu
+lahko ponovno uporabimo lemo o razcepu~\ref{izr:forking}, prek katere $A$ lahko previje napadalca
+in prejme diskretni logaritem $s_{i_j}$, katerega znanje dokazuje $\mathcal{F}$. Ker vsi podpisniki
+za dokaz uporabijo enak izziv $H_3(X_1, I_1, \dots, X_L, I_L)$, se mora zgoditi samo en razcep.
+
+Vprašanje, ki ostane, je časovna zahtevnost algortima $A$. Standardne operacije podpisovanja
+so polinomske v varnostnem parametru $k$, zato so polinomske tudi za $A$. Prav tako so učinkoviti
+odgovori na zgoščevalne poizvedbe. Najbolj časovno zahteven del so previjanja, ki jih je lahko $q_H$
+za vsak podpis in generiranje ključev. Časovna zahtevnost $A$ je torej proporcionalna $q_H$, ker pa
+je $\mathcal{F}$ omejen s polinomskim časom, je tudi časovna zahtevnost $A$ polinomska v $k$.
+
+Verjetnost uspeha algoritma $A$ je obratno proporcionalna polinomu v $q_H$, torej tudi v $k$. $A$ 
+je torej res polinomski algoritem, ki z nezanemarljivo verjetnostjo vrne odgovor na problem diskretnega
+algoritma. Ker predpostavljamo, da tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
+
+\todo{opomba o paralelnem podpisovanju}
+\todo{časovna zahtevnost in verjetnost uspeha}
+
+% Na tem mestu lahko uporabimo lemo o 
+% razcepu~\ref{izr:forking}
 
 \section{Varnost večstranskih podpisov v splošnem}
 \section{MuSig2}
