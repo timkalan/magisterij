@@ -135,8 +135,9 @@ the content and not the structure of your work.}
 % nastopa, kje vse je bil obravnavan. Na koncu opišite tudi organizacijo dela -- kaj je v
 % katerem razdelku.
 Odkar se je na svetu pojavil koncept (ročnega) podpisa, je večina primerov uporabe temeljila na
-pridobivanju podpisov več deležnikov. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih 
-držav Amerike~\ref{fig:declaration}. 
+pridobivanju podpisov več deležnikov, saj je bila večina podpisanih dokumentov sporazum ali pogodoba
+med večimi deležniki. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih držav
+Amerike, vidna na sliki~\ref{fig:declaration}. 
 
 \begin{figure}[ht]
   \centering
@@ -147,33 +148,56 @@ držav Amerike~\ref{fig:declaration}.
   \label{fig:declaration}
 \end{figure}
 
-V prejšnjem stoletju je vzpon računalnika in napredek v kriptografiji privedel do \textit{digitalnih
-podpisov}. Ti odlično nadomeščajo ročni podpis, prav tako omogočajo, da se skupina podpiše tako, 
-da vsak član poda svoj podpis. Vendar tu lahko z malo matematike poskrbimo, da se skupina lahko 
-podpiše na način, da vsi člani skupaj oddajo en sam podpis, ki priča o podpisu celotne skupine. Tako 
-razbremenimo preverjalca podpisov, kar je ključno v sistemih, kjer je računska moč omejena ali 
-pa draga (npr.\ pri tehnologiji veriženja blokov).
+S pojavom računalnika in napredkom v kriptografiji se je pojavila alternativna oblika podpisovanja.
+\textit{Digitalni podpisi} so dandanes povsod. Uporabljeni so vsakič, ko dostopamo do spletnih
+strani, prenašamo podatke ali pa opravljamo kakršnakoli plačila. Poleg avtomatiziranih podpisovanj,
+ki se zgodijo v ozadju zgoraj omenjenih procesov, pa so digitalni podpisi na voljo tudi kot alternativa
+ročnemu podpisu človeka. V praktično vseh pogledih so mnogo varnejši od tradicionalnih podpisov,
+omogočajo bolj sistematično preverjanje (prek računalnikov) in so skorajda enostavnejši za uporabo
+in prenašanje.
+
+Prav tako lahko digitalne podpise uporabimo, če mora skupina deležnikov podpisati pogodbo -- vsak
+enostavno pripne svoj digitalni podpis. Če je skupina velika, če je računska moč omejena
+(npr.\ če želimo zmanjšati ceno transakcij pri tehnologiji veriženja blokov), ali pa če enostavno
+želimo verifikatorju podpisov olajšati delo, lahko poskrbimo, da se skupina podpiše z enim samim,
+\textit{večstranskim} podpisom. Ta podpis vseeno priča o vseh podpisnikih, njegova verifikacija oz.\
+preverjanje, pa zajema približno enako dela, kot preverjanje enega samega podpisa.
+
+Taki podpisi so samo en izmed možnih načinov, kako se skupina podpiše. Od ostalih načinov izstopajo
+po tem, da omogočajo vpogled v sestavo skupine podpisnikov, kar nudi verifikatorju več informacij
+pri odločanju, če je podpis sprejemljiv, hkrati pa ohranja odgovornost individualnih članov skupine.
+Pri tradicionalnih skupinskih podpisih podpis samo priča o podpisu celotne skupine, ustvari pa ga
+lahko katerkoli član.
+
+V delu najprej predstavimo kriptografske osnove~\ref{sec:osnove}, ki so potrebne za razumevanje besedila.
+To zajema modularno aritmetiko in grupe, zgoščevalne funkcije, kriptografijo javnega ključa, nekaj
+splošnih definicij pri digitalnih podpisih in potem še nekaj besed o varnosti. V nadaljevanju predstavimo
+Schnorrov podpis~\ref{sec:schnorr}, ki je osnova za ostale sheme, ki jih obravnavamo. V 
+poglavju~\ref{sec:skpine} so predstavljeni vsi možni načini za podpisovanje skupin. Poglavje~\ref{sec:multischnorr}
+predstavi večstranski Schnorrov podpis, tam tudi dokažemo njegovo varnost v modelu slučajnega oraklja.
 
 \section{Kriptografske osnove}
-Preden si lahko pogledamo točno kako lahko skupina generira en sam podpis besedila, si moramo 
+\label{sec:osnove}
+Preden si lahko pogledamo točno kako lahko skupina generira en sam podpis sporočila, si moramo 
 pogledati nekaj kriptografskih osnov. Bolj komplicirane stvari bodo opisane sproti, ideja tega 
-poglavja je predstaviti stvari, ki so predpogoj za branje kakršnegakoli kriptografskega 
-besedila.
+poglavja je predstaviti stvari, ki so predpogoj za branje praktično kakršnegakoli kriptografskega 
+besedila s področja digitalnih podpisov.
 
 \subsection{Aritmetika v \texorpdfstring{$\Z_p^*$}{Zp∗}}
 V kriptografiji imamo pogosto opravka z multiplikativnimi grupami, najenostavnejša med njimi (in 
 tudi tradicionalno največ uporabljena) je \textit{multiplikativna grupa naravnih števil modulo $p$} 
 $\Z_p^*$. Njeni elementi so števila v $\{0, 1, \dots, p - 1\}$, ki so tuja številu $p$. V posebnem 
-primeru, ko je $p$ praštevilo, so to torej števila \{1, 2, \dots, p - 1\} in je red grupe 
-$\text{ord}(\Z_p^*) = |\Z_p^*| = p - 1$. Operacija v tej grupi je, kot ime že nakazuje, množenje 
-modulo $p$.
+primeru, ko je $p$ praštevilo, so to torej števila \{1, 2, \dots, p - 1\} in je red grupe (število
+elementov) $\text{ord}(\Z_p^*) = |\Z_p^*| = p - 1$. Operacija v tej grupi je, kot ime že nakazuje, 
+množenje modulo $p$.
 
-Spomnimo se, da je red elementa $g$ najmanjše naravno število $q$, da velja $g^q \equiv 1 \pmod p$, 
-kjer je $1$ enota za množenje. V primeru, da je $p$ praštevilo, je grupa grupa $\Z_p^*$ \textit{ciklična},
+Spomnimo se, da je red elementa $g$ v grupi najmanjše naravno število $q$, da velja $g^q \equiv 1 \pmod p$, 
+kjer je $1$ enota za množenje. V primeru, da je $p$ praštevilo, je grupa $\Z_p^*$ \textit{ciklična},
 kar pomeni, da v njej obstaja element $g$, katerega red je enak redu grupe, torej $\text{ord}(g) = p - 1$.
 V tem primeru se $g$ imenuje \textit{generator}.
 
 \begin{primer}[Grupa $\Z_{11}^*$]
+\label{primer:Z11}
 Ker je $11$ praštevilo, v grupi $\Z_{11}^*$ obstaja generator, oz.\ je grupa ciklična z redom $10 = 
 11 - 1$. Z zaporednim računanjem potenc lahko vidimo, da je $\text{ord}(2) = 10$, torej je $2$ 
 generator.
@@ -203,19 +227,18 @@ generator.
     Spomnimo se \textit{kongruence}: $a \equiv b \pmod m \iff m \text{ }|\text{ } a - b$.
 \end{opomba}
 
-\subsection{Pridobivanje velikih naključnih praštevil}
-
 \subsection{Zgoščevalne funkcije}
 V grobem so (kriptografske) \textit{zgoščevalne funkcije} funkcije, ki prejmejo poljubno dolg binarni 
 niz (ki lahko predstavlja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima
 vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. Namen zgoščevalnih funkcij je 
-za dokument ustvariti unikaten niz, ki zelo verjetno identificira dokument. V grobem si od zgoščevalnih
-funkcij želimo naslednje lastnosti:
+za dokument ustvariti unikaten niz, ki zelo verjetno unikatno identificira dokument. V grobem si od 
+zgoščevalnih funkcij želimo naslednje lastnosti:
 \begin{itemize}
     \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
         zgostitve. 
     \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
-        času. Izračun zgostitve mora biti računsko učinkovit.
+        času. Izračun zgostitve mora biti računsko učinkovit. Ponavadi tu zahtevamo, da je časovna
+        zahtevnost funkcije polinomska v dolžini vhodnega niza.
     \item \textbf{Enosmernost} pomeni, da iz predložene zgostitve zelo težko ugotovimo, kateri niz
         je funkcija prejela kot vhod. Tej lastnosti pravimo tudi \textit{odpornost na prasliko}.
     \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
@@ -226,6 +249,11 @@ funkcij želimo naslednje lastnosti:
         v zgostitvi.
 \end{itemize}
 
+\begin{opomba}
+    Vse varne kriptografske zgoščevalne funkcije, ki so v uporabi zadoščajo zgornjim lastnostim. To
+    pomeni, da za nobeno od teh funkcij nihče še ni našel trka.
+\end{opomba}
+
 \begin{definicija} 
 \label{def:hash}
     \textbf{Kriptografska zgoščevalna funkcija} $H: \{0, 1\}^* \rightarrow \{0, 1\}^n$ je funkcija, 
@@ -234,9 +262,9 @@ funkcij želimo naslednje lastnosti:
     \begin{itemize}
         \item (določenost) $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
         \item (učinkovitost) Izračun funkcije $H$ mora biti računsko učinkovit (v polinomskem času).
-        \item (odpornost na prasliko) Če poznamo zgostitev $h$ je računsko neizvedljivo najti 
+        \item (odpornost na prasliko) Če poznamo zgostitev $h$, je računsko neizvedljivo najti 
             niz $m$, da velja $h = H(m)$.
-        \item (odpornost na drugo prasliko) Če poznamo niz $m_1$ je računsko neizvedljivo najti 
+        \item (odpornost na drugo prasliko) Če poznamo niz $m_1$, je računsko neizvedljivo najti 
             zgostitev $m_2$, da velja $H(m_1) = H(m_2)$.
         \item (odpornost na trčenja) Računsko neizvedljivo je najti dva niza $m_1$ in $m_2$, 
             da velja $H(m_1) = H(m_2)$.
@@ -247,9 +275,9 @@ funkcij želimo naslednje lastnosti:
 
 \begin{primer}
     Ena izmed najbolj znanih zgoščevalnih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure 
-    Hash Algorithm} (slov.\ varen zgoščevalni algoritem), $256$ pa predstavlja dolžino zgostitve. 
-    Pogostokrat to ime zasledimo pri nameščanju programske opreme, služi kot avtentikator, da smo res 
-    naložili pravo stvar.
+    Hash Algorithm} (slov.\ varen zgoščevalni algoritem), $256$ pa predstavlja dolžino vrnjene zgostitve. 
+    Pogostokrat to ime zasledimo pri nameščanju programske opreme, kjer služi kot avtentikator, da smo res 
+    naložili pravo stvar. Preverja namreč, da se zgostitvi naloženih in prenešenih datotek ujemajo.
 
     Za primer si lahko ogledamo zgostitvi dveh podobnih nizov, \textit{Ljubljana} in \textit{Ljubljena}. 
     Kljub podobnosti bomo videli, da sta rezultata popolnoma drugačna, kar si tudi želimo pri zgoščevalnih 
@@ -262,7 +290,8 @@ funkcij želimo naslednje lastnosti:
     995d2d8ffb40e1838219e65dd2c665701ba34a90e11f7195a4b791838b6787fe
     \end{verbatim}
     Za preglednost nismo prevajali besed v binarne nize, to bi storili npr.\ z \texttt{ASCII} ali \texttt{UTF-8}
-    tabelo. Prav tako smo rezultat napisali v šestnajstiškem sistemu, saj je tako krajši.
+    tabelo. Prav tako smo rezultat napisali v šestnajstiškem sistemu, saj je tako krajši. Iz rezultatov
+    pa nazorno vidimo učinek plazu, saj sta popolnoma drugačna.
 \end{primer}
 
 \subsection{Kriptografija javnega ključa}
@@ -273,7 +302,7 @@ ustvarjena.
 \begin{primer}[Cezarjeva šifra]
     Ena najbolj znanih šifer, ki izvira iz Antičnega Rima, je \textit{Cezarjeva šifra}. Njen ključ 
     je število, ki je krajše od dolžine naše abecede, v Cezarjevem primeru je bilo to število $3$.
-    Šifra potem deluje tako, da vsako črko zamaknemo za toliko mest v abecedi, kolikor definira 
+    Šifra potem deluje tako, da vsako črko zamakne za toliko mest v abecedi, kolikor definira 
     ključ. Npr.\ za slovensko abecedo, bi šifra zamaknila črke:
     \begin{verbatim}
         A B C Č D E F G H I J K L M N O P R S Š T U V Z Ž
@@ -286,28 +315,28 @@ ustvarjena.
 V prejšnjem stoletju pa se je pojavila alternativa, imenovana \textit{asimetrična kriptografija}, oz.\
 \textit{kriptografija javnega ključa}. Glavna prednost te je, da osebi za komunikacijo ne rabita 
 poznati enakega skrivnega ključa, vendar ima vsak od njiju par ključev, ki ju imenujemo \textbf{javni 
-ključ} (angl.\ \textit{public key}) in \textbf{zasebni ključ} (angl.\ \textit{secret/private key})in 
+ključ} (angl.\ \textit{public key}) in \textbf{zasebni ključ} (angl.\ \textit{secret/private key}) in 
 označimo kot par $(\text{pk}, \text{sk})$. Vsaka oseba objavi svoj javni ključ in poskrbi, da nihče 
 ne izve, kaj je njen zasebni ključ. 
 
-Šifriranje potem poteka tako, da pridobimo javni ključ od osebe, s katero želi komunicirati, ga uporabi
-za šifriranje in objavi šifrirano sporočilo. Lastnik ustreznega zasebnega ključa (vsakemu javnemu pripada 
+Šifriranje potem poteka tako, da pridobimo javni ključ od osebe, s katero želi komunicirati, ga uporabimo
+za šifriranje in objavimo šifrirano sporočilo. Lastnik ustreznega zasebnega ključa (vsakemu javnemu pripada 
 natanko en zasebni) potem pridobi šifrirano sporočilo in ga z zasebnim ključem dešifrira. Kriptosistemi
 delujejo na način, da lahko sporočilo, šifrirano z javnim ključem dešifrira samo ustrezen zasebni ključ.
 Tako zagotovimo varno komunikacijo. 
 
 \begin{primer}[RSA]
     En prvih algoritmov javnega ključa, ki se uporablja še danes, je \textit{RSA}. Njegova varnost izhaja 
-    iz (domnevne) težavnosti problema iskanja prafaktorjev. Svoj ključ definiramo tako, da si izberemo dve 
-    (zelo veliki) praštevili $p$ in $q$, ter ju zmnožimo v $n = pq$. Za primer vzemimo $p = 23$ in 
-    $q = 17$. $n$ je potem enak $391$. Izbrati si moramo še eksponent $e$, vzemimo npr. $e = 3$. Naš 
-    javni ključ je potem par 
+    iz (domnevne) težavnosti problema iskanja prafaktorjev velikega števila. Svoj ključ definiramo tako, 
+    da si izberemo dve (zelo veliki) praštevili $p$ in $q$, ter ju zmnožimo v $n = pq$. Za primer vzemimo 
+    $p = 23$ in  $q = 17$. $n$ je potem enak $391$. Izbrati si moramo še eksponent $e$, vzemimo npr. $e = 3$. 
+    Naš javni ključ je potem par 
     $$ 
     (n, e) = (391, 3).
     $$
     Postopek šifriranja poteka tako, da oseba, s katero komuniciramo, izbere sporočilo $m$, npr.\ 
     $m = 10$, pridobi naš javni ključ, in izračuna šifro $c$ kot
-    $$   
+    $$
     c = m^e \bmod{n} = 10^3 \bmod{n} = 218.
     $$
     Dogovoriti se moramo še o zasebnem ključu. Za to bomo potrebovali eksponent za dešifriranje $d$,
@@ -322,7 +351,7 @@ Tako zagotovimo varno komunikacijo.
     $$
     Iz zasebnega ključa torej lahko kadarkoli izračunamo javnega, saj enostavno zmnožimo $p$ in $q$ 
     ter izračunamo inverz, v splošnem pa iz $n$ učinkovito ne moremo pridobiti faktorjev $p$ in $q$,
-    kar nam daje varnost.
+    kar nam zagotavlja varnost.
 
     Ko prejmemo šifrirano sporočilo $c$, ga dešifriramo tako, da izračunamo
     $$
@@ -338,10 +367,11 @@ in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, za
 s katero komuniciramo preveri, da je res prišlo od nas.
 
 \subsection{Digitalni podpisi}
-Ideja \textit{kriptografskih} ali \textit{digitalnih} podpisov je, da služijo kot izboljšava človeškega 
-ročnega podpisa. Za razliko od ročnega podpisa, lahko z digitalnim dosežemo pravo identifikacijo 
-posameznika, ki temelji na njegovem zasebnem ključu. Tako smo lahko za digitalno podpisan dokument 
-prepričani, da ga je res podpisal lastnik točno določenega zasebnega ključa. 
+Ideja \textit{kriptografskih} ali \textit{digitalnih podpisov} (angl.\ \textit{digital signatures}) je, 
+da služijo kot izboljšava človeškega ročnega podpisa. Za razliko od ročnega podpisa, lahko z digitalnim 
+dosežemo pravo identifikacijo posameznika, ki temelji na njegovem zasebnem ključu. Tako smo lahko 
+za digitalno podpisan dokument prepričani, da ga je res podpisal lastnik točno določenega zasebnega ključa
+(če predpostavimo, da podpisnik ključa ni posredoval nikomur). 
 
 Podpis dokumenta poteka nekoliko drugače, kot pri ročnih podpisih. Pri ročnem podpisu ta postane del 
 dokumenta, digitalni podpis pa je od njega ločen, vseeno pa nastane s pomočjo zgostitve podpisanega 
@@ -383,22 +413,23 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 \end{definicija}
 
 \subsection{Varnost}
-\label{sec:varnost}
 Glavna stvar, ki nas zanima pri obravnavi kateregakoli kriptosistema, je njegova \textit{varnost}. 
 Ker je cilj digitalnih podpisov sogovorniku zagotoviti, da sporočilo res pošiljamo mi, nas glede 
 varnosti najbolj skrbi, da bi \textit{napadalec} lahko ponaredil naš podpis in nam s tem ukradel 
 identiteto. Pri tem je lahko uspešen na več nivojih, ki so od najmanj do najbolj škodljivega:
 
 \begin{itemize}
-    \item \textbf{Eksistencialno ponarejanje} (angl.\ \textit{existential forgery}) pomeni, da napadalec 
-        lahko ponaredi vsaj en podpis. To pomeni, da lahko najde vsaj en par $(m, \sigma)$, da 
+    \item \textbf{Eksistencialno ponarejanje} (angl.\ \textit{existential forgery}) pomeni, da obstaja
+        sporočilo, za katerrega napadalec lahko ustvari ponarejen podpis (torej podpis, pri katerem
+        ni bil uporabljen zasebni ključ). To pomeni, da lahko najde vsaj en par $(m, \sigma)$, da 
         velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
     \item \textbf{Selektivno ponarejanje} (angl.\ \textit{selective forgery}) pomeni, da lahko napadalec 
-        z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga mi še nismo 
-        podpisali. Torej, če napadalcu nekdo predloži sporočilo $m$, lahko z nezanemarljivo verjetnostjo
-        najde podpis $\sigma$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
-    \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da je napadalec ugotovil naš 
-        zasebni ključ in s tem podpisovalni algoritem. V našem imenu lahko podpiše karkoli.
+        z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga lastnik zasebnega
+        ključa še ni podpisal. Torej, če napadalcu nekdo predloži sporočilo $m$, lahko z nezanemarljivo 
+        verjetnostjo najde podpis $\sigma$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
+    \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da napadalec ugotovi 
+        zasebni ključ napadenega in s tem pozna celoten podpisovalni algoritem. V imenu napadenega
+        lahko podpiše katerokoli sporočilo.
 \end{itemize}
 
 Poleg zgoraj definiranih \textit{ciljev napadalca}, lahko za vsak kriptosistem definiramo tudi
@@ -407,38 +438,41 @@ digitalne podpise temelji na (domnevni) težavnosti določenih matematičnih pro
 
 Stinson~\cite{stinson2023crypto} definira naslednje modele napada:
 \begin{itemize}
-    \item \textbf{Napad samo s ključem} je napad, kjer napadalec pozna samo naš javni ključ $\text{pk}$. 
+    \item \textbf{Napad samo s ključem} je napad, kjer napadalec pozna samo javni ključ $\text{pk}$. 
         Pozna torej algoritem za preverjanje podpisov $\mathcal{V}$.
     \item \textbf{Napad z znanimi sporočili} je napad, kjer napadalec poseduje seznam parov sporočil 
         in njihovih podpisov $(m_1, \sigma_1), (m_2, \sigma_2), \dots$, kjer za vsak $i$ velja 
         $\sigma_i = \mathcal{S}(\text{sk}, m_i)$.
-    \item \textbf{Napad z izbranimi sporočili} je napad, kjer nam napadalec da seznam sporočil $m_1,
-        m_2, \dots$, mi pa mu vrnemo seznam podpisov, da za vsak $i$ velja $\sigma_i = \mathcal{S}(\text{sk}, 
-        m_i)$.
+    \item \textbf{Napad z izbranimi sporočili} je napad, kjer napadalec podpisniku da seznam sporočil $m_1,
+        m_2, \dots$, ta pa mu vrne seznam podpisov, da za vsak $i$ velja $\sigma_i = \mathcal{S}(\text{sk}, 
+        m_i)$. Napadalčev cilj je iz predloženih parov izvleči zasebni ključ, ali pa na nek drug način
+        podpisati še ne podpisano sporočilo.
 \end{itemize}
 
 Ostane nam še pregled varnosti, ki jo lahko pričakujemo oz.\ zahtevamo od sheme za podpisovanje. 
 Takšna shema ne more biti \textit{brezpogojno varna}, kar bi pomenilo, da je tudi z neomejenimi 
 računskimi zmožnostmi nemogoče ponarediti podpis. To je zato, ker lahko napadalec sistematično 
-preveri vse podpise za neko sporočilo s pomočjo algoritma $\mathcal{V}$, dokler ne najde pravega. Pričakujemo 
-pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti ponaredka v doglednem času,
-če ima omejene računske sposobnosti, ali pa \textit{dokazljivo varnost}, kar pomeni, da lahko 
-varnost prevedemo na težavnost nekega matematičnega problema.
+preveri vse podpise za neko sporočilo s pomočjo algoritma $\mathcal{V}$, dokler ne najde pravega. 
+Pričakujemo pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti ponaredka 
+v doglednem času, če ima omejene računske sposobnosti, in/ali pa \textit{dokazljivo varnost}, kar 
+pomeni, da lahko varnost prevedemo na težavnost nekega matematičnega problema.
 
 \section{Schnorrov podpis}
 \label{sec:schnorr}
 Eden izmed najenostavnejših, dokazano varnih podpisov je ravno \textit{Schnorrov podpis}~\cite{schnorr1989sig}.
-Kot vsi podpisi, tudi ta potrebuje tri algoritme: za generiranje ključa, podpisovanje in preverjanje 
-podpisa. 
+Kot vsi podpisi, tudi ta potrebuje tri algoritme: za generiranje ključa, podpisovanje sporočil in preverjanje 
+podpisa.
 
 Za generiranje para ključev, je potrebno najprej generirati dve praštevili $p$ in $q$, tako da $q$ 
-deli $p-1$. Potem je potrebno izbrati element $g$ iz multiplikativne grupe modulo $p$, torej 
+deli $p-1$. Potem je potrebno izbrati element $g$ iz multiplikativne grupe celih števil modulo $p$, torej 
 $g \in \Z_p^*$, ki je reda $q$. Za konec je potreben še izbor naključnega števila $s \in [0, q - 1]$
 in izračun 
 $$ 
 I = g^s \bmod p.
 $$
-Ko vse to opravimo, smo uspešno ustvarili par ključev
+O pomenu tega izračuna bomo govorili kasneje, v poglavju o varnosti~\ref{subsec:sch-varnost}. Ključno pa je to, 
+da je iz $I$ zelo težko izračunati $s$ (to je \textit{problem diskretnega logaritma})Ko vse to opravimo, 
+smo uspešno ustvarili par ključev
 \begin{align*}
 \text{pk} &= (p, q, g, I), \\
 \text{sk} &= s.
@@ -446,13 +480,11 @@ Ko vse to opravimo, smo uspešno ustvarili par ključev
 
 Ideja v ozadju teh števil je, da $p$ določa multiplikativno grupo števil $\Z_p^*$. Za podpis je 
 potrebno najti podgrupo, katere red je praštevilo, je pa vseeno dovolj velika, da omogoča varnost. 
-Red te podgrupe je $q$, določa pa jo generator $g$. Iz varnostnih razlogov mora $p$ imeti $2048$ 
+Red te podgrupe je $q$, določa pa jo generator $g$. Iz varnostnih razlogov mora $p$ imeti vsaj $2048$ 
 bitov, $q$ pa $224$. Čeprav je grupa $\Z_p^*$ zelo velika, je Schnorrov podpis vseeno učinkovit, 
-saj večinoma deluje znotraj podgrupe, ki jo generira $g$.
+saj večina izračunov poteka znotraj podgrupe, ki jo generira $g$.
 
-\todo{kako dobimo parametre}
-
-Poleg parametrov $p, q$ in $g$, morata podpisnik in preverjalec določiti oz.\ imeti dostop do varne 
+Poleg parametrov $p, q$ in $g$, morata podpisnik in verifikator določiti oz.\ imeti dostop do iste varne 
 kriptografske zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
 ki zadošča lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije definira velikost 
 končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg $2 \log_2 q$ bitov~\cite{
@@ -465,12 +497,13 @@ $$
 X = g^r \bmod p.
 $$ 
 Ta korak je podoben zadnjemu delu generiranja ključev, le da je skrivni del ključa $s$ uporabljen 
-večkrat, $r$ pa mora biti generiran za vsako sporočilo znova. Potem z uporabo funkcije $H$ izračunamo 
-\textit{izziv} 
+večkrat (zasebni ključ se ne spreminja, razen če ustvarjamo nov par ključev), $r$ pa mora biti 
+generiran za vsako sporočilo znova. Potem z uporabo funkcije $H$ izračunamo \textit{izziv} 
+\todo{zakaj vedno novi r, je potrebna tu opomba o "nonce reuse"}
 $$
 e = H(X || m),
 $$ 
-kjer $||$ označuje stikanje nizov. Za konec je potrebno izračunati še 
+kjer ">$||$"< označuje stikanje nizov. Za konec je potrebno izračunati še 
 $$ 
 y = es + r \bmod q, 
 $$
@@ -487,11 +520,13 @@ in preveriti, če velja
 \begin{equation}
     g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod p. \label{eq:schnorr-ver}
 \end{equation}
-Za to moramo uporabiti nekaj lastnosti cikličnih grup in modularne aritmetike.
+Da vidmo, zakaj ta enačba preverja veljavnost Schnorrovega podpisa, moramo uporabiti nekaj lastnosti
+cikličnih grup in modularne aritmetike.
 \begin{trditev}
 \label{trd:mod-q}
-    Naj bosta $p$ in $q$ praštevili, $q \text{ }|\text{ } p - 1$. Naj bo $g$ element grupe $\Z_p^*$ 
-    reda $q$, kar pomeni, da je $g^q \equiv 1 \pmod p$. Naj bo $k$ naravno število. Potem velja 
+    Naj bosta $p$ in $q$ praštevili, kjer $q$ deli $p - 1$, oz.\ $q \text{ }|\text{ } p - 1$. Naj
+    bo $g$ element grupe $\Z_p^*$ reda $q$, kar pomeni, da je $g^q \equiv 1 \pmod p$. Naj bo $k$
+    naravno število. Potem velja 
     $$ 
     g^k \bmod p = g^{k \bmod q} \bmod p.
     $$
@@ -576,16 +611,15 @@ Za pretvorbo desne strani moramo uporabiti nekaj lastnosti modularne aritmetike.
 Desno stran enačbe~\eqref{eq:schnorr-ver} torej lahko prepišemo
 \begin{align*}
 X' \cdot I^{e'} \bmod p &= g^r \bmod p \cdot (g^s \bmod p)^e \bmod p = \\
-                        &= (g^r \bmod p) \cdot (g^{es} \bmod p) \bmod p = \\ 
-                        &= g^{es + r} \bmod p,
+                        &\stackrel{\eqref{eq:mod-exp}}{=} (g^r \bmod p) \cdot (g^{es} \bmod p) \bmod p = \\ 
+                        &\stackrel{\eqref{eq:mod-prod}}{=} g^{es + r} \bmod p,
 \end{align*}
 kjer smo pri prehodu v drugo vrstico uporabili lastnost~\eqref{eq:mod-exp}, pri prehodu v tretjo 
 pa lastnost~\eqref{eq:mod-prod}. Ker se obe strani ujemata za veljavne podpisne vrednosti, ta enačba 
 res preverja Schnorrov podpis.
 
-\todo{kako pa pokažemo, da se za napačne vrednosti ne ujema}
-
 \subsection{Varnost Schnorrovega podpisa}
+\label{subsec:sch-varnost}
 Najbolj očitna nevarnost kateregakoli kriptosistema z javnimi ključi bi bila možnost izračuna zasebnega 
 ključa iz javnega. Slednji je dostopen vsem, zato bi lahko kdorkoli pridobil zasebni ključ, kar 
 popolnoma izniči pomen šifriranja ali podpisovanja. 
@@ -600,11 +634,10 @@ da lahko zgornjo enačbo obrnemo in $s$ izračunamo kot
 $$ 
 s = \log_g(I) \bmod p.
 $$
-Taki izračuni v grupah $\Z_p^*$ žal niso tako enostavni, prišli smo do koncepta \textit{diskretnega 
-logaritma}.
-
-\subsubsection{Schnorrova identifikacijska shema}
-\subsubsection{Pretvorba identifikacijske sheme v digitalni podpis}
+Taki izračuni v grupah $\Z_p^*$ žal (ali pa na srečo) niso tako enostavni, prišli smo do koncepta 
+\textit{diskretnega logaritma}. V diskretnih grupah, kot je $\Z_p^*$, ni koncepta urejenosti, kar
+smo videli tudi v primeru~\ref{primer:Z11}, zato nam ">približki"< logaritma ne pomagajo čisto nič.
+Za izračun takih logaritmov se moramo zanesti na drugačne metode, kot za izračun navadnih.
 
 \begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
     Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
@@ -621,23 +654,27 @@ logaritma}.
     logaritma}.
 \end{definicija}
 
-Izkaže se, da za grupe, kot je $\Z_p^*$, ne poznamo učinkovitega algoritma za izračun diskretnega 
-logaritma, torej v njih drži predpostavka DL. To torej pomeni, da ob pridobljenem javnem ključu, 
-napadalec ne more učinkovito izračunati zasebnega.
+Izkaže se, da za grupe, kot je $\Z_p^*$, ne poznamo učinkovitega (subeksponentnega) algoritma za 
+izračun diskretnega logaritma, torej v njih drži predpostavka DL. To torej pomeni, da ob pridobljenem 
+javnem ključu za Schnorrov podpis, napadalec ne more učinkovito izračunati zasebnega.
+
+\todo{dokaz varnosti: dokažem forking lemmo že tu?}
+\subsubsection{Dokaz varnosti Schnorrovega podpisa}
 
 \section{Pregled skupinskih podpisov}
+\label{sec:skpine}
 Ko pridemo do podpisovanja skupin, si lahko zamislimo več različnih rešitev. Micali v ~\cite{micali2001asm} 
 definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
 \begin{itemize}
     \item \textbf{Prilagodljivost} (angl.\ \textit{flexibility}): Popolnoma prilagodljiv podpis skupine
         je takšen, ki ga lahko proizvede katerakoli podskupina originalne skupine podpisnikov. Ko je podpis 
-        preverjen, se mora tisti, ki ga je preveril odločiti, če je ustrezen del skupine podal svoj podpis. 
+        preverjen, se mora tisti, ki ga je preveril, odločiti, če je ustrezen del skupine podal svoj podpis. 
         Popolnoma neprilagodljiv podpis bi bil takšen, ki ga lahko v imenu skupine ustvari katerikoli član.
     \item \textbf{Odgovornost} (angl.\ \textit{accountability}): Če lahko iz podpisa ugotovimo, kateri člani 
         so sodelovali pri ustvarjanju, nam podpis omogoča odgovornost. Ta lastnost je lahko zaželena, če 
         se želimo prepričati, ali je ustrezen del skupine sodeloval pri podpisu (npr.\ ali je pri podpisovanju 
         sodeloval generalni direktor podjetja). V drugih primerih pa si želimo anonimnost posameznih članov 
-        (npr.\ če bi generiranje podpisa predstavljalo nekakšno glasovanje, bi želeli vedeti samo, koliko 
+        (npr.\ če bi generiranje podpisa predstavljalo nekakšno tajno glasovanje, bi želeli vedeti samo, koliko 
         članov je sodelovalo).
 \end{itemize}
 
@@ -653,17 +690,29 @@ ne more ugotoviti, kdo je podpis ustvaril. Da skupinski podpisi omogočijo vsaj 
 skupina določi \textit{vodjo skupine}, ki ima možnost razkriti identiteto podpisnika, če pride do 
 težav. V tem primeru seveda vodja predstavlja atraktivno tarčo za napad.
 
+\todo{primer za skupinski podpis}
+\begin{primer}
+    primer
+\end{primer}
+
 \subsection{Pragovni podpisi}
 Če želimo zagotoviti, da se s podpisom strinja zadosten delež skupine, lahko uporabimo \textbf{pragovni 
 podpis} (angl.\ \textit{threshold signature}). Ta nam omogoča določeno mero prilagodljivosti, saj lahko 
 katerikoli zadosten delež skupine ustvari podpis. Še vedno je nemogoče upoštevati morebitno hierarhično
 strukturo skupine. Pragovni podpisi omogočajo tudi popolno anonimnost podpisnikov, in s tem torej 
-nično odgovornost. Intuicija tu je, da večina pragovnih podpisov temelji na interpolaciji polinoma 
-$(l - 1)$-stopnje z $l$ točkami. Podpis je potem ustvarjen s pomočjo vrednosti polinoma v neki točki. 
-Po interpolaciji se informacija o tem, točno katere točke smo uporabili, izgubi. Take podpise imenujemo 
-tudi \textit{$l$-od-$L$ sheme}. Primer uporabe je odklepanje sefa v banki. Recimo, da ne zaupamo samo 
-osebi z odklepanjem in želimo, da je prisotnih $l$ od $L$ pooblaščenih oseb, ni nam pa važno, katerih. 
-Tu je pragovni podpis odlična rešitev.
+nično odgovornost. 
+
+Večina pragovnih podpisov temelji na interpolaciji polinoma $(l - 1)$-stopnje z $l$ točkami. Podpis je 
+potem ustvarjen s pomočjo vrednosti polinoma v neki točki. Po interpolaciji se informacija o tem, točno 
+katere točke smo uporabili, izgubi. Take podpise imenujemo tudi \textit{$l$-od-$L$ sheme}.
+
+\begin{primer}
+    Denimo, da ima banka sef, v katerem hrani vse pomembne dokumente in denar, ki ga hrani. Zaradi
+    izjemne pomembnosti sefa si ne želimo, da bi ga lahko odprla katerakoli posamezna oseba. Če 
+    osebje banke uporabi pragovni podpis, lahko zagotovi, da je pri odpiranju sefa vedno prisotnih
+    več ljudi, vseeno katerih. Vsak zaposleni dobi točko interpolacije, ko se jih zbere dovolj,
+    lahko skupaj ugotovijo vrednost polinoma v vnaprej določeni točki in odklenejo sef.
+\end{primer}
 
 \subsection{Večstranski podpisi}
 \label{sec:multisig}
@@ -692,12 +741,15 @@ odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito prev
 \end{primer}
 
 \subsection{Agregirani podpisi}
+\todo{agregirani podpisi}
 
 \section{Večstranski Schnorrov podpis}
+\label{sec:multischnorr}
 Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali 
-formalni dokaz varnosti. Zamislili so si večstranski podpis, ki temelji na Schnorrovem in ga poimenovali 
-\textbf{večstranski podpis podskupine z odvoronostjo} (angl.\ \textit{Accountable-Subgroup Multisignature 
-(ASM)}). V tem razdelku predstavimo njihov model, podpis in argument varnosti.
+formalni dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si večstranski podpis, ki temelji 
+na Schnorrovem in ga poimenovali \textbf{večstranski podpis podskupine z odvoronostjo} (angl.\ 
+\textit{Accountable-Subgroup Multisignature (ASM)}). V tem razdelku predstavimo njihov model, podpis 
+in argument varnosti.
 
 \subsection{Večstranski podpis podskupine z odgovornostjo}
 Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le bolj formalno definira idejo 
@@ -706,7 +758,7 @@ podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $
 \textbf{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. 
 Generiranje ključev je torej popolnoma v domeni skupine $G$. Podpis, ki ga ustvari $S$ predstavlja 
 splošno preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine stoji za (torej podpisuje) 
-sporočilom $M$.
+sporočilom $m$.
 
 \begin{definicija}[Večstranski podpis (podskupine z odgovornostjo)] 
     Skupina $G$ je sestavljena iz $L$ podpisnikov, torej
@@ -720,7 +772,7 @@ sporočilom $M$.
     Kot vsi digitalni podpisi~\ref{def:digisig}, ima tudi ta tri glavne komponente: 
     \begin{itemize}
         \item $\mathcal{G}$ je algoritem za ustvarjanje ključev. Za neko skupino podpisnikov $G$ je pognan samo 
-            enkrat, na začetku sodelovanja. Vsak podpisnik $i$ dobi kot vhod seznam vseh podpisnikov v $G$ 
+            enkrat, na začetku sodelovanja. Vsak podpisnik $P_i$ dobi kot vhod seznam vseh podpisnikov v $G$ 
             in požene $\mathcal{G}$, ki vrne par ključev $(\text{pk}_i, \text{sk}_i)$. Zapišemo lahko torej 
             $$ 
             \mathcal{G}_i(L) = (\text{pk}_i, \text{sk}_i),
@@ -765,11 +817,11 @@ sistem, saj ne iščemo robustnosti.
         \item Ima popoln nadzor nad vsemi komunikacijskimi kanali med člani skupine $G$. Lahko bere, 
             spreminja in preprečuje dostavo vseh sporočil. Prav tako lahko v imenu kateregakoli 
             podpisnika pošlje sporočilo.
-        \item Kadarkoli lahko \textit{pokvari} kateregakoli podpisnika. Ko je igralec pokvarjen, 
-            napadalec izve celotno stanje igralca, vključno z vsemi skrivnostmi.
+        \item Kadarkoli lahko \textit{pokvari} kateregakoli podpisnika. Ko je podpisnik pokvarjen, 
+            napadalec izve njegovo celotno notranje stanje, vključno z vsemi skrivnostmi.
         \item Nadzira lahko vhod algoritma za ustvarjanje ključev $\mathcal{G}$ za vse podpisnike. 
             Vsakemu lahko poda drugačno skupino $G$.
-        \item Od kateregakoli nepokvarjenega igralca lahko kadarkoli zahteva podpis nekega sporočila 
+        \item Od kateregakoli nepokvarjenega podpisnika lahko kadarkoli zahteva podpis nekega sporočila 
             skupaj s podskupino, ki jo določi napadalec. To je \textit{napad z izbranim sporočilom 
             in podskupino}.
     \end{itemize}
@@ -782,8 +834,8 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
 \begin{definicija}[Varnost pri ASM]
 \label{def:asm-varnost}
     Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
-    Naj bo $F$ napadalec, ki je omejen s polinomskim časom v parametru $k$. Naj bo $p$ verjetnost, da 
-    $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
+    Naj bo $F$ napadalec, čigar računska moč je omejena s polinomskim časom v parametru $k$. Naj bo 
+    $p$ verjetnost, da  $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
     \begin{itemize}
         \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
         \item Obstaja nepokvarjen igralec $P$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
@@ -796,6 +848,7 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
     $$
 \end{definicija}
 
+\todo{od tu naprej preverjamo}
 Kot ponavadi pri digitalnih podpisih, tudi tu predpostavimo, da preverjalec podpisov lahko vedno 
 pridobi prave javne ključe podpisnikov iz $S$. Zaradi močnega napadalca pri ASM, lahko tudi pridemo 
 v situacijo, ko podpisnik $P_1$ ne ve, kdo je zares podpisnik $P_2$. Tukaj predpostavimo, da preverjalec
@@ -1649,13 +1702,16 @@ je torej res polinomski algoritem, ki z nezanemarljivo verjetnostjo vrne odgovor
 algoritma. Ker predpostavljamo, da tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
 
 \todo{opomba o paralelnem podpisovanju}
-\todo{časovna zahtevnost in verjetnost uspeha}
-
-% Na tem mestu lahko uporabimo lemo o 
-% razcepu~\ref{izr:forking}
+\todo{časovna zahtevnost in verjetnost uspeha: povezava med qH in k (polinomska?)}
 
 \section{Varnost večstranskih podpisov v splošnem}
+\label{sec:varnost}
+Potreba po učinkovitosti je pripeljala avtorje do podpisov, ki potrebujejo le dva kroga. Potem je 
+drijvers pokazal, da so vse take sheme nevarne.
+
 \section{MuSig2}
+\label{sec:musig2}
+Obide meta-redukcijo drijversa, poda schnorrovo shemo, ki je varna(?) in učinkovita.
 
 % \section{Integrali po \texorpdfstring{$\omega$}{ω}-kompleksih}
 % \subsection{Definicija}
