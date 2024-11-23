@@ -360,7 +360,7 @@ Tako zagotovimo varno komunikacijo.
 \end{primer}
 
 Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega ključa omogočila tudi 
-\textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo e-pošto ali dostopamo do katerekoli 
+\textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo transakcijo ali dostopamo do katerekoli 
 spletne strani. Delujejo na podoben način, kot šifriranje z javnim ključem, le da najprej uporabimo 
 zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Ponavadi sta šifrianje 
 in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, za katerega lahko oseba,
@@ -658,8 +658,9 @@ Izkaže se, da za grupe, kot je $\Z_p^*$, ne poznamo učinkovitega (subeksponent
 izračun diskretnega logaritma, torej v njih drži predpostavka DL. To torej pomeni, da ob pridobljenem 
 javnem ključu za Schnorrov podpis, napadalec ne more učinkovito izračunati zasebnega.
 
-\todo{dokaz varnosti: dokažem forking lemmo že tu?}
 \subsubsection{Dokaz varnosti Schnorrovega podpisa}
+\todo{dokaz varnosti: dokažem forking lemmo že tu? Se da dokazati tudi v standardnem modelu? Je treba
+prek prevajanja iz identifikacijske sheme?}
 
 \section{Pregled skupinskih podpisov}
 \label{sec:skpine}
@@ -682,17 +683,21 @@ V nadaljevanju bomo skupino potencialnih podpisnikov (torej podpisnikov, ki imaj
 podpisovanju) označili z $G = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
 generiral samo del skupine $S \subseteq G$.
 
+\todo{je smiselno dati tu formalne definicije vseh vrst podpisov}
+
 \subsection{Skupinski podpisi}
 \textbf{Skupinski podpis} (angl.\ \textit{group signature}) v imenu celotne skupine $G$ ustvari en 
 anonimen član. To torej pomeni, da je podpis popolnoma neprilagodljiv, saj ni možno prisiliti skupine,
 da bi podpis ustvaril več kot en član. Prav tako v splošnem noben član, niti tisti, ki preverja podpis,
 ne more ugotoviti, kdo je podpis ustvaril. Da skupinski podpisi omogočijo vsaj delno odgovornost, 
 skupina določi \textit{vodjo skupine}, ki ima možnost razkriti identiteto podpisnika, če pride do 
-težav. V tem primeru seveda vodja predstavlja atraktivno tarčo za napad.
+težav. V tem primeru seveda vodja predstavlja atraktivno tarčo za napad. Skupinske podpise sta si
+zamislila Chaum in van Heyst~\cite{chaum1991group}.
 
-\todo{primer za skupinski podpis}
 \begin{primer}
-    primer
+    Skupinski podpisi so zelo uporabni v primerih, ko moramo vedeti samo, da neka oseba pripada skupini.
+    Primer je recimo dostop do varovanih območij, kjer je neprimerno, da bi natančno sledili vsem
+    posameznikom, vseeno pa mora biti dostop omejen samo zaposlenim.
 \end{primer}
 
 \subsection{Pragovni podpisi}
@@ -741,7 +746,20 @@ odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito prev
 \end{primer}
 
 \subsection{Agregirani podpisi}
-\todo{agregirani podpisi}
+Rezultat agregiranega podpisa je zelo podoben večstranskemu. Poleg standardnih algoritmov pri digitalnih
+podpisih za ustvarajanje ključev $\mathcal{G}$, podpisovanje $\mathcal{S}$ in preverjanje $\mathcal{V}$,
+imajo agregirani podpisi (angl.\ \textit{aggregate signatures}) še dodaten algoritem za združevanje
+podpisov $\mathcal{C}$. Ta algoritem prejme seznam trojic javnih ključev, sporočil in podpisov, vrne
+pa en sam podpis. Od večstranskih podpisov se razlikuje po tem, da sporočila niso nujno vsa
+enaka~\cite{boneh2011aggregate}.
+
+\begin{primer}
+    Recimo, da avtentičnost ključev posameznih podpisnikov preverja niz centrov za certificiranje
+    podpisov, kjer vsak naslednji center jamči za avtentičnost centra pod njem. Prvi center zajamči
+    avtentičnost našega ključa, naslednji zajamči avtentičnost centra in tako naprej. Ko bi želel
+    nekdo prejeti naš certificiran javni kljč, bi moral preveriti veljavnost podpisov vseh centrov,
+    s pomočjo agregiranih podpisov bi to lahko storil z enim samim preverjanjem.
+\end{primer}
 
 \section{Večstranski Schnorrov podpis}
 \label{sec:multischnorr}
@@ -827,7 +845,7 @@ sistem, saj ne iščemo robustnosti.
     \end{itemize}
 \end{definicija}
 
-Zaradi obširnih zmožnosti napadalca, ta lahko kadarkoli prepreči podpis sporočila. Naš cilj, kar se 
+Zaradi obširnih zmožnosti napadalca, ta lahko vedno prepreči podpis sporočila. Naš cilj, kar se 
 tiče varnosti, je, da preprečimo eksistencialno ponarejanje podpisa. Želimo torej, da napadalec ni 
 zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupine.
 
@@ -838,7 +856,7 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
     $p$ verjetnost, da  $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
     \begin{itemize}
         \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
-        \item Obstaja nepokvarjen igralec $P$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
+        \item Obstaja nepokvarjen podpisnik $P$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
             sporočila $m$ s strani skupine $S$.
     \end{itemize}
     Shemi za večstranske 
@@ -848,27 +866,32 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
     $$
 \end{definicija}
 
-\todo{od tu naprej preverjamo}
-Kot ponavadi pri digitalnih podpisih, tudi tu predpostavimo, da preverjalec podpisov lahko vedno 
+Kot ponavadi pri digitalnih podpisih, tudi tu predpostavimo, da tisti, ki preverja veljavnost podpisa, lahko vedno 
 pridobi prave javne ključe podpisnikov iz $S$. Zaradi močnega napadalca pri ASM, lahko tudi pridemo 
-v situacijo, ko podpisnik $P_1$ ne ve, kdo je zares podpisnik $P_2$. Tukaj predpostavimo, da preverjalec
+v situacijo, ko podpisnik $P_1$ ne ve, kdo je zares podpisnik $P_2$. Tukaj predpostavimo, da verifikator
 natančno ve, kdo je $P_2$ v resnici, in lahko pridobi ustrezen javni ključ. 
 
 \subsubsection{Model slučajnega oraklja}
 Ko obravnavamo varnost kriptosistemov, ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
 Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu 
-je na voljo. Občasno se znajdemo v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. 
-V tem primeru se znajdemo v alternativnih modelih kriptografije. 
+je na voljo (tu je ponavadi predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo 
+v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. V tem primeru govorimo o 
+alternativnih modelih kriptografije. 
 
 Ko imamo opravka z zgoščevalnimi funkcijami, je pogosto potrebno sprejeti dodatne predpostavke, da lahko 
 pokažemo varnost. Specifično, ko imamo opravka z zgoščevalno funkcijo $H: A \rightarrow B$ predpostavimo, 
 da je bila ta funkcija izbrana naključno med vsemi funkcijami, ki slikajo $A$ v $B$. To idealizirano 
 verzijo zgoščevalne funkcije imenujemo \textbf{slučajni orakelj} (angl.\ \textit{random oracle}).
+Za poljuben vhod torej vedno vrne enak odgovor, vendar je bil ta odgovor popolnoma naključno izbran.
 
 \textbf{Model slučajnega oraklja} (angl.\ \textit{random oracle model}) je model kriptografije, kjer poleg 
 standardnih predpostavk, vsako uporabo zgoščevalne funkcije nadomestimo s slučajnim 
 orakljem~\cite{boneh2023appcry}. Predpostavimo, da imajo do oraklja dostop vsi vpleteni v kriptosistem, 
 vključno z napadalcem.
+
+Varnostni dokazi, ki temeljijo na uporabi takih slučajnih orakljev, vseeno pričajo o varnosti shem,
+ki namesto orakljev uporabljajo zgoščevalne funkcije, vsaj dokler je uporabljena zgoščevalna funkcija
+varna (npr.\ zanjo nihče še ni našel trčenja).
 
 \begin{definicija}[Slučajni oraklelj pri ASM]
     Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega 
@@ -878,14 +901,15 @@ vključno z napadalcem.
 \end{definicija}
 
 \subsection{Konstrukcija večstranskega Schnorrovega podpisa}
-Večstranska verzija temelji na Schnorrovem podpisu, predstavljenemu v poglavju~\ref{sec:schnorr}. 
-Ideja konstrukcije je, da začnemo z naivno verzijo, nato pa rešimo njene probleme, kar nas 
-privede do formalne definicije v razdelku~\ref{sec:def_multi_schnorr} in dokaza v 
+V nadaljevanju bomo konstruirali večstransko verzijo Schnorrovega podpisa, predstavljenega v
+poglavju~\ref{sec:schnorr}. Končna shema spada med večstranske podpise podskupin z odgovornostjo.
+Ideja konstrukcije je, da začnemo z naivno verzijo, nato pa rešimo njene probleme, kar nas
+privede do formalne definicije v razdelku~\ref{sec:def_multi_schnorr} in dokaza varnosti v
 razdelku~\ref{sec:proof_multi_schnorr}.
 
 \subsubsection{Naivna verzija}
 Vsi podpisniki v skupini $G$ poznajo skupne parametre $p, q$ in $g$. Vsak podpisnik $P_i$ si 
-neodvisno in naključno izbere $s_i \in [0, \dots q-1]$ in izračuna 
+neodvisno in naključno izbere skrivno število $s_i \in [0, \dots q-1]$ in izračuna 
 $$ 
 I_i = g^{s_i} \bmod p.
 $$
@@ -940,9 +964,9 @@ $$
 
 \subsubsection{Generiranje parametrov: Predpostavka DL}
 Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo. 
-Prvi problem je generiranje skupnih parametrov javnega ključa $p, q$ in $g$. Ker si podpisniki 
+Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa $p, q$ in $g$. Ker si podpisniki 
 delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za parametre uporabiti 
-nek dogovorjen način uporabe $H$. Napadalec bo tako poznal točen postopek ustvarjanja skupnih 
+$H$ na vnprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih 
 parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo, 
 da to ne predstavlja nevarnosti, in generiranje parametrov dodamo k predpostavki diskretnega 
 logaritma za večstranske podpise. 
@@ -954,12 +978,6 @@ logaritma za večstranske podpise.
     \begin{itemize}
         \item \textit{Parametri}: Verjetnostni algoritem $Gen(k)$~\ref{alg:gen} teče v pričakovanem 
             polinomskem času: 
-            % \begin{verbatim}
-            % dokler q ni praštevilo in p ni praštevilo:
-            %     q <- naključno izbran k-bitni niz
-            %     p <- 2 * q + 1
-            % vrni p, q
-            % \end{verbatim}
             \begin{algorithm}
                 \caption{Algoritem $Gen(k)$ za generiranje praštevil.}
                 \label{alg:gen}
@@ -972,7 +990,6 @@ logaritma za večstranske podpise.
                     \EndWhile
                     \State \Return{$p, q$}
                 \end{algorithmic}
-                
             \end{algorithm}
         \item \textit{Težavnost PDL}: Naj bo $A$ algoritem, ki za svoje parametre sprejme 
             \begin{itemize}
@@ -992,16 +1009,21 @@ logaritma za večstranske podpise.
     \end{itemize}
 \end{definicija}
 
-Če torej predpostavimo~\ref{def:asm_dlp} (kar mora veljati za varnost), nas prvi problem ne skrbi več. 
+% Če torej predpostavimo~\ref{def:asm_dlp} (kar mora veljati za varnost), nas prvi problem ne skrbi vec. 
+Pri obravanavi večstranskega Schnorrovega podpisa bomo torej predpostavili, da držita obe točki iz
+definicije~\ref{def:asm_dlp}. Predpostavka o težavnosti diskretnega logaritma je za sheme, ki temeljijo
+na njem standardna, prva predpostavka pa nam zagotavlja učuinkovit in standarden način za generiranje
+skupnih parametrov, ki napadalcu ne izda dodatnih informacij.
 
 \subsubsection{Napad na generiranje ključev: Dokazi brez razkritja znanja}
-Naslednja težava nastopi v obliki napada na generiranje ključev. Ker napadalec nadzoruje vso komunikacijo, 
-si lahko privošči vstopiti v podpisovanje kot eden izmed podpisnikov $P_L$, in lahko zadnji generira svoj
+Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso komunikacijo, 
+si lahko privošči vstopiti v podpisovanje kot zadnji izmed podpisnikov $P_L$, in lahko zadnji generira svoj
 par ključev. Če si torej izbere naključen $s \in [0, q- 1]$, lahko izračuna svoj javni ključ kot 
 $$ 
 I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \pmod p.
 $$
-To mu omogoča, da se podpisuje v imenu celotne podskupine $S$.
+To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj bo pri množenju v enačbi za preverjanje
+tako izničil vse ostale javne ključe.
 
 Za rešitev tega problema potrebujemo nekaj novih kriptografskih orodij. Prvo izmed njih so 
 \textbf{dokazi brez razkritja znanja} (angl.\ \textit{zero-knowledge proofs}). Za intuicijo si najprej 
@@ -1037,29 +1059,29 @@ poglejmo primer.
 \end{primer}
 
 Dokazi brez razkritja znanja so torej orodje, s katerim lahko pokažemo, da nekaj vemo, brez da bi 
-izdali skrivnost. V osnovi so to interaktivni protokoli med \textit{dokazovalcem} in \textit{preverjalcem}. 
-Dokazovalec želi preverjalca prepričati, da pozna skrivnost, brez da bi mu jo izdal. Taki protokoli 
+izdali skrivnost. V osnovi so to interaktivni protokoli med \textit{dokazovalcem} in \textit{preverjevalcem}. 
+Dokazovalec želi preverjevalca prepričati, da pozna skrivnost, brez da bi mu jo izdal. Taki protokoli 
 sodijo med \textbf{interaktivne dokaze}, kar pomeni, da zadoščajo dvema lastnostima:
 \begin{itemize}
-    \item \textbf{Polnost} (angl.\ \textit{completeness}): Če trditev, ki se dokazuje,
-        drži, potem bo preverjalec sprejel dokaz dokazovalca (če noben od njiju ne bo goljufal).
-    \item \textbf{Trdnost} (angl.\ \textit{soundness}): Če trditev, ki se dokazuje, ne
+    \item \textbf{Kompletnost} (angl.\ \textit{completeness}): Če trditev, ki se dokazuje,
+        drži, potem bo preverjevalec sprejel dokaz dokazovalca (če noben od njiju ne bo goljufal).
+    \item \textbf{Zadostnost} (angl.\ \textit{soundness}): Če trditev, ki se dokazuje, ne
         drži, potem noben dokazovalec (tudi tak, ki goljufa) ne more predložiti dokaza, ki bi 
-        ga preverjalec sprejel, razen z zelo majhno verjetnostjo.
+        ga preverjevalec sprejel, razen z zelo majhno verjetnostjo.
 \end{itemize}
 Poleg teh dveh lastnosti, mora dokaz brez razkritja znanja zadoščati še eni, o njej govori že samo ime:
 \begin{itemize}
     \item \textbf{Brez razkritja znanja} (angl.\ \textit{zero-knowledge}): Če trditev, ki se dokazuje, 
-        drži, potem noben preverjalec (tudi tak, ki goljufa) ne bo iz dokaza izvedel ničesar več, 
+        drži, potem noben preverjevalec (tudi tak, ki goljufa) ne bo iz dokaza izvedel ničesar več, 
         kot samo to, da trditev drži.
 \end{itemize}
 
 \begin{opomba}
     Dokazi brez razkritja znanja niso zares dokazi v matematičnem smislu. Vedno obstaja določena verjetnost, 
-    da lahko goljufiv dokazovalec prepriča iskrenega preverjalca o trditvi, ki ne drži.
+    da lahko goljufiv dokazovalec prepriča iskrenega preverjevalca o trditvi, ki ne drži.
 \end{opomba}
 
-\todo{sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
+\todo{natančneje o zkp: sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
 
 Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg 
 svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ 
@@ -1067,21 +1089,23 @@ glede na javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $
 Ta dokaz je neinteraktiven, saj obravnavmo model slučajnega oraklja in lahko uporabimo Fiat-Shamirjevo 
 hevristiko.
 
-Ker tovrstni dokazi brez preverjalca nimajo smisla, se na tej točki vredno vprašati, kdo bo preverjal 
+Ker tovrstni dokazi brez preverjevalca nimajo smisla, se na tej točki vredno vprašati, kdo bo preverjal 
 veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe. 
 Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka 
 sprememba podaljša javne ključe in privede do izgube učinkovitosti. Preverjanje veljavnosti podpisa 
 bo sedaj poleg dveh modularnih potenciranj potrebovalo še dodatnih $2|S|$, saj je potrebno preveriti 
-vse dokaze javnih ključev. Posamezni preverjalec podpisov lahko sicer dodatno delo opravi le enkrat 
+vse dokaze javnih ključev. Posamezni preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat 
 za vsako skupino, če natančno beleži rezultate preverjanja dokazov.
 
+\todo{preveri od tu naprej}
 \subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
-Za dokaz varnosti je potrebno, da lahko simulator v polinomskem času za vsakega pokvarjenega igralca $P_j$
-pridobi diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, 
-da če $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem simulator uspešno pridobi diskretni 
-logaritem z verjetnostjo največ $1/q$. Torej, če je $k$ pokvarjenih podpisnikov, bo simulator 
-uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo polinomski simulator, je 
-igralcev lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
+Za dokaz varnosti je potrebno, da lahko algoritem, ki bo simuliral proces podpisovanja in napadanja 
+(pogosto se tak algoritem imenuje \textit{simulator}), v polinomskem času za vsakega pokvarjenega 
+podpisnika $P_j$ pridobi diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja 
+znanja. Izkaže pa se, da če $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem simulator 
+uspešno pridobi diskretni logaritem z verjetnostjo največ $1/q$. Torej, če je $k$ pokvarjenih 
+podpisnikov, bo simulator uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo 
+polinomski simulator, je podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
 
 \todo{kaj pomeni logaritemsko mnogo - je to prav}
 
@@ -1093,14 +1117,14 @@ e = H(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L).
 $$
 Podpisniki za dokaz znanja sedaj uporabijo Schnorrov podpis $e$ s svojim parom ključev. 
 \todo{a to pravilno razumem}
-To pomeni, da za generiranje dokazov $k$ pokvarjenih igralcev sedaj rabi le $kq$ klicev oraklja, 
+To pomeni, da za generiranje dokazov $k$ pokvarjenih podpisnikov sedaj rabi le $kq$ klicev oraklja, 
 torej je polinomski simulator uspešen z verjetnostjo $1/kq$. To omogoča, da je podpisnikov več 
 kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo, saj mora sedaj vsak podpisnik 
 v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa tudi vse javne ključe 
-soigralcev in njihove zaveze. Brez teh podatkov namreč dokaz znanja ni preverljiv. To pomeni, da je 
+sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja ni preverljiv. To pomeni, da je 
 za katerokoli podskupino $S$ velikost ključa proporcionalna velikosti celotne skupine $G$. Poleg 
-tega mora sedaj preverjalec preveriti, da se vsi vektorji javnih ključev ujemajo. V primerjavi 
-z osnovno naivno idejo, kjer je preverjalec potreboval le $|S|$ navadnih Schnorrovih javnih ključev, 
+tega mora sedaj preverjevalec preveriti, da se vsi vektorji javnih ključev ujemajo. V primerjavi 
+z osnovno naivno idejo, kjer je preverjevalec potreboval le $|S|$ navadnih Schnorrovih javnih ključev, 
 je v tej izvedbi velikost javnega ključa nedopustno velika.
 
 Da nazaj pridobimo učinkovit podpis, se lahko zanesemo na slučajnega oraklja in kriptografsko 
@@ -1145,16 +1169,16 @@ varne zgoščevalne funkcije računsko zelo težko spremeniti katerokoli vrednos
 spremenila vrednost v korenu. Enako velja za spremembe vhodnih podatkov. Merklova drevesa nam torej 
 omogočajo, da se zavežemo $L$ vrednostim $x_1, x_2, \dots, x_L$ tako, da enostavno vrnemo en sam 
 $k$-bitni niz. To storimo tako, da shranimo $x_1, x_2, \dots, x_L$ v liste drevesa in izračunamo koren. 
-Vrednostim se zavežemo tako, da preverjalcu damo vrednost korena. Ko mu kasneje želimo razkriti vrednosti, 
+Vrednostim se zavežemo tako, da preverjevalcu damo vrednost korena. Ko mu kasneje želimo razkriti vrednosti, 
 mu jih enostavno povemo, on pa lahko z izračunom drevesa preveri, da so vrednosti prave. Povzeto 
 po~\cite{micali2000csproofs}.
 
 \begin{trditev}[Overjevalna pot~\cite{micali2000csproofs}]
 \label{trd:overjevalna_pot}
-    Naj bo $A$ zavezovalec, ki se želi zavezati vrednostim $x_1, x_2, \dots, x_L$ preverjalcu $B$. Če 
+    Naj bo $A$ zavezovalec, ki se želi zavezati vrednostim $x_1, x_2, \dots, x_L$ preverjevalcu $B$. Če 
     se $A$ zaveže tako, da $B$ pove vrednost korena Merklovega drevesa, izračunanega na podlagi 
     vrednosti $x_1, x_2, \dots, x_L$, potem lahko dokaže zavezo eni vrednosti $x_i$ ($1 \le i \le L$)
-    tako, da preverjalcu $B$ pove $1 + \lceil \log L \rceil$ vrednosti: $x_i$ in pa \textbf{overjevalno 
+    tako, da preverjevalcu $B$ pove $1 + \lceil \log L \rceil$ vrednosti: $x_i$ in pa \textbf{overjevalno 
     pot}, torej vrednosti, shranjene v sestrskih vozliščih vseh vozlišč na poti med vključno $x_i$ in 
     korenom (brez korena, ki ga $B$ že pozna).
 \end{trditev}
@@ -1181,7 +1205,7 @@ veliko daljši od dolžine zgostitev, in ker je v overjevalni poti le $\log L$ z
 ne podaljša veliko (npr.\, če je $I_i$ dolg $2000$ bitov in so zgostitve $200$-bitne, bo $1000$ 
 podpisnikov ustvarilo ključe, dolge manj od $4000$ bitov, torej manj kot dvakrat daljše).
 
-Ko sedaj preverjalec preverja podpis sporočila $m$ s strani $S$, lahko za vsakega podpisnika 
+Ko sedaj preverjevalec preverja podpis sporočila $m$ s strani $S$, lahko za vsakega podpisnika 
 izračuna vrednost korena Merklovega drevesa in preveri, da se vse ujemajo. Obstoj enega nepokvarjenega
 podpisnika tako prisili vse pokvarjene, da uporabljajo prave ključe (ali pa najdejo trk v 
 zgoščevalni funkciji, kar je izjemno težko). S to spremembo smo tako uspešno ohranili podpise 
@@ -1278,26 +1302,26 @@ $$
 
 \subsubsection{Preverjanje}
 Preverjanje je podobno naivni verziji, le da je potrebno dodatno preveriti ustreznost Merklovih
-korenov. Če torej preverjalec želi preveriti veljavnost podpisa $\sigma = (\tilde{X}, \tilde{y})$
+korenov. Če torej preverjevalec želi preveriti veljavnost podpisa $\sigma = (\tilde{X}, \tilde{y})$
 sporočila $m$, moramo predpostaviti, da lahko dostopa do vseh javnih ključev $\{\text{pk}_{id_1},
 \text{pk}_{id_2}, \dots, \text{pk}_{id_l}\}$ vseh podpisnikov $S = \{P_{id_1}, P_{id_2}, \dots, 
 P_{id_l}\}$.
 
-Najprej mora preverjalec preveriti, da se vseh $l$ izvodov skupnih parametrov $p, q$ in $g$ ujema.
+Najprej mora preverjevalec preveriti, da se vseh $l$ izvodov skupnih parametrov $p, q$ in $g$ ujema.
 Da dokončno potrdi veljavnost in ustreznost javnih ključev, za vsakega podpisnika $P_{id_j} (1 \le
 j \le l)$ s pomočjo $I_{id_j}$ in $\text{pot}_{id_j}$ izračuna vrednost $V_{id_j}$ v korenu 
 Merklovega drevesa, kot prikazano v trditvi~\ref{trd:overjevalna_pot}. Ko izračuna vse vrednosti
 $V_{id_j}$, mora preveriti, da so vse enake. 
 
-Ko se preverjalec prepriča o veljavnosti ključev, postopa podobno kot pri naivni verziji. Najprej
+Ko se preverjevalec prepriča o veljavnosti ključev, postopa podobno kot pri naivni verziji. Najprej
 mora izračunati
 $$
 \tilde{I}_S = (I_{id_1} \cdot I_{id_2} \cdot \cdots \cdot I_{id_l}) \bmod p.
 $$
-Če si dosledno beleži izračune, lahko preverjalec ta del preverjanja podpisa opravi le enkrat za
+Če si dosledno beleži izračune, lahko preverjevalec ta del preverjanja podpisa opravi le enkrat za
 vsako skupino podpisnikov $S$.
 
-Potem mora preverjalec izračunati izziv s pomočjo slučajnega oraklja
+Potem mora preverjevalec izračunati izziv s pomočjo slučajnega oraklja
 $$
 e = H_5(\tilde{X} || m || S)
 $$
@@ -1369,7 +1393,7 @@ Pred dokazom izreka pa moramo, tako kot za napadalca $F$, tudi tu definirati kaj
     verjetnost, da $F'$ vrne trojico $(\sigma, m, S)$, za katero velja: 
     \begin{itemize}
         \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
-        \item Obstaja nepokvarjen igralec $P$ iz skupine $S$, od katerega $F'$ ni zahteval podpisa 
+        \item Obstaja nepokvarjen podpisnik $P$ iz skupine $S$, od katerega $F'$ ni zahteval podpisa 
             sporočila $m$ s strani skupine $S$.
     \end{itemize}
     Shemi za večstranske 
@@ -1518,8 +1542,8 @@ $q_H$, bo v najslabšem primeru potreboval $q_H$ previjanj.
 
 Sedaj lahko konstruiramo algoritem $A$ na podlagi poenostavljenega napadalca $\mathcal{F}$. $A$ torej
 prejme instanco problema diskretnega logaritma s podatki $p, q, g$ in $I$ (kot definirano v 
-definiciji~\ref{def:asm_dlp}). $P_i$ naj označuje igralca, ki ga poenostavljen napadalec napada
-(to je torej edini nepokvarjeni igralec). Ker ima $A$ absoluten nadzor, lahko brez problema
+definiciji~\ref{def:asm_dlp}). $P_i$ naj označuje podpisnika, ki ga poenostavljen napadalec napada
+(to je torej edini nepokvarjeni podpisnik). Ker ima $A$ absoluten nadzor, lahko brez problema
 nastavi oraklja $H_1$ in $H_2$ tako, da so $p, q$ in $g$ točno deljeni parametri pri večstranskem
 Schnorrovem podpisu. Potem lahko izbere $I_i = I$ in nastavi $H_3$ tako, da lahko dokaže znanje
 diskretnem logaritmu $I_g$ modulo $g$. \todo{to si lahko malo razjasnemo}. Tu naletimo na podoben
