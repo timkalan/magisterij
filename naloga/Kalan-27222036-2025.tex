@@ -122,7 +122,7 @@ the content and not the structure of your work.}
 \newcommand{\C}{\mathbb C}
 \newcommand{\Q}{\mathbb Q}
 
-\newcommand{\todo}[1]{\textcolor{red}{\textbf{\uppercase{#1}??}}}
+\newcommand{\todo}[1]{\textcolor{red}{\\ \textbf{\uppercase{todo: #1}} \\}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZAČETEK VSEBINE
@@ -1097,12 +1097,11 @@ bo sedaj poleg dveh modularnih potenciranj potrebovalo še dodatnih $2|S|$, saj 
 vse dokaze javnih ključev. Posamezni preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat 
 za vsako skupino, če natančno beleži rezultate preverjanja dokazov.
 
-\todo{preveri od tu naprej}
 \subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
 Za dokaz varnosti je potrebno, da lahko algoritem, ki bo simuliral proces podpisovanja in napadanja 
 (pogosto se tak algoritem imenuje \textit{simulator}), v polinomskem času za vsakega pokvarjenega 
 podpisnika $P_j$ pridobi diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja 
-znanja. Izkaže pa se, da če $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem simulator 
+znanja. Izkaže pa se, da če je $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem simulator 
 uspešno pridobi diskretni logaritem z verjetnostjo največ $1/q$. Torej, če je $k$ pokvarjenih 
 podpisnikov, bo simulator uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo 
 polinomski simulator, je podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
@@ -1110,7 +1109,7 @@ polinomski simulator, je podpisnikov lahko največ logaritemsko mnogo v številu
 \todo{kaj pomeni logaritemsko mnogo - je to prav}
 
 Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$ 
-in tudi zavezo $X_i$. Potem si izmenjajo $I_i$ in $X_i$. Vsak podpisnik lahko sedaj izračuna 
+in tudi zavezo $X_i$. Potem si vsi izmenjajo $I_i$ in $X_i$. Vsak podpisnik lahko sedaj izračuna 
 \textit{skupni izziv} 
 $$ 
 e = H(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L).
@@ -1121,18 +1120,19 @@ To pomeni, da za generiranje dokazov $k$ pokvarjenih podpisnikov sedaj rabi le $
 torej je polinomski simulator uspešen z verjetnostjo $1/kq$. To omogoča, da je podpisnikov več 
 kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo, saj mora sedaj vsak podpisnik 
 v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa tudi vse javne ključe 
-sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja ni preverljiv. To pomeni, da je 
-za katerokoli podskupino $S$ velikost ključa proporcionalna velikosti celotne skupine $G$. Poleg 
-tega mora sedaj preverjevalec preveriti, da se vsi vektorji javnih ključev ujemajo. V primerjavi 
+sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja (Schnorrov podpis) ni preverljiv. 
+To pomeni, da je za katerokoli podskupino $S$ velikost ključa proporcionalna velikosti celotne skupine 
+$G$. Poleg tega mora sedaj preverjevalec preveriti, da se vsi vektorji javnih ključev ujemajo. V primerjavi 
 z osnovno naivno idejo, kjer je preverjevalec potreboval le $|S|$ navadnih Schnorrovih javnih ključev, 
 je v tej izvedbi velikost javnega ključa nedopustno velika.
 
 Da nazaj pridobimo učinkovit podpis, se lahko zanesemo na slučajnega oraklja in kriptografsko 
 orodje, imenovano \textbf{Merklovo drevo} (angl.\ \textit{Merkle tree}). V osnovi je to 
 \textit{binarno drevo}, torej drevo, kjer ima vsako vozlišče največ dva otroka. Ideja je, da v liste 
-shranimo katerekoli podatke. Drevo potem gradimo navzgor tako, da v vsako vozlišče shranimo zgostitev 
-stika zgostitev levega in desnega otroka. Tako nadaljujemo do korena. Pomembno je, da je za pridobivanje 
-zgostitev uporabljena zgoščevalna funkcija, ki je skoraj brez trčenj ali pa slučajni orakelj. Osnovna 
+shranimo zgostitve katerekolih podatkov, pridobljene s pomočjo izbranega slučajnega oraklja ali zgoščevalne 
+funkcije. Drevo potem gradimo navzgor tako, da v vsako vozlišče shranimo zgostitev stika zgostitev levega in desnega 
+otroka. Tako nadaljujemo do korena. Pomembno je, da je za pridobivanje zgostitev uporabljena zgoščevalna 
+funkcija, ki je skoraj brez trčenj ali pa slučajni orakelj. Osnovna 
 struktura je prikazana na sliki~\ref{fig:merkle}.
 \begin{figure}[ht]
   \centering
@@ -1168,10 +1168,10 @@ dolgi vsi podatki, ki jih hranijo vsa vozlišča drevesa. Za Merklova drevesa je
 varne zgoščevalne funkcije računsko zelo težko spremeniti katerokoli vrednost v drevesu, brez da bi se 
 spremenila vrednost v korenu. Enako velja za spremembe vhodnih podatkov. Merklova drevesa nam torej 
 omogočajo, da se zavežemo $L$ vrednostim $x_1, x_2, \dots, x_L$ tako, da enostavno vrnemo en sam 
-$k$-bitni niz. To storimo tako, da shranimo $x_1, x_2, \dots, x_L$ v liste drevesa in izračunamo koren. 
-Vrednostim se zavežemo tako, da preverjevalcu damo vrednost korena. Ko mu kasneje želimo razkriti vrednosti, 
-mu jih enostavno povemo, on pa lahko z izračunom drevesa preveri, da so vrednosti prave. Povzeto 
-po~\cite{micali2000csproofs}.
+$k$-bitni niz. To storimo tako, da shranimo zgostitve vrednosti $x_1, x_2, \dots, x_L$ v liste drevesa 
+in izračunamo koren. Vrednostim se zavežemo tako, da preverjevalcu damo vrednost korena. Ko mu kasneje 
+želimo razkriti vrednosti, mu jih enostavno povemo, on pa lahko z izračunom drevesa preveri, da so 
+vrednosti prave. Povzeto po~\cite{micali2000csproofs}.
 
 \begin{trditev}[Overjevalna pot~\cite{micali2000csproofs}]
 \label{trd:overjevalna_pot}
@@ -1231,7 +1231,11 @@ Prav tako predpostavimo, da imajo vsi podpisniki dostop do algoritma $Gen(k)$~\r
 
 Za lažjo obravnavo si izberemo še enega izmed podpisnikov, in ga označimo z $D$. Ta podpisnik bo 
 vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. $D$ lahko tudi predstavlja vse podpisnike, 
-a je opis sheme malce lažji, če si izberemo enega.
+a je opis sheme malce lažji, če si izberemo enega -- v tem primeru je on prejemnik vseh sporočil
+ostalih podpisnikov, svoje odgovore pa potem oddaja (angl.\ \textit{broadcast}) ostalim podpisnikom.
+Če si ne izberemo podpisnika $D$, si podpisniki sporočila pošiljajo v krogu (vsak pošlje svoje sporočilo
+desnemu sosedu, ko prejme sporočilo levega, spet pošlje desnemu. Vsak torej pošlje $L$ sporočil, na
+koncu imajo vsi vse potrebne podatke za izračune).
 
 \subsubsection{Generiranje ključev}
 Vsi podpisniki morajo sami generirati parametre $p, q$ in $g$. Za prva dva uporabijo algoritem 
@@ -1292,7 +1296,7 @@ večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikaci
         in pošlje $y_j$ podpisniku $D$.
 \end{enumerate}
 Na tem mestu ima $D$ vse kar rabi, da dokonča podpis. Najprej izračuna
-$$ 
+$$
 \tilde{y} = (y_1 + y_2 + \cdots + y_l) \bmod q
 $$
 in nato vrne končni podpis
@@ -1361,25 +1365,28 @@ torej ustreza pogojem definicije varnosti~\ref{def:asm-varnost}, kjer ima napada
 definirane v~\ref{def:asm-napadalec}. Varnost torej pomeni, da je preprečeno eksistencialno ponarejanje,
 zaradi napadalčevega nadzora nad komunikacijskim omrežjem pa si lahko privošči napad z izbranimi sporočili.
 Še več, ker se ukvarjamo z večstranskimi podpisi, si napadalec lahko izbere še podskupino, ki bo 
-sporočilo podpisovala.
+sporočilo podpisovala. Napadalec lahko torej na katerikoli točki od katerekoli podskpupine zahteva
+podpis kateregakoli izbranega sporočila.
 
 Zaradi kompleksnosti napadalca, dokaz varnosti poteka tako, da najprej dokažemo ekvivalentnost med
-šibkejšim napadalcem $F'$ in prvotnim napadalcem $F$, potem pa dokažemo varnot v primeru šibkega
+šibkejšim napadalcem $F'$ in prvotnim napadalcem $F$, potem pa dokažemo varnost v primeru šibkega
 napadalca $F'$.
 
 \subsubsection{Šibek napadalec}
 Za enostavnejšo analizo definiramo \textbf{šibkega napadalca} (ali nasprotnika) (angl.\ 
-\textit{weak adversary}) $F'$. Njegov cilj je enak nasprotniku $F$. Želi si torej ponarediti podpis
-s pomočjo napada z izbranim sporočilom in podskupino. Izbere si lahko torej podpisnika, in od njega
+\textit{weak adversary}) $F'$. Njegov cilj je enak izvornemu napadalcu $F$. Želi si torej ponarediti podpis
+s pomočjo napada z izbranim sporočilom in podskupino. Izbere si lahko podpisnika, in od njega
 zahteva podpis izbranega sporočila skupaj z izbrano podskupino $S$. Napadalca se razlikujeta v tem,
-da je $F'$ bistveno šibkejši, oz.\ ima manj nadzora nad potekom podpisovanja.
+da je $F'$ bistveno šibkejši, oz.\ ima manj nadzora nad potekom podpisovanja in komunikacijo med
+podpisniki.
 
 Šibek napadalec nima zmožnosti pokvariti podpisnikov. Vse, kar lahko stori $F'$ je, da si preden skupina
 generira svoje ključe, izbere podpisnika $P_i$, ki ga bo napadal. Edina interakcija, ki je potem dovoljena
 šibkemu napadalcu, je s podpisnikom $P_i$. Ko je podpisnik napaden, mora zanj $F'$ priskrbeti vse vhode
 za algoritme in vse vhodna sporočila, ki jih prejme. Prav tako lahko vidi vsa poslana sporočila
-podpisnika. Ko so vsi ključi generirani, $F'$ izvede napad z izbranim sporočilom in podskupino na
-podpisnika $P_i$.
+podpisnika. Situacija je torej taka, kot da ostali podpisniki sploh ne obstajajo, pri podpisovanju 
+sodleujeta samo $P_i$ in $F'$. Ko podpisnik $P_i$ generira svoj ključ, $F'$ nad njim izvede napad z izbranim 
+sporočilom in podskupino.
 
 Ker mora šibek napadalec za izbranega podpisnika predložiti vse vhode in komunikacijo, lahko vidimo
 delovanje šibkega napadalca kot delovanje napadalca, ki pokvari vse podpisnike, razen podpisnika $P_i$.
@@ -1397,7 +1404,7 @@ Pred dokazom izreka pa moramo, tako kot za napadalca $F$, tudi tu definirati kaj
             sporočila $m$ s strani skupine $S$.
     \end{itemize}
     Shemi za večstranske 
-    podpise podskupine z odgovornostjo bomo rekli, da je \textbf{varna}, če velja 
+    podpise podskupine z odgovornostjo bomo rekli, da je \textbf{šibko varna}, če velja 
     $$ 
     p < k^{-c}.
     $$
@@ -1419,12 +1426,14 @@ ekvivalentnost šibkega napadalca in napadalca.
 
 \begin{dokaz}
     Ker se definicija varnosti in šibke varnosti razlikuje le v uporabi napadalca $F$ ali šibkega
-    napadalca $F'$, je potrebno pokazati le, da sta $F$ in $F'$ ekvivalentna.
+    napadalca $F'$, je potrebno pokazati le, da sta $F$ in $F'$ ekvivalentna (ob ustrezni velikost
+    skupine podpisnikov).
 
-    $(\Rightarrow)$: Predpostavimo, da podpis ni šibko varen. Ker ima napadalec $F$ vse zmožnosti,
-    ki jih ima napadalec $F'$ (in še mnogo več), potem podpis tudi ni varen. Še več, če $F$ pokvari
-    vse podpisnike razen tistega, ki ga napada $F'$, lahko popolnoma simulira delovanje $F'$ za
-    napadenega podpisnika.
+    $(\Rightarrow)$: Predpostavimo, da podpis ni šibko varen. Kot smo že prej smo omenili, je delovanje
+    šibkega napadalca $F'$ enako delovanju napadalca $F$, ki pokvari vse podpisnike razen enega.
+    Napadalec $F$ ima torej vse zmožnosti, ki jih ima napadalec $F'$ (in še mnogo več). Če podpis ni
+    šibko varen, lahko $F$ s simulacijo $F'$, opisano zgoraj, z nezanmarljivo verjetnostjo vrne
+    ponarejen podpis, torej sheam tudi ni varna.
 
     $(\Leftarrow)$: Predpostavimo, da podpis ni varen. Obstaja torej napadalec $F$, ki je omejen
     s polinomskim čason v parametru $k$ in uspešno izvede napad z izbranim sporočilom in podskupino.
@@ -1432,7 +1441,7 @@ ekvivalentnost šibkega napadalca in napadalca.
     vsaj en nepokvarjen podpisnik. Sicer je napadalec edini ki podpisuje, zato varnost sheme ni ogrožena.
     Če pa pri podpisovanju sodeluje iskren podpisnik, in napadalec uspešno ustvari ponaredek, pa
     to kaže na težave v varnosti.
-    
+
     Konstruirajmo šibkega napadalca $F'$, ki deluje tako, da pred začetkom podpisovanja izbere naključnega
     podpisnika $P_i$ ($1 \le i \le L$) za tarčo svojega napada. $F'$ se torej za podpisnika $P_i$ postavi
     v vlogo vseh ostalih podpisnikov. $F'$ lahko torej $F$ simulira delovanje vseh podpisnikov razen
@@ -1455,25 +1464,25 @@ ekvivalentnost šibkega napadalca in napadalca.
           &\cdot \text{Pr}(\text{$F$ vrne veljaven ponaredek}) \\
         \geq &\frac{1}{L} \cdot \text{Pr}(\text{$F$ vrne veljaven ponaredek}),
     \end{align*}
-kjer smo pri prehodu iz tretje v četrto vrstico uporabili lastnost verjetnosti, ki pravi
-$$
-\text{Pr}(A \cap B) = \text{Pr}(A \text{ }|\text{ } B) \cdot \text{Pr}(B),
-$$
-pri prehodu v zadnjo vrstico pa smo upoštevali, da velja
-\begin{equation}
-\label{eq:geq1}
-\sum_{i=1}^L \text{Pr}(\text{$P_i \in S$ in ni pokvarjen | $F$ vrne veljaven ponaredek}) \geq 1.
-\end{equation}
-Neenačba~\eqref{eq:geq1} drži, saj mora pri uspešnem ponarejanju sodelovati vsaj en nepokvajren
-podpisnik. Če torej $F$ vrne veljaven ponaredek, bo vsaj ena od verjetnosti v zgornji vsoti enaka $1$.
+    kjer smo pri prehodu iz tretje v četrto vrstico uporabili osnovno lastnost verjetnosti, ki pravi
+    $$
+    \text{Pr}(A \cap B) = \text{Pr}(A \text{ }|\text{ } B) \cdot \text{Pr}(B),
+    $$
+    pri prehodu v zadnjo vrstico pa smo upoštevali, da velja
+    \begin{equation}
+    \label{eq:geq1}
+    \sum_{i=1}^L \text{Pr}(\text{$P_i \in S$ in ni pokvarjen | $F$ vrne veljaven ponaredek}) \geq 1.
+    \end{equation}
+    Neenačba~\eqref{eq:geq1} drži, saj mora pri uspešnem ponarejanju sodelovati vsaj en nepokvajren
+    podpisnik. Če torej $F$ vrne veljaven ponaredek, bo vsaj ena od verjetnosti v zgornji vsoti enaka $1$.
 
-Pri ponarejanju je torej $F$ uspešen največ $L$-krat več kot $F'$, kar pomeni, da shema ni šibko
-varna.
+    Pri ponarejanju je torej $F$ uspešen največ $L$-krat več kot $F'$, kar pomeni, da shema ni šibko
+    varna.
 \end{dokaz}
 
 \subsubsection{Dokaz varnosti}
 Ker sta napadalec in šibek napadalec ekvivalentna, je dovolj pokazati varnost v primeru šibkega
-napadalca.
+napadalca, shema pa je potem tudi varna po izreku~\ref{izr:šibka-varnost}.
 
 \begin{izrek}[Varnost večstranskega Schnorrovega podpisa]
     Če drži predpostavka o težavnosti diskretnega logaritma pri ASM~\ref{def:asm_dlp}, je večstranski 
@@ -1495,7 +1504,7 @@ Druga vrsta poizvedb je \textit{podpisovalna poizvedba}, kjer napadalec podpisni
 izbral na začetku) pošlje sporočilo $m$ in skupino $S$, ta pa mu nazaj pošlje zavezo $X_i$. Potem
 mora napadalec igrati vlogo podpisnika $D$, ki agregira informacije. Podpisniku $P_i$ pošlje skupno
 zavezo $\tilde{X}$, nazaj pa dobi $y_i$. Podpisovalne poizvedbe torej potekajo v dveh krogih in
-predstavljajo izvedbo napada z izbranim sporočilom in podskupino.
+predstavljajo izvedbo napada z izbranim sporočilom in podskupino nad podpisnikom $P_i$.
 
 Za lažjo konstrukcijo algoritma $A$, je smotrno šibkega napadalca $F'$ še dodatno poenostaviti. Naj
 $q_{\text{zgoščevalna}}$ označuje največje število zgoščevalnih poizvedb, ki jih opravi $F'$,
@@ -1518,8 +1527,8 @@ e_{q_H}$ oraklja $H_5$. Odgovor na podpisovalno poizvedbo za podpisnika $P_i$ na
 je malce bolj zapleten. $A$ stori sledeče:
 \begin{enumerate}
     \item Shrani konfiguracijo poenostavljenega napadalca $\mathcal{F}$.
-    \item \label{rewind} Si izbere naključen odgovor $e_j$ ($1 \le j \le q_H$) oraklja $H_5$, v upanju, da bo to
-        zgostitev, ki bo identificirala to poizvedbo.
+    \item \label{rewind} Si izbere naključen odgovor $e_j$ ($1 \le j \le q_H$) oraklja $H_5$, 
+        v upanju, da bo to zgostitev, ki bo identificirala to poizvedbo.
     \item Si izbere naključen $y \in [0, q - 1]$.
     \item Izračuna 
         $$
@@ -1531,8 +1540,9 @@ je malce bolj zapleten. $A$ stori sledeče:
 \end{enumerate}
 Zgornje je primer splošne metode za analiziranje varnosti v kriptografiji, ki se imenuje 
 \textbf{previjanje nazaj} (angl.\ \textit{rewinding}). Popularna je pri analizi dokazov brez razkritja
-znanja in pri dokazih varnosti v modelu slučajnega oraklja. Temelj metode je, da dovoli analizo večih
-naključnih izbir.
+znanja in pri dokazih varnosti v modelu slučajnega oraklja. Metoda dovoli, da prek naključnih izbir
+algoritem odgovori na poizvedbo, preden je postavljena, za ceno največ toliko previjanj, kot ima
+poizvedba odgovorov.
 
 V tem primeru je previjanje nazaj nujno potrebno za simuliranje iskrenega podpisnika $P_i$. To je zato,
 ker je izbira $\tilde{X}$ s strani $\mathcal{F}$ tista, ki odloči izziv $e$, ki ga $P_i$ uporabi za
@@ -1541,7 +1551,7 @@ kaj bo izziv $e$. Zato mora uganiti, kater odgovor oraklja $H_5$ bi bil pravi. K
 $q_H$, bo v najslabšem primeru potreboval $q_H$ previjanj.
 
 Sedaj lahko konstruiramo algoritem $A$ na podlagi poenostavljenega napadalca $\mathcal{F}$. $A$ torej
-prejme instanco problema diskretnega logaritma s podatki $p, q, g$ in $I$ (kot definirano v 
+prejme instanco problema diskretnega logaritma s podatki $p, q, g$ in $I$ (kot predstavljeno v 
 definiciji~\ref{def:asm_dlp}). $P_i$ naj označuje podpisnika, ki ga poenostavljen napadalec napada
 (to je torej edini nepokvarjeni podpisnik). Ker ima $A$ absoluten nadzor, lahko brez problema
 nastavi oraklja $H_1$ in $H_2$ tako, da so $p, q$ in $g$ točno deljeni parametri pri večstranskem
@@ -1549,20 +1559,20 @@ Schnorrovem podpisu. Potem lahko izbere $I_i = I$ in nastavi $H_3$ tako, da lahk
 diskretnem logaritmu $I_g$ modulo $g$. \todo{to si lahko malo razjasnemo}. Tu naletimo na podoben
 problem, kot pri odgovarjanju na druge kroge podpisovalnih poizvedb. $A$ mora poslati zavezo $X_i$
 preden pozna skupni izziv $e$. Problem ponovno rešimo s previjanjem poenostavljenega napadalca
-$\mathcal{F}$. Previti bo treba največ tolikokrat, kot je poizvedb, ki jih $\mathcal{F}$ pošlje
+$\mathcal{F}$. Previti je treba največ tolikokrat, kot je poizvedb, ki jih $\mathcal{F}$ pošlje
 $H_3$ (označimo $q_{H_3}$).
 
 Potem lahko $A$ požene $\mathcal{F}$ in odgovarja na njegove poizvedbe kot opisano zgoraj. Ideja
-dokaza od tu naprej je, da $\mathcal{F}$ vrne ponarejen podpis, nato pa $A$ uporabi previjanje in
+dokaza od tu naprej je, da ko $\mathcal{F}$ vrne ponarejen podpis, $A$ uporabi previjanje in
 \textbf{lemo o razcepu}~\ref{izr:forking} (angl.\ \textit{forking lemma}), da pridobi še en ponarejen 
-podpis. Iz teh dveh ponaredkov potem lahko izlušči odgovor na problem diskretnega logaritma.
+podpis. Iz teh dveh ponaredkov potem lahko izlušči odgovor na dani problem diskretnega logaritma.
 
 \begin{izrek}[Lema o razcepu~\cite{pointcheval1996forking}]
 \label{izr:forking}
     Naj bo $\mathcal{S}$ podpisna shema, ki vrača dvodelne podpise $\sigma = (\sigma_1, \sigma_2)$,
-    kjer $\sigma_2$ temelji na zgostitvi vhodnega sporočila $m$ in $\sigma_1$ (npr.\ pri Shnorrovem 
+    kjer $\sigma_2$ temelji na zgostitvi vhodnega sporočila $m$ in $\sigma_1$ (npr.\ pri Schnorrovem 
     podpisu je ta zgostitev izziv  $e = H(X || m)$). Naj slučajni orakelj $H$ vrača zgostitve
-    dolžine $k$. Velikost privatnega ključa naj bo $n$, tako da velja $k \gg \log(n)$.
+    dolžine $k$. Velikost zasebnega ključa naj bo $n$, tako da velja $k \gg \log(n)$.
 
     Naj bo $F$ verjetnostni Turingov stroj, omejen s polinomskim časom, ki ima na voljo vse javne
     podatke pri podpisni shemi $\mathcal{S}$. Če lahko $F$ z nezanemarljivo verjetnostjo vrne par 
@@ -1613,19 +1623,21 @@ Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verje
 Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
 
 \begin{dokaz}[Dokaz leme o razcepu~\ref{izr:forking}]
-    Naj bo $F$ napadalec, ki nima na voljo nobenega sporočila. Denimo, da med svojim napadom napadalec 
-    $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb v parametru $n$. Označimo 
-    poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1, \mathcal{Q}_2, \dots, \mathcal{Q}_Q$ (brez škode 
-    za splošnost lahko prepdostavimo, da so poizvedbe med seboj različne). Odgovore oraklja označimo 
-    z $\rho_1, \rho_2 , \dots, \rho_Q$. 
+    Naj bo $F$ napadalec, ki nima na voljo nobenega sporočila. Denimo, da med svojim napadom napadalec
+    $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb v parametru $n$ (dolžini
+    zasebnega ključa). Označimo  poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1, \mathcal{Q}_2, \dots,
+    \mathcal{Q}_Q$ (brez škode za splošnost lahko prepdostavimo, da so poizvedbe med seboj različne).
+    Odgovore oraklja označimo  z $\rho_1, \rho_2 , \dots, \rho_Q$.
 
-    Predpostavimo, da lahko za naključno izbran vhodni trak $\omega$ in naključno izbranega oraklja $H$,
-    $F$ vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis sporočila $m$ z nezanemarljivo
-    verjetnostjo. Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila
+    Predpostavimo, da lahko za naključno izbran vhodni trak $\omega$ in naključno izbran orakelj $H$,
+    $F$ z nezanemarljivo verjetnostjo vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis
+    sporočila $m$. Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila
     ena izmed poizvedb oraklju prav tista, ki je vsebovala sporočilo in delni podpis, nezanemarljiva.
-    Sicer bi moral $F$ uganiti naključno vrednost. Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta$
-    ($1 < \beta < Q$). Ker je poizvedb polinomsko mnogo v parametru $n$ in je verjetnost uspeha 
-    nezanemarljiva, mora obstajati polinom $P(n)$, za katerega je verjetnost uspeha
+    Sicer bi moral $F$ uganiti odgovor na to poizvedbo za to, da bi lahko ustvaril drugi del podpisa
+    (uganiti bi torej moral naključno vrednost, kar lahko stori z največ zanemarljivo verjetnostjo).
+    Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta$ ($1 < \beta < Q$). Ker je poizvedb polinomsko
+    mnogo v parametru $n$ in je verjetnost uspeha nezanemarljiva, mora obstajati polinom $P(n)$, za
+    katerega je verjetnost uspeha
     $$
     \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek}) \geq \frac{1}{P(n)},
     $$
@@ -1651,7 +1663,7 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
     \dots, \rho_Q)$ in $(\rho_\beta', \dots, \rho_Q')$ lahko z nezanemarljivo verjetnostjo dobimo
     dva veljavna podpisa $\sigma$ in $\sigma'$ sporočila $m$, ki temeljita na drugačnih zgostitvah.
 
-    \todo{n vs k, točno kako vmestimo Qbeta}
+    \todo{n vs k, polinom P, točno kako vmestimo Qbeta}
 \end{dokaz}
 
 Vrnimo se na dokaz varnosti večstranskega Schnorrovega podpisa. Ostali smo pri algoritmu $A$, ki
@@ -1731,11 +1743,11 @@ algoritma. Ker predpostavljamo, da tak algoritem ne obstaja, je večstranski Sch
 \section{Varnost večstranskih podpisov v splošnem}
 \label{sec:varnost}
 Potreba po učinkovitosti je pripeljala avtorje do podpisov, ki potrebujejo le dva kroga. Potem je 
-drijvers pokazal, da so vse take sheme nevarne.
+Drijvers pokazal, da so vse take sheme nevarne.
 
 \section{MuSig2}
 \label{sec:musig2}
-Obide meta-redukcijo drijversa, poda schnorrovo shemo, ki je varna(?) in učinkovita.
+Obide meta-redukcijo Drijversa, poda Schnorrovo shemo, ki je varna(?) in učinkovita.
 
 % \section{Integrali po \texorpdfstring{$\omega$}{ω}-kompleksih}
 % \subsection{Definicija}
