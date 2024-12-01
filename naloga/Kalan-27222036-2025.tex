@@ -122,8 +122,17 @@ the content and not the structure of your work.}
 \newcommand{\C}{\mathbb C}
 \newcommand{\Q}{\mathbb Q}
 
-\newcommand{\todo}[1]{\textcolor{red}{\\ \textbf{\uppercase{todo: #1}} \\}}
-
+\newcommand{\todo}[2][]{%
+    \textcolor{red}{%
+        \\ \textbf{\uppercase{todo: #2}}%
+        \\%
+        \ifx&#1&% Check if the optional parameter is empty
+        \else%
+            \textcolor{blue}{\uppercase{ideja:} #1}%
+            \\%
+        \fi%
+    }%
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ZAČETEK VSEBINE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -412,6 +421,10 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
     \end{itemize}
 \end{definicija}
 
+\subsection{Interaktivni protokoli}
+\todo{si interaktivni protokoli, identifikacijske in avtentikacijske sheme, dokazi (znanja) brez 
+razkritja znanja, fiat-shamirjeva hevristika zasluži obravnavo posebaj?}
+
 \subsection{Varnost}
 Glavna stvar, ki nas zanima pri obravnavi kateregakoli kriptosistema, je njegova \textit{varnost}. 
 Ker je cilj digitalnih podpisov sogovorniku zagotoviti, da sporočilo res pošiljamo mi, nas glede 
@@ -499,7 +512,7 @@ $$
 Ta korak je podoben zadnjemu delu generiranja ključev, le da je skrivni del ključa $s$ uporabljen 
 večkrat (zasebni ključ se ne spreminja, razen če ustvarjamo nov par ključev), $r$ pa mora biti 
 generiran za vsako sporočilo znova. Potem z uporabo funkcije $H$ izračunamo \textit{izziv} 
-\todo{zakaj vedno novi r, je potrebna tu opomba o "nonce reuse"}
+\todo{je potrebna tu opomba o "nonce reuse"?}
 $$
 e = H(X || m),
 $$ 
@@ -618,6 +631,9 @@ kjer smo pri prehodu v drugo vrstico uporabili lastnost~\eqref{eq:mod-exp}, pri 
 pa lastnost~\eqref{eq:mod-prod}. Ker se obe strani ujemata za veljavne podpisne vrednosti, ta enačba 
 res preverja Schnorrov podpis.
 
+\todo{mogoče vsaj omenim, da dela to enako v bolj splošnih grupah (o tem nekaj sigurno piše v originalnem
+schnorr članku in pa musig2)}
+
 \subsection{Varnost Schnorrovega podpisa}
 \label{subsec:sch-varnost}
 Najbolj očitna nevarnost kateregakoli kriptosistema z javnimi ključi bi bila možnost izračuna zasebnega 
@@ -659,8 +675,8 @@ izračun diskretnega logaritma, torej v njih drži predpostavka DL. To torej pom
 javnem ključu za Schnorrov podpis, napadalec ne more učinkovito izračunati zasebnega.
 
 \subsubsection{Dokaz varnosti Schnorrovega podpisa}
-\todo{dokaz varnosti: dokažem forking lemmo že tu? Se da dokazati tudi v standardnem modelu? Je treba
-prek prevajanja iz identifikacijske sheme?}
+\todo{dokaz varnosti: naredim prek identifikacijske sheme + fiat shamir ali prek forking lemme? 
+se da dokazati v standardnem modelu?}
 
 \section{Pregled skupinskih podpisov}
 \label{sec:skpine}
@@ -683,7 +699,7 @@ V nadaljevanju bomo skupino potencialnih podpisnikov (torej podpisnikov, ki imaj
 podpisovanju) označili z $G = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
 generiral samo del skupine $S \subseteq G$.
 
-\todo{je smiselno dati tu formalne definicije vseh vrst podpisov}
+\todo{je smiselno dati tu formalne definicije vseh vrst podpisov?}
 
 \subsection{Skupinski podpisi}
 \textbf{Skupinski podpis} (angl.\ \textit{group signature}) v imenu celotne skupine $G$ ustvari en 
@@ -803,6 +819,7 @@ sporočilom $m$.
             sporočilo $m$ in lasten zasebni ključ $\text{sk}_i$. Algoritem $\mathcal{S}$ je porazdeljen 
             protokol, pri izvedbi morajo sodelovati vsi člani $S$. Po uspešni izvedbi lahko en od članov 
             objavi podpis $\sigma$.
+            \todo{razmisli, kako bi na pameten način napisal to z enačbo, enako za preverjanje}
             % $$ 
             % \mathcal{S}((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \text{sk}_i) = \sigma,
             % $$
@@ -1081,7 +1098,20 @@ Poleg teh dveh lastnosti, mora dokaz brez razkritja znanja zadoščati še eni, 
     da lahko goljufiv dokazovalec prepriča iskrenega preverjevalca o trditvi, ki ne drži.
 \end{opomba}
 
-\todo{natančneje o zkp: sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
+\todo[
+kaj je fiat shamir~\cite{fiat1987heuristic}:  
+Če dokazovalec $A$ želi prepričati preverjevalca $B$ o svoji identiteti, lahko uporabi eno od treh
+vrst shem:
+\begin{itemize}
+    \item \textbf{avtentikacijska shema} (angl.\ \textit{authentication scheme}) dovoli $A$, da dokaže
+        $B$ svojo identiteto, vendar nihče drug ne more $B$ dokazati, da je $A$.
+    \item \textbf{identifikacijska shema} (angl.\ \textit{identification scheme}) dovoli $A$, da dokaže
+        $B$ svojo identiteto, vendar more $B$ dokazati nikomur drugemu, da je $A$.
+    \item \textbf{podpisna shema} (angl.\ \textit{signature scheme}) dovoli $A$, da dokaže
+        $B$ svojo identiteto, vendar niti $B$ ne more sebi dokazati, da je $A$.
+\end{itemize}
+dokaz varnosti~\cite{pointcheval1996forking}:]
+{natančneje o zkp: sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
 
 Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg 
 svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ 
@@ -1106,7 +1136,7 @@ uspešno pridobi diskretni logaritem z verjetnostjo največ $1/q$. Torej, če je
 podpisnikov, bo simulator uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo 
 polinomski simulator, je podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
 
-\todo{kaj pomeni logaritemsko mnogo - je to prav}
+\todo{kaj pomeni logaritemsko mnogo - je to prav?}
 
 Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$ 
 in tudi zavezo $X_i$. Potem si vsi izmenjajo $I_i$ in $X_i$. Vsak podpisnik lahko sedaj izračuna 
@@ -1115,7 +1145,7 @@ $$
 e = H(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L).
 $$
 Podpisniki za dokaz znanja sedaj uporabijo Schnorrov podpis $e$ s svojim parom ključev. 
-\todo{a to pravilno razumem}
+\todo{a to pravilno razumem?}
 To pomeni, da za generiranje dokazov $k$ pokvarjenih podpisnikov sedaj rabi le $kq$ klicev oraklja, 
 torej je polinomski simulator uspešen z verjetnostjo $1/kq$. To omogoča, da je podpisnikov več 
 kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo, saj mora sedaj vsak podpisnik 
@@ -1737,7 +1767,7 @@ Verjetnost uspeha algoritma $A$ je obratno proporcionalna polinomu v $q_H$, tore
 je torej res polinomski algoritem, ki z nezanemarljivo verjetnostjo vrne odgovor na problem diskretnega
 algoritma. Ker predpostavljamo, da tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
 
-\todo{opomba o paralelnem podpisovanju}
+\todo{opomba o paralelnem podpisovanju - forking lemma ga ne dopušča}
 \todo{časovna zahtevnost in verjetnost uspeha: povezava med qH in k (polinomska?)}
 
 \section{Varnost večstranskih podpisov v splošnem}
