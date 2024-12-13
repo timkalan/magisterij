@@ -176,7 +176,10 @@ Taki podpisi so samo en izmed možnih načinov, kako se skupina podpiše. Od ost
 po tem, da omogočajo vpogled v sestavo skupine podpisnikov, kar nudi verifikatorju več informacij
 pri odločanju, če je podpis sprejemljiv, hkrati pa ohranja odgovornost individualnih članov skupine.
 Pri tradicionalnih skupinskih podpisih podpis samo priča o podpisu celotne skupine, ustvari pa ga
-lahko katerkoli član.
+lahko katerkoli član. Take lastnosti so v določenih primerih zelo zaželene, npr.\ pri tehnologiji
+veriženja blokov je zelo pomembno, da je znano iz katerih naslovov prihajajo transakcije. To, v
+kombinaciji s popularizacijo Schnorrovega podpisa, je privedlo mnogo raziskovalcev do želje po
+večstranskih podpisih, ki vrnejo navadne Schnorrove podpise, in so tako enostavno zamenljivi.
 
 V delu najprej predstavimo kriptografske osnove~\ref{sec:osnove}, ki so potrebne za razumevanje besedila.
 To zajema modularno aritmetiko in grupe, zgoščevalne funkcije, kriptografijo javnega ključa, nekaj
@@ -484,7 +487,7 @@ $$
 I = g^s \bmod p.
 $$
 O pomenu tega izračuna bomo govorili kasneje, v poglavju o varnosti~\ref{subsec:sch-varnost}. Ključno pa je to, 
-da je iz $I$ zelo težko izračunati $s$ (to je \textit{problem diskretnega logaritma})Ko vse to opravimo, 
+da je iz $I$ zelo težko izračunati $s$ (to je \textit{problem diskretnega logaritma}). Ko vse to opravimo, 
 smo uspešno ustvarili par ključev
 \begin{align*}
 \text{pk} &= (p, q, g, I), \\
@@ -511,8 +514,9 @@ X = g^r \bmod p.
 $$ 
 Ta korak je podoben zadnjemu delu generiranja ključev, le da je skrivni del ključa $s$ uporabljen 
 večkrat (zasebni ključ se ne spreminja, razen če ustvarjamo nov par ključev), $r$ pa mora biti 
-generiran za vsako sporočilo znova. Potem z uporabo funkcije $H$ izračunamo \textit{izziv} 
-\todo{je potrebna tu opomba o "nonce reuse"?}
+generiran za vsako sporočilo znova (glej opombo~\ref{opomba:nonce}).
+
+Potem z uporabo funkcije $H$ izračunamo \textit{izziv} 
 $$
 e = H(X || m),
 $$ 
@@ -524,6 +528,24 @@ podpis sporočila $m$ pa je potem par $(X, y)$ oz.\
 $$ 
 S(s, m) = (X, y).
 $$
+
+\begin{opomba}
+\label{opomba:nonce}
+    V primeru, da je enak $r$ uporabljen večkrat, podpisnik tvega, da lahko napadalec iz dveh njegovih
+    podpisov izračuna njegov zasebni ključ $s$. Naj bosta $(X_1, y_1)$ in $(X_2, y_2)$ podpisa sporočil
+    $m_1$ in $m_2$. Potem velja
+    $$
+    y_1 - y_2 \equiv e_1 s + r_1 - e_2 s - r_2 \equiv (e_1 - e_2)s + (r_1 - r_2) \pmod q.
+    $$
+    V primeru, da sta $r_1$ in $r_2$ enaka, lahko napadalec z enostavnim izračunom inverza $(e_1 - e_2)$
+    pridobi zasebni ključ $s$ (za izračun $e_1$ in $e_2$ ima napadalec dovolj informacij, saj je
+    izbrana zgoščevalna funkcija javna). 
+
+    Izkaže se, da je lahko problematična že uporaba generatorja naključnih števil za pridobivanje
+    $r$, ki ne vrača enakomerno porazdeljenih števil. Če napadalec dobi dovolj veliko količino 
+    sporočil in podpisov, lahko v tem primeru reši \textit{problem skritega števila} in pridobi 
+    zasebni ključ~\cite{tibouchi2017attacks}.
+\end{opomba}
 
 Za preverjanje veljavnosti podpisa $(X', y')$ sporočila $m$, je potrebno izračunati 
 $$ 
@@ -631,8 +653,44 @@ kjer smo pri prehodu v drugo vrstico uporabili lastnost~\eqref{eq:mod-exp}, pri 
 pa lastnost~\eqref{eq:mod-prod}. Ker se obe strani ujemata za veljavne podpisne vrednosti, ta enačba 
 res preverja Schnorrov podpis.
 
-\todo{mogoče vsaj omenim, da dela to enako v bolj splošnih grupah (o tem nekaj sigurno piše v originalnem
-schnorr članku in pa musig2)}
+\subsection{Schnorrov podpis v splošnih grupah}
+Čeprav je Schnorr originalno~\cite{schnorr1989sig} opisal podpis v multiplikativnih grupah naravnih
+števil modulo $p$ $\Z_p^*$, pri njem zares ni nič, kar bi specifično delalo samo v teh grupah. Zares
+je Schnorrov podpis mogoče posplošiti na katerekoli končne grupe, kjer obstaja učinkovit algoritem
+za množenje in je problem diskretnega logaritma težek.
+
+Naj bo grupa $G$ taka končna grupa reda $p$. V njej si izberemo element $g$ reda $q$, kjer mora
+veljati, da je $q$ dovolj velik (velikost je odvisna od varnostnega parametra). Pri osnovni verziji
+je tu moralo veljati, da $q$ deli $p - 1$, v splošnem pa sta lahko $p$ in $q$ tudi enaka. Efektivno
+grupo, v kateri računamo določa $q$, tako da se v tem primeru navadno predpostavi, da je red grupe
+$G$ kar $q$. Za generiranje ključa si potem izberemo naključno število $s \in [0, q - 1]$ in izračunamo
+$$
+I = g^s
+$$
+z uporabo učinkovitega algoritma za množenje. Javni ključ $I$ je torej element grupe $G$, zasebni ključ
+$s$ pa je element $\Z_q$.
+
+Izračun podpisa poteka podobno, kot pri osnovni verziji. Najprej si izbreremo naključno število
+$r \in [0, q - 1]$ in izračunamo
+$$
+X = g^r.
+$$
+Potem z uporabo zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$ izračunamo $e = H(X || m)$,
+drugi del podpisa pa izračunamo kot
+$$
+y = es + r.
+$$
+
+Preverjanje podpisa poteka praktično enako kot prej, ob predloženem podpisu $(X', y')$ sporočila $m$
+je potrebno izračunati $e = H(X' || m)$ in preveriti, če velja
+$$
+g^{y'} \stackrel{?}{=} X' \cdot I^{e'}.
+$$
+
+Schnorrov podpis je tako precej splošno orodje, v zadnjem času je precej popularna uporaba Schnorrovih
+podpisov v \textit{eliptičnih grupah}. Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj
+časovno in prostorsko učinkovit.
+
 
 \subsection{Varnost Schnorrovega podpisa}
 \label{subsec:sch-varnost}
@@ -1777,7 +1835,22 @@ Drijvers pokazal, da so vse take sheme nevarne.
 
 \section{MuSig2}
 \label{sec:musig2}
-Obide meta-redukcijo Drijversa, poda Schnorrovo shemo, ki je varna(?) in učinkovita.
+Zaradi nedavne popularizacije Schnorrovega podpisa se je zelo veliko dela vložilo v razvoj večstranskega
+podpisa, ki vrača popolnoma enake podpise, kot navaden Schnorrov podpis in je hkrati preverljiv
+z navadno Schnorrovo enačbo za preverjanje podpisov~\eqref{eq:schnorr-ver}. 
+
+Prva izboljšava v primerjav z zgoraj definiranim podpisom je bila odstranitev enega izmed krogov
+podpisovanja. To predstavlja bistveno izboljšavo pri hitrosti podpisovanja, saj je komunikacija
+med podpisniki daleč najdražja operacija. Prvih nekaj poskusov se je izkazalo za dokazljivo nevarne
+(vsaj z uporabo standardnih metod)~\cite{drijvers2019security}. Z uporabo vpogledov iz dokaza pa je 
+Jonasu, Ruffingu in Seurinu~\cite{jonas2020musig2} uspelo narediti podpis, ki lahko enostavno zamenja
+Schnorrovega, je ućinkovit in dokazano varen v modelu slučajnega oraklja.
+
+\subsection{Konstrukcija}
+Podpis MuSig2 temelji na enaki naivni shemi, kot večstranski Schnorrov podpis. Večstranski Schnorrov
+podpis je glavno težavo naivne konstrukcije, torej napad na generiranje ključev, reševal z zahtevo
+po priložitvi dokaza znanja brez razkritja znanja o privatnih ključih posameznikov. To je pomenilo
+velike izgube, kar se tiče učinkovitosti podpisovanja in velikosti ključev.
 
 % \section{Integrali po \texorpdfstring{$\omega$}{ω}-kompleksih}
 % \subsection{Definicija}
