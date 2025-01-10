@@ -2,19 +2,10 @@ package schnorr
 
 import (
 	"crypto/rand"
-	"crypto/sha256"
 	"fmt"
-	"hash"
 	"math/big"
+	"multisig/config"
 )
-
-// The parameters, usually found on the internet and not set by hand
-type schnorrParams struct {
-	p *big.Int  // A large prime
-	q *big.Int  // A large prime factor of p-1
-	g *big.Int  // A generator of the subgroup or order q in Z_p
-	H hash.Hash // A hash function
-}
 
 // The private key, to sign a message and the public key, to verify the signature
 type keyPair struct {
@@ -28,67 +19,28 @@ type signature struct {
 	y *big.Int
 }
 
-// Generate a large prime q, find p via p = kq+1 and then find generator g
-func generateParameters(bitLength int) (*schnorrParams, error) {
-	// Step 1: Generate a large prime q
-	q, err := rand.Prime(rand.Reader, bitLength)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate prime q: %v", err)
-	}
-
-	// Step 2: Compute p = kq + 1
-	var p *big.Int
-	k := big.NewInt(1)
-	one := big.NewInt(1)
-
-	for {
-		p = new(big.Int).Mul(q, k)
-		p.Add(p, one)            // p = kq + 1
-		if p.ProbablyPrime(20) { // Check if p is prime
-			break
-		}
-		k.Add(k, one) // Increment k
-	}
-
-	// Step 3: Find a generator g
-	var g *big.Int
-	for {
-		h, err := rand.Int(rand.Reader, p)
-		if err != nil {
-			return nil, fmt.Errorf("failed to generate random h: %v", err)
-		}
-		// g = h^((p-1)/q) mod p
-		g = new(big.Int).Exp(h, new(big.Int).Div(new(big.Int).Sub(p, one), q), p)
-		if g.Cmp(one) != 0 {
-			break
-		}
-	}
-
-	return &schnorrParams{p: p, q: q, g: g, H: sha256.New()}, nil
-}
-
-func generateKeyPair(params *schnorrParams) (*keyPair, error) {
+func generateKeyPair(params *config.Params) (*keyPair, error) {
 	// Choose a random s (0 <= s <= q-1) as the secret key
-	s, err := rand.Int(rand.Reader, params.q)
+	s, err := rand.Int(rand.Reader, params.Q)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate random s: %v", err)
 	}
 
 	// Calculate I = g^s mod p as the public key
-	I := new(big.Int).Exp(params.g, s, params.p)
+	I := new(big.Int).Exp(params.G, s, params.P)
 
 	return &keyPair{privateKey: s, publicKey: I}, nil
 }
 
-func sign(params *schnorrParams, privateKey *big.Int, message []byte) (*signature, error) {
+func sign(params *config.Params, privateKey *big.Int, message []byte) (*signature, error) {
 	// Choose a random r (0 <= r <= q-1) as the secret key
-	r, err := rand.Int(rand.Reader, params.q)
+	r, err := rand.Int(rand.Reader, params.Q)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate random r: %v", err)
 	}
 
 	// Calculate commitment X = g^r mod p
-	X := new(big.Int).Exp(params.g, r, params.p)
+	X := new(big.Int).Exp(params.G, r, params.P)
 
 	// Calculate challenge e = H(X || message)
 	params.H.Reset()
@@ -100,12 +52,12 @@ func sign(params *schnorrParams, privateKey *big.Int, message []byte) (*signatur
 	// Calculate y = es + r mod q
 	y := new(big.Int).Mul(e, privateKey)
 	y.Add(y, r)
-	y.Mod(y, params.q)
+	y.Mod(y, params.Q)
 
 	return &signature{X: X, y: y}, nil
 }
 
-func verify(params *schnorrParams, publicKey *big.Int, message []byte, sig *signature) bool {
+func verify(params *config.Params, publicKey *big.Int, message []byte, sig *signature) bool {
 	// Calculate e' = H(X' || message)
 	params.H.Reset()
 	params.H.Write(sig.X.Bytes())
@@ -113,28 +65,25 @@ func verify(params *schnorrParams, publicKey *big.Int, message []byte, sig *sign
 	e := new(big.Int).SetBytes(params.H.Sum(nil))
 
 	// check whether g^y' =?= X' I^e'
-	lhs := new(big.Int).Exp(params.g, sig.y, params.p)
-	rhs := new(big.Int).Exp(publicKey, e, params.p)
+	lhs := new(big.Int).Exp(params.G, sig.y, params.P)
+	rhs := new(big.Int).Exp(publicKey, e, params.P)
 	rhs.Mul(rhs, sig.X)
-	rhs.Mod(rhs, params.p)
-
-	fmt.Println("lhs:", lhs)
-	fmt.Println("rhs:", rhs)
+	rhs.Mod(rhs, params.P)
 
 	return lhs.Cmp(rhs) == 0
 }
 
 func SchnorrDemo() {
 	// Generate parameters
-	params, err := generateParameters(512)
+	params, err := config.GenerateParameters(1024)
 	if err != nil {
 		// fmt.Println("failed to generate parameters: %v", err)
 		panic(err)
 	}
 	fmt.Println("Params generated")
-	fmt.Println("p:", params.p)
-	fmt.Println("q:", params.q)
-	fmt.Println("g:", params.g)
+	fmt.Println("p:", params.P)
+	fmt.Println("q:", params.Q)
+	fmt.Println("g:", params.G)
 
 	// Generate keys
 	keys, err := generateKeyPair(params)

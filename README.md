@@ -1,7 +1,10 @@
 # Magistrsko delo: Večstranski podpisi
 
-Repozitorij za magistrsko delo na drugi stopnji IŠRM. Struktura:
+Repozitorij za magistrsko delo na drugi stopnji IŠRM.
 
-- `seminar/`: predstavitev pri predmetu IŠRM seminar.
+## Struktura
+
+- `implementacija/`: implementacija in primerjava večstranskih in navadnih podpisov.
 - `naloga/`: besedilo magistrske naloge.
+- `seminar/`: predstavitev pri predmetu IŠRM seminar.
 - `zagovor/`: predstavitev za zagovor naloge.
