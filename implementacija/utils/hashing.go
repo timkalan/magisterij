@@ -5,16 +5,18 @@ import (
 	"multisig/config"
 )
 
+// HashBigInt hashes a single big.Int using the hash function provided in params.
 func HashBigInt(params *config.Params, number *big.Int) *big.Int {
-	params.H.Reset()
-	params.H.Write(number.Bytes())
-	return new(big.Int).SetBytes(params.H.Sum(nil))
+	h := params.HashFactory() // Create a new hash instance
+	h.Write(number.Bytes())
+	return new(big.Int).SetBytes(h.Sum(nil))
 }
 
+// HashData hashes multiple byte slices by concatenating them and applying the hash function.
 func HashData(params *config.Params, numbers [][]byte) *big.Int {
-	params.H.Reset()
+	h := params.HashFactory() // Create a new hash instance
 	for _, number := range numbers {
-		params.H.Write(number)
+		h.Write(number)
 	}
-	return new(big.Int).SetBytes(params.H.Sum(nil))
+	return new(big.Int).SetBytes(h.Sum(nil))
 }

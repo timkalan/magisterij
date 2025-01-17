@@ -38,69 +38,46 @@ func NewMerkleTree(params *config.Params, data []*big.Int) (*MerkleTree, error) 
 
 // buildTree recursively builds the Merkle tree.
 func buildTree(params *config.Params, nodes []*Node) *Node {
-	if len(nodes) == 1 {
-		return nodes[0]
+	for len(nodes) > 1 {
+		nodes = buildNextLevel(params, nodes)
 	}
+	return nodes[0]
+}
 
+// Helper function to build the next level of the tree
+func buildNextLevel(params *config.Params, nodes []*Node) []*Node {
 	var parents []*Node
 	for i := 0; i < len(nodes); i += 2 {
 		if i+1 < len(nodes) {
 			combinedHash := HashData(params, [][]byte{nodes[i].Hash.Bytes(), nodes[i+1].Hash.Bytes()})
-			parents = append(parents, &Node{
-				Hash:  combinedHash,
-				Left:  nodes[i],
-				Right: nodes[i+1],
-			})
+			parents = append(parents, &Node{Hash: combinedHash})
 		} else {
-			// Handle odd nodes by promoting the last node.
-			parents = append(parents, nodes[i])
+			parents = append(parents, nodes[i]) // Promote the last node if odd count
 		}
 	}
-
-	return buildTree(params, parents)
-}
-
-// Helper function to find the parent of a node.
-func findParent(node, root *Node) *Node {
-	if root == nil || root.Left == nil && root.Right == nil {
-		return nil
-	}
-
-	if root.Left == node || root.Right == node {
-		return root
-	}
-
-	if left := findParent(node, root.Left); left != nil {
-		return left
-	}
-	return findParent(node, root.Right)
+	return parents
 }
 
 // GetAuthenticationPath generates the authentication path for a specific leaf.
-func (mt *MerkleTree) GetAuthenticationPath(index int) ([]*big.Int, error) {
+func (mt *MerkleTree) GetAuthenticationPath(params *config.Params, index int) ([]*big.Int, error) {
 	if index < 0 || index >= len(mt.Leaves) {
 		return nil, fmt.Errorf("index out of bounds")
 	}
 
-	var path []*big.Int
-	current := mt.Leaves[index]
+	path := []*big.Int{}
+	currentIndex := index
+	nodes := mt.Leaves
 
-	// Navigate up the tree and record sibling hashes.
-	for current != mt.Root {
-		parent := findParent(current, mt.Root)
-		if parent == nil {
-			break
+	for len(nodes) > 1 {
+		siblingIndex := currentIndex ^ 1 // Flip the last bit to find sibling
+		if siblingIndex < len(nodes) {
+			path = append(path, nodes[siblingIndex].Hash)
 		}
 
-		if parent.Left == current {
-			if parent.Right != nil {
-				path = append(path, parent.Right.Hash)
-			}
-		} else {
-			path = append(path, parent.Left.Hash)
-		}
-		current = parent
+		currentIndex /= 2                     // Move to parent index
+		nodes = buildNextLevel(params, nodes) // Build the next level of the tree
 	}
+
 	return path, nil
 }
 

@@ -1,19 +1,40 @@
 package asm
 
 import (
+	"hash"
+	"log"
 	"multisig/config"
+	"os"
 	"testing"
 )
 
-// BenchmarkKeyGeneration benchmarks the key generation process
+var (
+	bitLength   int
+	hashFactory func() hash.Hash
+	nSigners    uint
+)
+
+// TestMain is the entry point for tests and benchmarks in this package.
+func TestMain(m *testing.M) {
+	// Load environment variables once
+	var err error
+	bitLength, hashFactory, nSigners, err = config.LoadEnv("../.env")
+	if err != nil {
+		log.Fatalf("Failed to load environment configuration: %v", err)
+	}
+
+	// Run tests and benchmarks
+	os.Exit(m.Run())
+}
+
+// BenchmarkKeyGeneration measures the time taken to generate a key pair.
 func BenchmarkKeyGeneration(b *testing.B) {
-	// Generate parameters once, as it's not part of the benchmark
-	params, err := config.GenerateParameters(1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
 	if err != nil {
 		b.Fatalf("failed to generate parameters: %v", err)
 	}
 
-	b.ResetTimer() // Reset the timer to ignore setup time
+	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		_, err := generateKeyPair(params)
@@ -23,14 +44,13 @@ func BenchmarkKeyGeneration(b *testing.B) {
 	}
 }
 
-// BenchmarkSigning benchmarks the signing process
+// BenchmarkSigning measures the time taken to sign a message.
 func BenchmarkSigning(b *testing.B) {
-	// Generate parameters and key pair
-	params, err := config.GenerateParameters(1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
 	if err != nil {
 		b.Fatalf("failed to generate parameters: %v", err)
 	}
-	keys, err := generateKeys(params, 1024)
+	keys, err := generateKeys(params, nSigners)
 	if err != nil {
 		b.Fatalf("failed to generate keys: %v", err)
 	}
@@ -40,26 +60,25 @@ func BenchmarkSigning(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		_, err := sign(params, keys, message, 1024)
+		_, err := sign(params, keys, message, nSigners)
 		if err != nil {
 			b.Fatalf("failed to sign message: %v", err)
 		}
 	}
 }
 
-// BenchmarkVerification benchmarks the verification process
+// BenchmarkVerification measures the time taken to verify a signature.
 func BenchmarkVerification(b *testing.B) {
-	// Generate parameters, key pair, and signature
-	params, err := config.GenerateParameters(1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
 	if err != nil {
 		b.Fatalf("failed to generate parameters: %v", err)
 	}
-	keys, err := generateKeys(params, 1024)
+	keys, err := generateKeys(params, nSigners)
 	if err != nil {
 		b.Fatalf("failed to generate keys: %v", err)
 	}
 	message := []byte("Benchmark message for Schnorr verification")
-	sig, err := sign(params, keys, message, 1024)
+	sig, err := sign(params, keys, message, nSigners)
 	if err != nil {
 		b.Fatalf("failed to sign message: %v", err)
 	}
@@ -67,29 +86,38 @@ func BenchmarkVerification(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		valid, err := verify(params, keys, message, sig, 1024)
+		valid, err := verify(params, keys, message, sig, nSigners)
 		if err != nil {
-			panic(err)
+			b.Fatalf("failed to verify signature: %v", err)
 		}
-
 		if !valid {
 			b.Fatalf("failed to verify signature")
 		}
 	}
 }
 
+// BenchmarkASM measures signing and verifying with N_SIGNERS.
 func BenchmarkASM(b *testing.B) {
-	params, _ := config.GenerateParameters(1024)
-	keys, _ := generateKeys(params, 1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
+	if err != nil {
+		b.Fatalf("failed to generate parameters: %v", err)
+	}
+	keys, err := generateKeys(params, nSigners)
+	if err != nil {
+		b.Fatalf("failed to generate keys: %v", err)
+	}
 	message := []byte("Benchmark message for ASM signing")
 
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		sig, _ := sign(params, keys, message, 1024)
-		valid, err := verify(params, keys, message, sig, 1024)
+		sig, err := sign(params, keys, message, nSigners)
 		if err != nil {
-			panic(err)
+			b.Fatalf("failed to sign message: %v", err)
+		}
+		valid, err := verify(params, keys, message, sig, nSigners)
+		if err != nil {
+			b.Fatalf("failed to verify signature: %v", err)
 		}
 		if !valid {
 			b.Fatalf("failed to verify signature")

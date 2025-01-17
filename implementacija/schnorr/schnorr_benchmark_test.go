@@ -1,38 +1,60 @@
 package schnorr
 
 import (
+	"hash"
+	"log"
 	"multisig/config"
+	"os"
 	"testing"
 )
 
-// BenchmarkKeyGeneration benchmarks the key generation process
-func BenchmarkKeyGeneration(b *testing.B) {
-	// Generate parameters once, as it's not part of the benchmark
-	params, err := config.GenerateParameters(1024)
+var (
+	bitLength   int
+	hashFactory func() hash.Hash
+	nSigners    uint
+)
+
+// TestMain is the entry point for tests and benchmarks in this package.
+func TestMain(m *testing.M) {
+	// Load environment variables once
+	var err error
+	bitLength, hashFactory, nSigners, err = config.LoadEnv("../.env")
 	if err != nil {
-		b.Fatalf("failed to generate parameters: %v", err)
+		log.Fatalf("Failed to load environment configuration: %v", err)
 	}
 
-	b.ResetTimer() // Reset the timer to ignore setup time
+	// Run tests and benchmarks
+	os.Exit(m.Run())
+}
+
+// BenchmarkKeyGeneration benchmarks the key generation process.
+func BenchmarkKeyGeneration(b *testing.B) {
+	// Generate parameters once (not part of the benchmark)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
+	if err != nil {
+		b.Fatalf("Failed to generate parameters: %v", err)
+	}
+
+	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		_, err := generateKeyPair(params)
 		if err != nil {
-			b.Fatalf("failed to generate keys: %v", err)
+			b.Fatalf("Failed to generate keys: %v", err)
 		}
 	}
 }
 
-// BenchmarkSigning benchmarks the signing process
+// BenchmarkSigning benchmarks the signing process.
 func BenchmarkSigning(b *testing.B) {
 	// Generate parameters and key pair
-	params, err := config.GenerateParameters(1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
 	if err != nil {
-		b.Fatalf("failed to generate parameters: %v", err)
+		b.Fatalf("Failed to generate parameters: %v", err)
 	}
 	keys, err := generateKeyPair(params)
 	if err != nil {
-		b.Fatalf("failed to generate keys: %v", err)
+		b.Fatalf("Failed to generate keys: %v", err)
 	}
 
 	message := []byte("Benchmark message for Schnorr signing")
@@ -42,41 +64,43 @@ func BenchmarkSigning(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_, err := sign(params, keys.privateKey, message)
 		if err != nil {
-			b.Fatalf("failed to sign message: %v", err)
+			b.Fatalf("Failed to sign message: %v", err)
 		}
 	}
 }
 
-// BenchmarkVerification benchmarks the verification process
+// BenchmarkVerification benchmarks the verification process.
 func BenchmarkVerification(b *testing.B) {
 	// Generate parameters, key pair, and signature
-	params, err := config.GenerateParameters(1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
 	if err != nil {
-		b.Fatalf("failed to generate parameters: %v", err)
+		b.Fatalf("Failed to generate parameters: %v", err)
 	}
 	keys, err := generateKeyPair(params)
 	if err != nil {
-		b.Fatalf("failed to generate keys: %v", err)
+		b.Fatalf("Failed to generate keys: %v", err)
 	}
 	message := []byte("Benchmark message for Schnorr verification")
 	sig, err := sign(params, keys.privateKey, message)
 	if err != nil {
-		b.Fatalf("failed to sign message: %v", err)
+		b.Fatalf("Failed to sign message: %v", err)
 	}
 
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		if !verify(params, keys.publicKey, message, sig) {
-			b.Fatalf("failed to verify signature")
+			b.Fatalf("Failed to verify signature")
 		}
 	}
 }
 
+// BenchmarkSchnorr benchmarks signing and verifying with N_SIGNERS.
 func BenchmarkSchnorr(b *testing.B) {
-	params, _ := config.GenerateParameters(1024)
-	keys := make([]*keyPair, 1000) // Simulate keys for up to 1000 signers
-	for i := 0; i < 1000; i++ {
+	// Generate parameters and key pairs for the signers
+	params, _ := config.GenerateParameters(bitLength, hashFactory)
+	keys := make([]*keyPair, nSigners)
+	for i := uint(0); i < nSigners; i++ {
 		keys[i], _ = generateKeyPair(params)
 	}
 
@@ -84,7 +108,7 @@ func BenchmarkSchnorr(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		for j := 0; j < 100; j++ { // Simulate 100 individual signatures
+		for j := 0; j < int(nSigners); j++ {
 			sig, _ := sign(params, keys[j].privateKey, message)
 			verify(params, keys[j].publicKey, message, sig)
 		}

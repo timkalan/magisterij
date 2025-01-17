@@ -1,8 +1,10 @@
 package asm
 
 import (
+	"bytes"
 	"crypto/rand"
 	"fmt"
+	"hash"
 	"math/big"
 	"multisig/config"
 	"multisig/utils"
@@ -71,11 +73,12 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	}
 
 	// Each signer calculates the joint challenge e = H(X_1 || I_1 || ... || X_L || I_L)
-	toHash := make([][]byte, 2*nSigners)
+	var buffer bytes.Buffer
 	for i := range nSigners {
-		toHash = append(toHash, commitments[i].Bytes(), keys[i].publicKey.Bytes())
+		buffer.Write(commitments[i].Bytes())
+		buffer.Write(keys[i].publicKey.Bytes())
 	}
-	e := utils.HashData(params, toHash)
+	e := utils.HashData(params, [][]byte{buffer.Bytes()})
 
 	// Each signer calculates y_i = e s_i + r_i
 	for i := range nSigners {
@@ -112,7 +115,7 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	}
 
 	for i := range nSigners {
-		path, err := merkleTree.GetAuthenticationPath(int(i))
+		path, err := merkleTree.GetAuthenticationPath(params, int(i))
 		if err != nil {
 			return nil, fmt.Errorf("Failed getting authentication path: %v", err)
 		}
@@ -154,13 +157,14 @@ func sign(
 	X.Mod(X, params.P)
 
 	// Each signer calculates e = H5(X || message || S)
-	toHash := make([][]byte, 2+nSigners)
-	toHash = append(toHash, X.Bytes(), message)
+	var buffer bytes.Buffer
+	buffer.Write(X.Bytes())
+	buffer.Write(message)
 	// Represent S via all public keys
 	for i := range nSigners {
-		toHash = append(toHash, keys[i].publicKey.Bytes())
+		buffer.Write(keys[i].publicKey.Bytes())
 	}
-	e := utils.HashData(params, toHash)
+	e := utils.HashData(params, [][]byte{buffer.Bytes()})
 
 	// Each signer calculates y_i = e s_i + r_i
 	for i := range nSigners {
@@ -214,13 +218,14 @@ func verify(params *config.Params, keys []*keyPair, message []byte, sig *signatu
 	I.Mod(I, params.P)
 
 	// Calculate e = H5(X || message || S)
-	toHash := make([][]byte, 2+nSigners)
-	toHash = append(toHash, sig.X.Bytes(), message)
+	var buffer bytes.Buffer
+	buffer.Write(sig.X.Bytes())
+	buffer.Write(message)
 	// Represent S via all public keys
 	for i := range nSigners {
-		toHash = append(toHash, keys[i].publicKey.Bytes())
+		buffer.Write(keys[i].publicKey.Bytes())
 	}
-	e := utils.HashData(params, toHash)
+	e := utils.HashData(params, [][]byte{buffer.Bytes()})
 
 	// Check whether g^y =?= X I^e
 	lhs := new(big.Int).Exp(params.G, sig.y, params.P)
@@ -231,9 +236,9 @@ func verify(params *config.Params, keys []*keyPair, message []byte, sig *signatu
 	return lhs.Cmp(rhs) == 0, nil
 }
 
-func ASMDemo() {
+func ASMDemo(bitLength int, hashFactory func() hash.Hash, nSigners uint) {
 	// Generate parameters
-	params, err := config.GenerateParameters(1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
 	if err != nil {
 		// fmt.Println("failed to generate parameters: %v", err)
 		panic(err)
@@ -243,7 +248,6 @@ func ASMDemo() {
 	fmt.Println("q:", params.Q)
 	fmt.Println("g:", params.G)
 
-	var nSigners uint = 1024
 	fmt.Println("Number of signers:", nSigners)
 
 	// Generate keys

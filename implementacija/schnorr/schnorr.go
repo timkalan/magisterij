@@ -3,6 +3,7 @@ package schnorr
 import (
 	"crypto/rand"
 	"fmt"
+	"hash"
 	"math/big"
 	"multisig/config"
 	"multisig/utils"
@@ -68,9 +69,9 @@ func verify(params *config.Params, publicKey *big.Int, message []byte, sig *sign
 	return lhs.Cmp(rhs) == 0
 }
 
-func SchnorrDemo() {
+func SchnorrDemo(bitLength int, hashFactory func() hash.Hash) {
 	// Generate parameters
-	params, err := config.GenerateParameters(1024)
+	params, err := config.GenerateParameters(bitLength, hashFactory)
 	if err != nil {
 		// fmt.Println("failed to generate parameters: %v", err)
 		panic(err)
