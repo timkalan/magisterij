@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"multisig/config"
+	"multisig/utils"
 )
 
 // The private key, to sign a message and the public key, to verify the signature
@@ -43,10 +44,7 @@ func sign(params *config.Params, privateKey *big.Int, message []byte) (*signatur
 	X := new(big.Int).Exp(params.G, r, params.P)
 
 	// Calculate challenge e = H(X || message)
-	params.H.Reset()
-	params.H.Write(X.Bytes())
-	params.H.Write(message)
-	e := new(big.Int).SetBytes(params.H.Sum(nil))
+	e := utils.HashData(params, [][]byte{X.Bytes(), message})
 	// e.Mod(e, params.q)
 
 	// Calculate y = es + r mod q
@@ -59,10 +57,7 @@ func sign(params *config.Params, privateKey *big.Int, message []byte) (*signatur
 
 func verify(params *config.Params, publicKey *big.Int, message []byte, sig *signature) bool {
 	// Calculate e' = H(X' || message)
-	params.H.Reset()
-	params.H.Write(sig.X.Bytes())
-	params.H.Write(message)
-	e := new(big.Int).SetBytes(params.H.Sum(nil))
+	e := utils.HashData(params, [][]byte{sig.X.Bytes(), message})
 
 	// check whether g^y' =?= X' I^e'
 	lhs := new(big.Int).Exp(params.G, sig.y, params.P)

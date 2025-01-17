@@ -168,12 +168,12 @@ in prenašanje.
 Prav tako lahko digitalne podpise uporabimo, če mora skupina deležnikov podpisati pogodbo -- vsak
 enostavno pripne svoj digitalni podpis. Če je skupina velika, če je računska moč omejena
 (npr.\ če želimo zmanjšati ceno transakcij pri tehnologiji veriženja blokov), ali pa če enostavno
-želimo verifikatorju podpisov olajšati delo, lahko poskrbimo, da se skupina podpiše z enim samim,
+želimo preverjevalcu podpisov olajšati delo, lahko poskrbimo, da se skupina podpiše z enim samim,
 \textit{večstranskim} podpisom. Ta podpis vseeno priča o vseh podpisnikih, njegova verifikacija oz.\
 preverjanje, pa zajema približno enako dela, kot preverjanje enega samega podpisa.
 
 Taki podpisi so samo en izmed možnih načinov, kako se skupina podpiše. Od ostalih načinov izstopajo
-po tem, da omogočajo vpogled v sestavo skupine podpisnikov, kar nudi verifikatorju več informacij
+po tem, da omogočajo vpogled v sestavo skupine podpisnikov, kar nudi preverjevalcu več informacij
 pri odločanju, če je podpis sprejemljiv, hkrati pa ohranja odgovornost individualnih članov skupine.
 Pri tradicionalnih skupinskih podpisih podpis samo priča o podpisu celotne skupine, ustvari pa ga
 lahko katerkoli član. Take lastnosti so v določenih primerih zelo zaželene, npr.\ pri tehnologiji
@@ -181,27 +181,27 @@ veriženja blokov je zelo pomembno, da je znano iz katerih naslovov prihajajo tr
 kombinaciji s popularizacijo Schnorrovega podpisa, je privedlo mnogo raziskovalcev do želje po
 večstranskih podpisih, ki vrnejo navadne Schnorrove podpise, in so tako enostavno zamenljivi.
 
-V delu najprej predstavimo kriptografske osnove~\ref{sec:osnove}, ki so potrebne za razumevanje besedila.
+V poglavju~\ref{sec:osnove} najprej predstavimo kriptografske osnove, ki so potrebne za razumevanje besedila.
 To zajema modularno aritmetiko in grupe, zgoščevalne funkcije, kriptografijo javnega ključa, nekaj
-splošnih definicij pri digitalnih podpisih in potem še nekaj besed o varnosti. V nadaljevanju predstavimo
-Schnorrov podpis~\ref{sec:schnorr}, ki je osnova za ostale sheme, ki jih obravnavamo. V 
+splošnih definicij pri digitalnih podpisih in potem še nekaj besed o varnosti. V poglavju~\ref{sec:schnorr}
+predstavimo Schnorrov podpis, ki je osnova za ostale sheme, ki jih obravnavamo. V 
 poglavju~\ref{sec:skpine} so predstavljeni vsi možni načini za podpisovanje skupin. Poglavje~\ref{sec:multischnorr}
 predstavi večstranski Schnorrov podpis, tam tudi dokažemo njegovo varnost v modelu slučajnega oraklja.
 
 \section{Kriptografske osnove}
 \label{sec:osnove}
-Preden si lahko pogledamo točno kako lahko skupina generira en sam podpis sporočila, si moramo 
-pogledati nekaj kriptografskih osnov. Bolj komplicirane stvari bodo opisane sproti, ideja tega 
+Preden si lahko pogledamo natančneje kako lahko skupina generira en sam podpis sporočila, si moramo 
+pogledati nekaj kriptografskih osnov. Bolj kompleksnejši pojmi bodo opisani sproti, namen tega 
 poglavja je predstaviti stvari, ki so predpogoj za branje praktično kakršnegakoli kriptografskega 
 besedila s področja digitalnih podpisov.
 
 \subsection{Aritmetika v \texorpdfstring{$\Z_p^*$}{Zp∗}}
 V kriptografiji imamo pogosto opravka z multiplikativnimi grupami, najenostavnejša med njimi (in 
-tudi tradicionalno največ uporabljena) je \textit{multiplikativna grupa naravnih števil modulo $p$} 
-$\Z_p^*$. Njeni elementi so števila v $\{0, 1, \dots, p - 1\}$, ki so tuja številu $p$. V posebnem 
-primeru, ko je $p$ praštevilo, so to torej števila \{1, 2, \dots, p - 1\} in je red grupe (število
-elementov) $\text{ord}(\Z_p^*) = |\Z_p^*| = p - 1$. Operacija v tej grupi je, kot ime že nakazuje, 
-množenje modulo $p$.
+tudi tradicionalno največ uporabljena) je \textit{multiplikativna grupa naravnih števil modulo $p$},
+ki jo označimo $\Z_p^*$. Njeni elementi so števila v $\{0, 1, \dots, p - 1\}$, ki so tuja številu $p$.
+V posebnem primeru, ko je $p$ praštevilo, so to torej števila \{1, 2, \dots, p - 1\} in je red grupe
+(število elementov) $\text{ord}(\Z_p^*) = |\Z_p^*| = p - 1$. Operacija v tej grupi je, kot ime že
+nakazuje, množenje modulo $p$.
 
 Spomnimo se, da je red elementa $g$ v grupi najmanjše naravno število $q$, da velja $g^q \equiv 1 \pmod p$, 
 kjer je $1$ enota za množenje. V primeru, da je $p$ praštevilo, je grupa $\Z_p^*$ \textit{ciklična},
@@ -240,31 +240,12 @@ generator.
 \end{opomba}
 
 \subsection{Zgoščevalne funkcije}
-V grobem so (kriptografske) \textit{zgoščevalne funkcije} funkcije, ki prejmejo poljubno dolg binarni 
+V grobem so (kriptografske) \textit{zgoščevalne funkcije} take funkcije, ki prejmejo poljubno dolg binarni 
 niz (ki lahko predstavlja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima
 vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. Namen zgoščevalnih funkcij je 
-za dokument ustvariti unikaten niz, ki zelo verjetno unikatno identificira dokument. V grobem si od 
-zgoščevalnih funkcij želimo naslednje lastnosti:
-\begin{itemize}
-    \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
-        zgostitve. 
-    \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
-        času. Izračun zgostitve mora biti računsko učinkovit. Ponavadi tu zahtevamo, da je časovna
-        zahtevnost funkcije polinomska v dolžini vhodnega niza.
-    \item \textbf{Enosmernost} pomeni, da iz predložene zgostitve zelo težko ugotovimo, kateri niz
-        je funkcija prejela kot vhod. Tej lastnosti pravimo tudi \textit{odpornost na prasliko}.
-    \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
-        je zelo težko najdemo drug niz z enako zgostitvijo.
-    \item \textbf{Skoraj brez trčenj} pomeni, da je verjetnost, da imata dva izraza enako zgostitev,
-        majhna. Želimo tudi, da je zelo težko najti dva niza z enako zgostitvijo.
-    \item \textbf{Učinek plazu} pomeni, da majhna sprememba v vhodnem nizu povzroči veliko spremembo 
-        v zgostitvi.
-\end{itemize}
-
-\begin{opomba}
-    Vse varne kriptografske zgoščevalne funkcije, ki so v uporabi zadoščajo zgornjim lastnostim. To
-    pomeni, da za nobeno od teh funkcij nihče še ni našel trka.
-\end{opomba}
+za dokument ustvariti unikaten niz, ki zelo verjetno unikatno identificira dokument. Želimo si, da
+je v praksi nemogoče najti dva različna niza z enako zgostitvijo, natančno pa zgoščevalne funkcije
+definiramo:
 
 \begin{definicija} 
 \label{def:hash}
@@ -272,18 +253,30 @@ zgoščevalnih funkcij želimo naslednje lastnosti:
     ki slika binarne nize $m$ poljubne dolžine v njihove \textbf{zgostitve} $H(m)$, tj.\ binarne nize 
     vnaprej določene dolžine $n$. Zadoščati mora naslednjim lastnostim:
     \begin{itemize}
-        \item (določenost) $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
-        \item (učinkovitost) Izračun funkcije $H$ mora biti računsko učinkovit (v polinomskem času).
-        \item (odpornost na prasliko) Če poznamo zgostitev $h$, je računsko neizvedljivo najti 
-            niz $m$, da velja $h = H(m)$.
-        \item (odpornost na drugo prasliko) Če poznamo niz $m_1$, je računsko neizvedljivo najti 
-            zgostitev $m_2$, da velja $H(m_1) = H(m_2)$.
-        \item (odpornost na trčenja) Računsko neizvedljivo je najti dva niza $m_1$ in $m_2$, 
-            da velja $H(m_1) = H(m_2)$.
-        \item (učinek plazu) Vsaka sprememba vhoda povzroči, veliko spremembo v zgostitvi. 
-            Vsak bit zgostitve se spremeni z verjetnostjo vsaj $1/2$.
+        \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
+            zgostitve. Zapišemo lahko $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
+        \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
+            času. Izračun zgostitve mora biti računsko učinkovit. Ponavadi tu zahtevamo, da je časovna
+            zahtevnost funkcije $H$ polinomska v dolžini vhodnega niza.
+        \item \textbf{Enosmernost} oz.\ \textbf{odpornost na prasliko} pomeni, da iz predložene 
+            zgostitve zelo težko ugotovimo, kateri niz je funkcija prejela kot vhod. Če torej poznamo 
+            zgostitev $h$ za nek neznan $m$, je računsko neizvedljivo najti niz $m$, da velja $h = H(m)$.
+        \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
+            zelo težko najdemo drug niz z enako zgostitvijo. Če torej poznamo niz $m_1$, je računsko 
+            neizvedljivo najti zgostitev $m_2$, da velja $H(m_1) = H(m_2)$.
+        \item \textbf{Skoraj brez trčenj} oz.\ \textbf{odpornost na trčenja} pomeni, da je verjetnost,
+            da imata dva izraza enako zgostitev, majhna. Želimo, da je računsko neizvedljivo
+            najti dva niza  $m_1$ in $m_2$, ki imata enako zgostitev, oz.\ da velja $H(m_1) = H(m_2)$.
+        \item \textbf{Učinek plazu} pomeni, da vsaka sprememba v vhodnem nizu povzroči veliko spremembo 
+            v zgostitvi. Ob katerikoli spremembi se vsak bit zgostitve se spremeni z verjetnostjo 
+            vsaj $1/2$.
     \end{itemize}
 \end{definicija}
+
+\begin{opomba}
+    Vse varne kriptografske zgoščevalne funkcije, ki so v uporabi zadoščajo zgornjim lastnostim. To
+    pomeni, da za nobeno od teh funkcij nihče še ni našel trka.
+\end{opomba}
 
 \begin{primer}
     Ena izmed najbolj znanih zgoščevalnih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure 
@@ -356,7 +349,7 @@ Tako zagotovimo varno komunikacijo.
     $$
     (m^e)^d \equiv 1 \pmod{\varphi(n)},
     $$ 
-    kjer $\varphi$ označuje Eulerjevo funkcijo fi. Iščemo torej multiplikativni inverz eksponenta 
+    kjer $\varphi$ označuje Eulerjevo funkcijo. Iščemo torej multiplikativni inverz eksponenta 
     $e$, modulo $\varphi(n)$. V našem primeru je to $d = 235$. Zasebni ključ je potem 
     $$ 
     (p, q, d) = (23, 17, 235). 
@@ -374,7 +367,7 @@ Tako zagotovimo varno komunikacijo.
 Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega ključa omogočila tudi 
 \textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo transakcijo ali dostopamo do katerekoli 
 spletne strani. Delujejo na podoben način, kot šifriranje z javnim ključem, le da najprej uporabimo 
-zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Ponavadi sta šifrianje 
+zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Velikokrat sta šifrianje 
 in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, za katerega lahko oseba,
 s katero komuniciramo preveri, da je res prišlo od nas.
 
@@ -397,14 +390,18 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 
 \begin{definicija}
 \label{def:digisig}
-    \textbf{Digitalni} ali \textbf{kriptografski podpis} $\mathcal{S} = (\mathcal{G}, \mathcal{S}, 
-    \mathcal{V})$ je trojica učinkovitih algoritmov $\mathcal{G}$ za ustvarjanje ključa, $\mathcal{S}$ 
-    za podpisovanje in $\mathcal{V}$ za preverjanje podpisa. Definirana je nad končno množico možnih 
-    sporočil $\mathcal{M}$, vrnjeni podpis pa leži v v končni množici podpisov $\Sigma$.
+    \textbf{Digitalni} ali \textbf{kriptografski podpis} $\mathcal{S} = (\mathcal{P}, \mathcal{G},
+    \mathcal{S}, \mathcal{V})$ je četvorka učinkovitih algoritmov $\mathcal{P}$ za ustvarjanje parametrov
+    podpisa, $\mathcal{G}$ za ustvarjanje ključa, $\mathcal{S}$ za podpisovanje in $\mathcal{V}$ za
+    preverjanje podpisa. Definirana je nad končno množico možnih  sporočil $\mathcal{M}$, vrnjeni
+    podpis pa leži v v končni množici podpisov $\Sigma$.
     \begin{itemize}
+        \item $\mathcal{P}$ je algoritem za ustvarjanje javnih parametrov podpisa. Definira grupo $G$,
+            ki bo uporabljena pri podpisu. V praksi je ta korak izpuščen, sodelujoči pri podpisu
+            uporabijo dobro poznane varne grupe.
         \item $\mathcal{G}$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
             ki ne prejme nobenega argumenta. $\text{pk}$ je javni kljč za preverjanje avtentičnosti 
-            podpisa, $\text{sk}$ pa je zasebni ključ za podpisovanje. 
+            podpisa, $\text{sk}$ pa je zasebni ključ za podpisovanje.
         \item $\mathcal{S}$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$ 
             in sporočilo $m$, vrne pa podpis $\sigma$ sporočila $m$ z zasebnim ključem $\text{sk}$
             oz.\ 
@@ -500,7 +497,7 @@ Red te podgrupe je $q$, določa pa jo generator $g$. Iz varnostnih razlogov mora
 bitov, $q$ pa $224$. Čeprav je grupa $\Z_p^*$ zelo velika, je Schnorrov podpis vseeno učinkovit, 
 saj večina izračunov poteka znotraj podgrupe, ki jo generira $g$.
 
-Poleg parametrov $p, q$ in $g$, morata podpisnik in verifikator določiti oz.\ imeti dostop do iste varne 
+Poleg parametrov $p, q$ in $g$, morata podpisnik in preverjevalec določiti oz.\ imeti dostop do iste varne 
 kriptografske zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
 ki zadošča lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije definira velikost 
 končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg $2 \log_2 q$ bitov~\cite{
@@ -943,7 +940,7 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
 
 Kot ponavadi pri digitalnih podpisih, tudi tu predpostavimo, da tisti, ki preverja veljavnost podpisa, lahko vedno 
 pridobi prave javne ključe podpisnikov iz $S$. Zaradi močnega napadalca pri ASM, lahko tudi pridemo 
-v situacijo, ko podpisnik $P_1$ ne ve, kdo je zares podpisnik $P_2$. Tukaj predpostavimo, da verifikator
+v situacijo, ko podpisnik $P_1$ ne ve, kdo je zares podpisnik $P_2$. Tukaj predpostavimo, da preverjevalec
 natančno ve, kdo je $P_2$ v resnici, in lahko pridobi ustrezen javni ključ. 
 
 \subsubsection{Model slučajnega oraklja}

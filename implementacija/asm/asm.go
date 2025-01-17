@@ -5,12 +5,8 @@ import (
 	"fmt"
 	"math/big"
 	"multisig/config"
+	"multisig/utils"
 )
-
-// type publicKey struct {
-// 	schnorrPublicKey *big.Int
-// 	merkleTreePath   []*big.Int
-// }
 
 // The private key, to sign a message and the public key, to verify the signature.
 // Each signer has their own pair.
@@ -75,12 +71,11 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	}
 
 	// Each signer calculates the joint challenge e = H(X_1 || I_1 || ... || X_L || I_L)
+	toHash := make([][]byte, 2*nSigners)
 	for i := range nSigners {
-		params.H.Reset()
-		params.H.Write(commitments[i].Bytes())
-		params.H.Write(keys[i].publicKey.Bytes())
+		toHash = append(toHash, commitments[i].Bytes(), keys[i].publicKey.Bytes())
 	}
-	e := new(big.Int).SetBytes(params.H.Sum(nil))
+	e := utils.HashData(params, toHash)
 
 	// Each signer calculates y_i = e s_i + r_i
 	for i := range nSigners {
@@ -92,18 +87,15 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	}
 
 	// Each signer checks validity of all received Schnorr ZKPoK
-	// TODO: maybe the outer loop is unnecessary, each signer does this concurently anyway
-	for _ = range nSigners {
-		for j := range nSigners {
-			// check whether g^y_j =?= X_j I_j^e
-			lhs := new(big.Int).Exp(params.G, ys[j], params.P)
-			rhs := new(big.Int).Exp(keys[j].publicKey, e, params.P)
-			rhs.Mul(rhs, commitments[j])
-			rhs.Mod(rhs, params.P)
+	for j := range nSigners {
+		// check whether g^y_j =?= X_j I_j^e
+		lhs := new(big.Int).Exp(params.G, ys[j], params.P)
+		rhs := new(big.Int).Exp(keys[j].publicKey, e, params.P)
+		rhs.Mul(rhs, commitments[j])
+		rhs.Mod(rhs, params.P)
 
-			if lhs.Cmp(rhs) != 0 {
-				return nil, fmt.Errorf("The ZKPoK is not valid: %s", j)
-			}
+		if lhs.Cmp(rhs) != 0 {
+			return nil, fmt.Errorf("The ZKPoK is not valid: %d", j)
 		}
 	}
 
@@ -114,8 +106,13 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 		publicKeys[i] = keys[i].publicKey
 	}
 
+	merkleTree, err := utils.NewMerkleTree(params, publicKeys)
+	if err != nil {
+		return nil, fmt.Errorf("Failed generating Merkle tree: %v", err)
+	}
+
 	for i := range nSigners {
-		path, err := getAuthenticatingPath(params, publicKeys, i)
+		path, err := merkleTree.GetAuthenticationPath(int(i))
 		if err != nil {
 			return nil, fmt.Errorf("Failed getting authentication path: %v", err)
 		}
@@ -123,59 +120,6 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	}
 
 	return keys, nil
-}
-
-// Calculates the authentication path in the Merkle tree with leaf values values for value
-// at index index.
-func getAuthenticatingPath(params *config.Params, values []*big.Int, index uint) ([]*big.Int, error) {
-	if int(index) >= len(values) {
-		return nil, fmt.Errorf("Index out of range")
-	}
-
-	// Convert values to leaf hashes
-	leaves := make([]*big.Int, len(values))
-	for i, v := range values {
-		params.H.Reset()
-		params.H.Write(v.Bytes())
-		leaves[i] = new(big.Int).SetBytes(params.H.Sum(nil))
-	}
-
-	// Calculate the Merkle tree and collect the authenticating path
-	var path []*big.Int
-	nodes := leaves
-	for len(nodes) > 1 {
-		var nextLevel []*big.Int
-		for i := 0; i < len(nodes); i += 2 {
-			left := nodes[i]
-			var right *big.Int
-			if i+1 < len(nodes) {
-				right = nodes[i+1]
-			} else {
-				// The number is odd, return error
-				return nil, fmt.Errorf("Number of signers is odd")
-			}
-			params.H.Reset()
-			params.H.Write(left.Bytes())
-			params.H.Write(right.Bytes())
-			hashPair := new(big.Int).SetBytes(params.H.Sum(nil))
-			nextLevel = append(nextLevel, hashPair)
-			if uint(i)/2 == index/2 {
-				// Collect sibling hash for the authenticating path.
-				if index%2 == 0 && i+1 < len(nodes) { // Left node, add right sibling.
-					path = append(path, right)
-				} else if index%2 == 1 { // Right node, add left sibling.
-					path = append(path, left)
-				}
-			}
-		}
-		nodes = nextLevel
-		index /= 2
-	}
-
-	// Root is the last remaining node in the tree, add it to the path
-	root := nodes[0]
-	path = append(path, root)
-	return path, nil
 }
 
 func sign(
@@ -210,14 +154,13 @@ func sign(
 	X.Mod(X, params.P)
 
 	// Each signer calculates e = H5(X || message || S)
-	params.H.Reset()
-	params.H.Write(X.Bytes())
-	params.H.Write(message)
+	toHash := make([][]byte, 2+nSigners)
+	toHash = append(toHash, X.Bytes(), message)
 	// Represent S via all public keys
 	for i := range nSigners {
-		params.H.Write(keys[i].publicKey.Bytes())
+		toHash = append(toHash, keys[i].publicKey.Bytes())
 	}
-	e := new(big.Int).SetBytes(params.H.Sum(nil))
+	e := utils.HashData(params, toHash)
 
 	// Each signer calculates y_i = e s_i + r_i
 	for i := range nSigners {
@@ -238,13 +181,28 @@ func sign(
 	return &signature{X: X, y: y}, nil
 }
 
-func verify(params *config.Params, keys []*keyPair, message []byte, sig *signature, nSigners uint) bool {
+func verify(params *config.Params, keys []*keyPair, message []byte, sig *signature, nSigners uint) (bool, error) {
 	// Check that all Merkle tree roots are the same
-	root := calculateRootFromPath(params, keys[0].publicKey, keys[0].merkleTreePath, 0)
+	publicKeys := make([]*big.Int, nSigners)
 	for i := range nSigners {
-		candidate := calculateRootFromPath(params, keys[i].publicKey, keys[i].merkleTreePath, i)
-		if root != candidate {
-			return false
+		publicKeys[i] = keys[i].publicKey
+	}
+
+	merkleTree, err := utils.NewMerkleTree(params, publicKeys)
+	if err != nil {
+		return false, fmt.Errorf("Failed generating Merkle tree: %v", err)
+	}
+
+	for i := range nSigners {
+		if !utils.VerifyAuthenticationPath(
+			params,
+			keys[i].publicKey,
+			keys[i].merkleTreePath,
+			merkleTree.Root.Hash,
+			int(i),
+		) {
+			fmt.Println("Failed to verify authentication path")
+			return false, nil
 		}
 	}
 
@@ -256,14 +214,13 @@ func verify(params *config.Params, keys []*keyPair, message []byte, sig *signatu
 	I.Mod(I, params.P)
 
 	// Calculate e = H5(X || message || S)
-	params.H.Reset()
-	params.H.Write(sig.X.Bytes())
-	params.H.Write(message)
+	toHash := make([][]byte, 2+nSigners)
+	toHash = append(toHash, sig.X.Bytes(), message)
 	// Represent S via all public keys
 	for i := range nSigners {
-		params.H.Write(keys[i].publicKey.Bytes())
+		toHash = append(toHash, keys[i].publicKey.Bytes())
 	}
-	e := new(big.Int).SetBytes(params.H.Sum(nil))
+	e := utils.HashData(params, toHash)
 
 	// Check whether g^y =?= X I^e
 	lhs := new(big.Int).Exp(params.G, sig.y, params.P)
@@ -271,36 +228,7 @@ func verify(params *config.Params, keys []*keyPair, message []byte, sig *signatu
 	rhs.Mul(rhs, sig.X)
 	rhs.Mod(rhs, params.P)
 
-	return lhs.Cmp(rhs) == 0
-}
-
-// calculateRootFromPath calculates the Merkle tree root from a target leaf, an authenticating path,
-// and the target index in the original tree.
-func calculateRootFromPath(params *config.Params, leaf *big.Int, path []*big.Int, index uint) *big.Int {
-	params.H.Reset()
-	params.H.Write(leaf.Bytes())
-	current := new(big.Int).SetBytes(params.H.Sum(nil))
-
-	for _, sibling := range path {
-		if index%2 == 0 {
-			// If the current node is a left child, hash it with the sibling to the right.
-			params.H.Reset()
-			params.H.Write(current.Bytes())
-			params.H.Write(sibling.Bytes())
-			hashPair := new(big.Int).SetBytes(params.H.Sum(nil))
-			current = hashPair
-		} else {
-			// If the current node is a right child, hash the sibling to the left with it.
-			params.H.Reset()
-			params.H.Write(sibling.Bytes())
-			params.H.Write(current.Bytes())
-			hashPair := new(big.Int).SetBytes(params.H.Sum(nil))
-			current = hashPair
-		}
-		index /= 2 // Move to the parent level.
-	}
-
-	return current
+	return lhs.Cmp(rhs) == 0, nil
 }
 
 func ASMDemo() {
@@ -315,7 +243,7 @@ func ASMDemo() {
 	fmt.Println("q:", params.Q)
 	fmt.Println("g:", params.G)
 
-	var nSigners uint = 1000
+	var nSigners uint = 1024
 	fmt.Println("Number of signers:", nSigners)
 
 	// Generate keys
@@ -327,7 +255,7 @@ func ASMDemo() {
 	fmt.Println("Keys generated")
 
 	// Message to sign
-	message := []byte("Hello, Schnorr!")
+	message := []byte("Hello, Accountable-Subgroup Multisignatures!")
 	fmt.Println("Message:", string(message))
 
 	// Sign the message
@@ -341,7 +269,11 @@ func ASMDemo() {
 	fmt.Println("y:", sig.y)
 
 	// Verify the signature
-	if verify(params, keys, message, sig, nSigners) {
+	valid, err := verify(params, keys, message, sig, nSigners)
+	if err != nil {
+		panic(err)
+	}
+	if valid {
 		fmt.Println("Signature verified!")
 	} else {
 		fmt.Println("Signature verification failed.")
