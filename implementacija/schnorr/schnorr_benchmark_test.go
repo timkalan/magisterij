@@ -12,14 +12,14 @@ import (
 var (
 	bitLength    int
 	hashFactory  func() hash.Hash
-	testNSigners = []uint{1, 2, 4, 8, 16, 32} // Shared variable for testing different numbers of signers
+	testNSigners []uint
 )
 
 // TestMain is the entry point for tests and benchmarks in this package.
 func TestMain(m *testing.M) {
 	// Load environment variables once
 	var err error
-	bitLength, hashFactory, _, err = config.LoadEnv("../.env")
+	bitLength, hashFactory, _, testNSigners, err = config.LoadEnv("../.env")
 	if err != nil {
 		log.Fatalf("Failed to load environment configuration: %v", err)
 	}

@@ -10,6 +10,7 @@ import (
 	"math/big"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -22,17 +23,17 @@ type Params struct {
 }
 
 // LoadEnv loads configuration parameters from a .env file
-func LoadEnv(path string) (int, func() hash.Hash, uint, error) {
+func LoadEnv(path string) (int, func() hash.Hash, uint, []uint, error) {
 	// Load the .env file
 	if err := godotenv.Load(path); err != nil {
-		return 0, nil, 0, errors.New("failed to load .env file")
+		return 0, nil, 0, nil, errors.New("failed to load .env file")
 	}
 
 	// Get BIT_LENGTH
 	bitLengthStr := os.Getenv("BIT_LENGTH")
 	bitLength, err := strconv.Atoi(bitLengthStr)
 	if err != nil {
-		return 0, nil, 0, errors.New("invalid BIT_LENGTH: must be an integer")
+		return 0, nil, 0, nil, errors.New("invalid BIT_LENGTH: must be an integer")
 	}
 
 	// Get HASH_FUNCTION
@@ -44,16 +45,30 @@ func LoadEnv(path string) (int, func() hash.Hash, uint, error) {
 	case "sha512":
 		hashFactory = sha512.New
 	default:
-		return 0, nil, 0, errors.New("invalid HASH_FUNCTION: must be 'sha256' or 'sha512'")
+		return 0, nil, 0, nil, errors.New("invalid HASH_FUNCTION: must be 'sha256' or 'sha512'")
 	}
 	// Get N_SIGNERS
 	nSignersStr := os.Getenv("N_SIGNERS")
 	nSigners, err := strconv.Atoi(nSignersStr)
 	if err != nil {
-		return 0, nil, 0, errors.New("invalid N_SIGNERS: must be an integer")
+		return 0, nil, 0, nil, errors.New("invalid N_SIGNERS: must be an integer")
 	}
 
-	return bitLength, hashFactory, uint(nSigners), nil
+	testNSigners := []uint{}
+
+	// Get BENCHMARK_SIGNERS=1,2,4,8,16,32
+	benchmarkSignersStr := os.Getenv("BENCHMARK_SIGNERS")
+	// BENCHMARK_SIGNERS is a comma-separated list of integers
+	benchmarkSigners := strings.Split(benchmarkSignersStr, ",")
+	for _, s := range benchmarkSigners {
+		n, err := strconv.Atoi(s)
+		if err != nil {
+			return 0, nil, 0, nil, errors.New("invalid BENCHMARK_SIGNERS: must be a comma-separated list of integers")
+		}
+		testNSigners = append(testNSigners, uint(n))
+	}
+
+	return bitLength, hashFactory, uint(nSigners), testNSigners, nil
 }
 
 // Generate a large prime q, find p via p = kq+1 and then find generator g

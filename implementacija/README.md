@@ -24,7 +24,11 @@ kjer `PODPIS` nadomestimo z ustreznim imenom mape (npr. `schnorr`).
 
 ## Primerjava
 
-Da poženemo celovito primerjavo med implementiranimi podpisi lahko poženemo skripto `run_benchmarks.sh`.
+Da poženemo celovito primerjavo med implementiranimi podpisi lahko poženemo skripto 
+
+```bash
+run_benchmarks.sh BENCHMARK PONOVITVE
+```
 
 ## Potencialna vprašanja
 - Koliko časa traja ustvarjanje/preverjanje $n$ individualnih podpisov v primerjavi z večstranskim

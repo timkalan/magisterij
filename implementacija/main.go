@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	bitLength, hash, nSigners, err := config.LoadEnv(".env")
+	bitLength, hash, nSigners, _, err := config.LoadEnv(".env")
 	if err != nil {
 		panic(err)
 	}
