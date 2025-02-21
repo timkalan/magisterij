@@ -9,6 +9,8 @@
 % METAPODATKI
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% LTeX: language=sl-SI
+
 % - vaše ime
 \avtor{Tim Kalan}
 
@@ -144,7 +146,7 @@ the content and not the structure of your work.}
 % nastopa, kje vse je bil obravnavan. Na koncu opišite tudi organizacijo dela -- kaj je v
 % katerem razdelku.
 Odkar se je na svetu pojavil koncept (ročnega) podpisa, je večina primerov uporabe temeljila na
-pridobivanju podpisov več deležnikov, saj je bila večina podpisanih dokumentov sporazum ali pogodoba
+pridobivanju podpisov več deležnikov, saj je bila večina podpisanih dokumentov sporazum ali pogodba
 med večimi deležniki. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih držav
 Amerike, vidna na sliki~\ref{fig:declaration}. 
 
@@ -190,7 +192,7 @@ predstavi večstranski Schnorrov podpis, tam tudi dokažemo njegovo varnost v mo
 
 \section{Kriptografske osnove}
 \label{sec:osnove}
-Preden si lahko pogledamo natančneje kako lahko skupina generira en sam podpis sporočila, si moramo 
+Preden si lahko natančneje pogledamo, kako lahko skupina generira en sam podpis sporočila, si moramo 
 pogledati nekaj kriptografskih osnov. Bolj kompleksnejši pojmi bodo opisani sproti, namen tega 
 poglavja je predstaviti stvari, ki so predpogoj za branje praktično kakršnegakoli kriptografskega 
 besedila s področja digitalnih podpisov.
@@ -238,6 +240,87 @@ generator.
 \begin{opomba}
     Spomnimo se \textit{kongruence}: $a \equiv b \pmod m \iff m \text{ }|\text{ } a - b$.
 \end{opomba}
+
+Za konec tega popdpoglavja si oglejmo še dve trditvi, ki bosta pomembni pri dokazovanju pravilnega
+delovanja Schnorrovega podpisa.
+
+\begin{trditev}
+\label{trd:mod-q}
+    Naj bosta $p$ in $q$ praštevili, kjer $q$ deli $p - 1$, oz.\ $q \text{ }|\text{ } p - 1$. Naj
+    bo $g$ element grupe $\Z_p^*$ reda $q$, kar pomeni, da je $g^q \equiv 1 \pmod p$. Naj bo $k$
+    naravno število. Potem velja 
+    $$ 
+    g^k \bmod p = g^{k \bmod q} \bmod p.
+    $$
+\end{trditev}
+\begin{dokaz}
+    Po osnovnem izreku o deljenju naravnih števil, lahko $k$ na en sam način zapišemo kot $k = nq + r$, 
+    kjer velja $n \in \N, r < q$.
+
+    Leva stran enačbe se potem prepiše 
+    \begin{align*}
+        g^k \bmod p &= g^{nq + r} \bmod p = \\ 
+                    &= (g^q)^n g^r \bmod p = \\ 
+                    &= 1^n g^r \bmod p = \\ 
+                    &= g^r \bmod p.
+    \end{align*}
+    Desna stran pa se prepiše kot 
+    \begin{align*}
+        g^{k \bmod q} \bmod p &= g^{(nq + r) \bmod q} \bmod p = \\ 
+                              &= g^r \bmod p.
+    \end{align*}
+    Ker sta obe strani enaki, je trditev dokazana.
+\end{dokaz}
+
+\begin{trditev}
+\label{trd:mod-mn-pt}
+    Naj bodo $a$, $b$ in $p$ naravna števila. Potem za modularno množenje in potenciranje velja
+    \begin{align}
+        a \cdot b \bmod p &= (a \bmod p) \cdot (b \bmod p) \bmod p, \label{eq:mod-prod} \\
+        a^b \bmod p &= (a \bmod p)^b \bmod p. \label{eq:mod-exp} 
+    \end{align}
+\end{trditev}
+\begin{dokaz}
+    $a$ in $b$ lahko po osnovnem izreku o deljenju naravnih števil na en sam način zapišemo kot 
+    \begin{align*}
+        a &= n_a p + r_a, \\
+        b &= n_b p + r_a,
+    \end{align*}
+    kjer velja $r_a < p$.
+
+    \eqref{eq:mod-prod}: Levo stran preoblikujemo
+    \begin{align*}
+        a \cdot b \bmod p &= (n_a p + r_a) \cdot (n_b p + r_b) \bmod p = \\
+                          &= (n_a n_b p^2 + n_a p r_b + n_b p r_a + r_a r_b) \bmod p = \\
+                          &= r_a r_b \bmod p,
+    \end{align*}
+    desno pa
+    \begin{align*}
+        (a \bmod p) \cdot (b \bmod p) \bmod p &= (n_a p + r_a \bmod p) \cdot (n_b p + r_b \bmod p) \bmod p = \\
+                          &= r_a r_b \bmod p.
+    \end{align*}
+    Ker se strani ujemata, je trditev dokazana.
+
+    \eqref{eq:mod-exp}: Ker je potenciranje samo zaporedna uporaba množenj, lahko trditev pokažemo z 
+    indukcijo na $b$ in enačbo~\eqref{eq:mod-prod}:
+    \begin{itemize}
+        \item $b = 2$: Primer, ko je $b = 1$ (ali $b = 0$) je trivialen, če pa je $b = 2$, pa se 
+            problem reducira v 
+            $$ 
+            a \cdot a \bmod p \stackrel{?}{=} (a \bmod p) \cdot (a \bmod p) \bmod p,
+            $$
+            kar drži neposredno po enačbi~\eqref{eq:mod-prod}.
+        \item $n \rightarrow n + 1$: Predpostavimo, da enačba~\eqref{eq:mod-exp} drži za $b = n$ (I.P.). 
+            Ko je $b = n + 1$, dobimo 
+            \begin{align*}
+                a^{n + 1} \bmod p &= a^n a \bmod p = \\ 
+                                  &\stackrel{\eqref{eq:mod-prod}}{=} (a^n \bmod p) (a \bmod p) \bmod p = \\
+                                  &\stackrel{\text{I.P.}}{=} (a \bmod p)^n (a \bmod p) \bmod p = \\
+                                  &= (a \bmod p)^{n + 1} \bmod p.
+            \end{align*}
+    \end{itemize}
+    S tem je indukcija končana in trditev dokazana.
+\end{dokaz}
 
 \subsection{Zgoščevalne funkcije}
 V grobem so (kriptografske) \textit{zgoščevalne funkcije} take funkcije, ki prejmejo poljubno dolg binarni 
@@ -300,7 +383,7 @@ definiramo:
 \end{primer}
 
 \subsection{Kriptografija javnega ključa}
-Prve šifre, ki smo jih uporabljaji ljudje, so bile \textit{simetrične}, kar pomeni, da sta osebi 
+Prve šifre, ki smo jih uporabljali ljudje, so bile \textit{simetrične}, kar pomeni, da sta osebi 
 za komunikacijo obe morali poznati skriven \textit{ključ}, ki je definiral, kako je bila šifra 
 ustvarjena. 
 
@@ -331,6 +414,7 @@ delujejo na način, da lahko sporočilo, šifrirano z javnim ključem dešifrira
 Tako zagotovimo varno komunikacijo. 
 
 \begin{primer}[RSA]
+\label{primer:rsa}
     En prvih algoritmov javnega ključa, ki se uporablja še danes, je \textit{RSA}. Njegova varnost izhaja 
     iz (domnevne) težavnosti problema iskanja prafaktorjev velikega števila. Svoj ključ definiramo tako, 
     da si izberemo dve (zelo veliki) praštevili $p$ in $q$, ter ju zmnožimo v $n = pq$. Za primer vzemimo 
@@ -394,14 +478,22 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
     \mathcal{S}, \mathcal{V})$ je četvorka učinkovitih algoritmov $\mathcal{P}$ za ustvarjanje parametrov
     podpisa, $\mathcal{G}$ za ustvarjanje ključa, $\mathcal{S}$ za podpisovanje in $\mathcal{V}$ za
     preverjanje podpisa. Definirana je nad končno množico možnih  sporočil $\mathcal{M}$, vrnjeni
-    podpis pa leži v v končni množici podpisov $\Sigma$.
+    podpis pa leži v končni množici podpisov $\Sigma$.
     \begin{itemize}
         \item $\mathcal{P}$ je algoritem za ustvarjanje javnih parametrov podpisa. Definira grupo $G$,
             ki bo uporabljena pri podpisu. V praksi je ta korak izpuščen, sodelujoči pri podpisu
-            uporabijo dobro poznane varne grupe.
+            uporabijo dobro poznane varne grupe. Formalno pa je to algoritem, ki prejme varnostni
+            parameter $\lambda$ in vrne parametre grupe $G$, oz.\
+            $$
+            G = \mathcal{P}(\lambda).
+            $$
         \item $\mathcal{G}$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
-            ki ne prejme nobenega argumenta. $\text{pk}$ je javni kljč za preverjanje avtentičnosti 
-            podpisa, $\text{sk}$ pa je zasebni ključ za podpisovanje.
+            ki za svoj vhod prejme parametre grupe $G$ (javno dostopni ali pa ustvarjeni prek $\mathcal{P}$).
+            Z javnim ključem $\text{pk}$ lahko preverjevalec preveri avtentičnost podpisa, z zasebnim
+            ključem $\text{sk}$ pa podpisnik podpisuje. Formalno velja
+            $$
+            (\text{pk}, \text{sk}) = \mathcal{G}(G).
+            $$
         \item $\mathcal{S}$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$ 
             in sporočilo $m$, vrne pa podpis $\sigma$ sporočila $m$ z zasebnim ključem $\text{sk}$
             oz.\ 
@@ -426,23 +518,23 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 razkritja znanja, fiat-shamirjeva hevristika zasluži obravnavo posebaj?}
 
 \subsection{Varnost}
-Glavna stvar, ki nas zanima pri obravnavi kateregakoli kriptosistema, je njegova \textit{varnost}. 
-Ker je cilj digitalnih podpisov sogovorniku zagotoviti, da sporočilo res pošiljamo mi, nas glede 
-varnosti najbolj skrbi, da bi \textit{napadalec} lahko ponaredil naš podpis in nam s tem ukradel 
-identiteto. Pri tem je lahko uspešen na več nivojih, ki so od najmanj do najbolj škodljivega:
+Poglavitna lastnost vsakega kriptosistema je njegova \textit{varnost}. Ker je namen digitalnih podpisov
+zagotoviti sogovorniku, da je sporočilo res poslal lastnik zasebnega ključa, je največja varnostna
+skrb, da bi \textit{napadalec} lahko ponaredil pošiljateljev podpis in si s tem prisvojil njegovo 
+identiteto. To napadalcu lahko uspe na več nivojih, od najmanj do najbolj škodljivega:
 
 \begin{itemize}
     \item \textbf{Eksistencialno ponarejanje} (angl.\ \textit{existential forgery}) pomeni, da obstaja
-        sporočilo, za katerrega napadalec lahko ustvari ponarejen podpis (torej podpis, pri katerem
-        ni bil uporabljen zasebni ključ). To pomeni, da lahko najde vsaj en par $(m, \sigma)$, da 
-        velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
+        sporočilo, za katerega napadalec lahko ustvari ponarejen podpis (torej podpis, pri katerem
+        ni bil uporabljen zasebni ključ). To pomeni, da lahko najde vsaj en par sporočila in podpisa
+        $(m, \sigma)$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
     \item \textbf{Selektivno ponarejanje} (angl.\ \textit{selective forgery}) pomeni, da lahko napadalec 
         z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga lastnik zasebnega
         ključa še ni podpisal. Torej, če napadalcu nekdo predloži sporočilo $m$, lahko z nezanemarljivo 
         verjetnostjo najde podpis $\sigma$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
-    \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da napadalec ugotovi 
-        zasebni ključ napadenega in s tem pozna celoten podpisovalni algoritem. V imenu napadenega
-        lahko podpiše katerokoli sporočilo.
+    \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da napadalec pridobi 
+        zasebni ključ napadenega in s tem pridobi vse potrebne podatke za podpisovanje poljubnih
+        sporočil v njegovem imenu.
 \end{itemize}
 
 Poleg zgoraj definiranih \textit{ciljev napadalca}, lahko za vsak kriptosistem definiramo tudi
@@ -451,8 +543,10 @@ digitalne podpise temelji na (domnevni) težavnosti določenih matematičnih pro
 
 Stinson~\cite{stinson2023crypto} definira naslednje modele napada:
 \begin{itemize}
-    \item \textbf{Napad samo s ključem} je napad, kjer napadalec pozna samo javni ključ $\text{pk}$. 
-        Pozna torej algoritem za preverjanje podpisov $\mathcal{V}$.
+    \item \textbf{Napad samo s ključem} je napad, kjer napadalec pozna javni ključ žrtve $\text{pk}$. 
+        Predpostavimo tudi, da napadalec vedno pozna delovanje sheme za podpisovanje $\mathcal{S}$
+        in ima dostop do javnih parametrov podpisa $G$. Z javnim ključem torej lahko preverja
+        veljavnost podpisov, ni pa prejel nobenega podpisanega sporočila.
     \item \textbf{Napad z znanimi sporočili} je napad, kjer napadalec poseduje seznam parov sporočil 
         in njihovih podpisov $(m_1, \sigma_1), (m_2, \sigma_2), \dots$, kjer za vsak $i$ velja 
         $\sigma_i = \mathcal{S}(\text{sk}, m_i)$.
@@ -470,61 +564,116 @@ Pričakujemo pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne mo
 v doglednem času, če ima omejene računske sposobnosti, in/ali pa \textit{dokazljivo varnost}, kar 
 pomeni, da lahko varnost prevedemo na težavnost nekega matematičnega problema.
 
+\subsubsection{Temelji varnosti}
+V primeru~\ref{primer:rsa} smo omenili, da je varnost algoritma RSA odvisna od težavnosti problema
+iskanja prafaktorjev velikega števila. To je le eden izmed mnogih problemov, ki služijo kot osnova
+za varnost kriptografskih sistemov. V kriptografiji javnega ključa se pogosto srečamo s cikličnimi
+grupami, ki podpirajo množenje. V nadaljevanju bomo pogosto uporabili operacijo množenja, za izračune
+tipa 
+$$
+I = g^s,
+$$
+kjer je $g$ generator ciklične grupe, $s$ pa zasebni ključ. Zaradi notacije bi morda kdo hitro pomislil,
+da lahko zgornjo enačbo obrnemo in $s$ izračunamo kot 
+$$ 
+s = \log_g(I).
+$$
+Taki izračuni v (nekaterih) cikličnih grupah žal (ali pa na srečo) niso tako enostavni, prišli smo do
+koncepta \textit{diskretnega logaritma}. V diskretnih cikličih grupah, kot je npr.\ $\Z_p^*$, ni koncepta
+urejenosti, kar smo videli tudi v primeru~\ref{primer:Z11}, zato nam ">približki"< logaritma ne pomagajo
+čisto nič. Za izračun takih logaritmov se moramo zanesti na drugačne metode, kot za izračun navadnih.
+
+\begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
+\label{def:dl}
+    Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
+    grupe $G$. Naj velja $g^x = h$. Eksponent $x$ Potem imenujemo \textbf{Diskretni logaritem (DL)}.
+
+    Zamislimo si igro, kjer izzivalec in nasprotnik kot vhod prejmeta opis grupe $G$ (torej $q$ in 
+    $g \in G$). Izzivalec potem izbere naključen element $\alpha \in G$ in izračuna $h = g^{\alpha}$.
+    $h$ pošlje nasprotniku, ta pa mora odgovoriti nazaj z elementom $\alpha$. To igro imenujemo 
+    \textbf{problem diskretnega logaritma (PDL)} (angl.\ \textit{discrete logarithm problem}).
+
+    Pri tej igri nas zanima verjetnost pravilnega odgovora nasprotnika, ki je računsko omejen. S tem 
+    mislimo, da ima na voljo polinomsko mnogo časa (glede na velikost grupe). Če je grupa $G$ takšna, 
+    da je verjetnost zanemarljiva, pravimo, da za grupo $G$ drži \textit{predpostavka diskretnega 
+    logaritma}.
+\end{definicija}
+
+Če naš kriptosistem torej živi v ciklični grupi, v kateri je problem diskretnega logaritma težek,
+nam to zagotavlja, da iz javnega ključa ni računsko izvedljivo pridobiti zasebnega. To je osnova
+za varnost mnogih kriptografskih sistemov, kot sta npr.\ ElGamal in Schnorrov podpis.
+
+\todo{kaj je to zanemarljiva verjetnost/funkcija (negligible function)?}
+
 \section{Schnorrov podpis}
 \label{sec:schnorr}
-Eden izmed najenostavnejših, dokazano varnih podpisov je ravno \textit{Schnorrov podpis}~\cite{schnorr1989sig}.
-Kot vsi podpisi, tudi ta potrebuje tri algoritme: za generiranje ključa, podpisovanje sporočil in preverjanje 
-podpisa.
+Eden izmed najenostavnejših, dokazano varnih podpisov je \textit{Schnorrov podpis}~\cite{schnorr1989sig}.
+Kot vsi podpisi, tudi ta potrebuje štiri algoritme: za ustvarjanje javnih parametrov, ustvarjanje ključa, 
+podpisovanje sporočil in preverjanje podpisa.
 
-Za generiranje para ključev, je potrebno najprej generirati dve praštevili $p$ in $q$, tako da $q$ 
-deli $p-1$. Potem je potrebno izbrati element $g$ iz multiplikativne grupe celih števil modulo $p$, torej 
-$g \in \Z_p^*$, ki je reda $q$. Za konec je potreben še izbor naključnega števila $s \in [0, q - 1]$
-in izračun 
-$$ 
-I = g^s \bmod p.
-$$
-O pomenu tega izračuna bomo govorili kasneje, v poglavju o varnosti~\ref{subsec:sch-varnost}. Ključno pa je to, 
-da je iz $I$ zelo težko izračunati $s$ (to je \textit{problem diskretnega logaritma}). Ko vse to opravimo, 
-smo uspešno ustvarili par ključev
-\begin{align*}
-\text{pk} &= (p, q, g, I), \\
-\text{sk} &= s.
-\end{align*}
+Čeprav je Schnorr originalno~\cite{schnorr1989sig} opisal podpis v multiplikativnih grupah naravnih
+števil modulo $p$, pri njem ni nič, kar bi specifično delalo samo v teh grupah. Zares
+je Schnorrov podpis mogoče posplošiti na katerekoli končne grupe, kjer obstaja učinkovit algoritem
+za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
+\begin{itemize}
+    \item \textbf{Parametri}:
+    Naj bo grupa $G$ končna grupa reda $p$. V njej si izberemo element $g$ reda $q$, pri čemer mora
+    biti $q$ dovolj veliko praštevilo (njegova velikost je odvisna od varnostnega parametra).
+    V splošnem pa sta lahko $p$ in $q$ tudi enaka. Ker računanje potega v podgrupi, ki jo določa $g$,
+    se običajno privzame, da je $G$ kar grupa reda $q$, ki jo generira $g$.
 
-Ideja v ozadju teh števil je, da $p$ določa multiplikativno grupo števil $\Z_p^*$. Za podpis je 
-potrebno najti podgrupo, katere red je praštevilo, je pa vseeno dovolj velika, da omogoča varnost. 
-Red te podgrupe je $q$, določa pa jo generator $g$. Iz varnostnih razlogov mora $p$ imeti vsaj $2048$ 
-bitov, $q$ pa $224$. Čeprav je grupa $\Z_p^*$ zelo velika, je Schnorrov podpis vseeno učinkovit, 
-saj večina izračunov poteka znotraj podgrupe, ki jo generira $g$.
+    Poleg grupe $G$ si morata podpisnik in preverjevalec izbrati še varno kriptografsko zgoščevalno
+    funkcijo $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
+    ki zadošča lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije definira velikost 
+    končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg $2 \log_2 q$ bitov~\cite{
+    stinson2023crypto}.
+    \item \textbf{Ključ}:
+    Za ustvarjanje ključa si izberemo naključno število $s \in [0, q - 1]$ in izračunamo
+    $$
+    I = g^s
+    $$
+    z uporabo učinkovitega algoritma za množenje. Javni ključ $I$ je torej element grupe $G$, zasebni ključ
+    $s$ pa je element $\Z_q$. Ker smo predpostavili, da je v grupi $G$ težek problem diskretnega logaritma,
+    iz javnega ključa $I$ ni mogoče pridobiti zasebnega ključa $s$.
 
-Poleg parametrov $p, q$ in $g$, morata podpisnik in preverjevalec določiti oz.\ imeti dostop do iste varne 
-kriptografske zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
-ki zadošča lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije definira velikost 
-končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg $2 \log_2 q$ bitov~\cite{
-stinson2023crypto}. Tu se pokaže glavna prednost Schnorrovega podpisa. Vrača relativno kratke podpise, 
-hkrati pa lahko izkoristi velikost grupe $\Z_p^*$ za varnost.
+    \item \textbf{Podpis}:
+    Za podpis sporočila $m$ si najprej izberemo naključno število $r \in [0, q - 1]$ in izračunamo
+    \textit{zavezo} (angl.\ \textit{commitment})
+    $$
+    X = g^r.
+    $$
+    Ta korak je popolnoma enak, kot pri ustvarjanju ključa, vendar ima pomembno razliko. Zasebni
+    ključ se ne spreminja, pri izbiri $r$ pa je potrebno paziti, da je ta res naključna, in da se
+    $r$ ne ponovi (glej opombo~\ref{opomba:nonce}).
 
-Za podpis enega sporočila mora podpisnik generirati naključno število $r \in [0, q-1]$ in izračunati 
-\textit{zavezo} 
-$$ 
-X = g^r \bmod p.
-$$ 
-Ta korak je podoben zadnjemu delu generiranja ključev, le da je skrivni del ključa $s$ uporabljen 
-večkrat (zasebni ključ se ne spreminja, razen če ustvarjamo nov par ključev), $r$ pa mora biti 
-generiran za vsako sporočilo znova (glej opombo~\ref{opomba:nonce}).
+    Potem z uporabo zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$ izračunamo \textit{izziv}
+    (angl.\ \textit{challenge})
+    $$
+    e = H(X || m),
+    $$
+    kjer ">$||$"< označuje stikanje nizov. Za konec je potrebno izračunati še 
+    $$ 
+    y = es + r, 
+    $$
+    podpis sporočila $m$ pa je potem par $(X, y)$ oz.\ 
+    $$ 
+    \mathcal{S}(s, m) = (X, y).
+    $$
 
-Potem z uporabo funkcije $H$ izračunamo \textit{izziv} 
-$$
-e = H(X || m),
-$$ 
-kjer ">$||$"< označuje stikanje nizov. Za konec je potrebno izračunati še 
-$$ 
-y = es + r \bmod q, 
-$$
-podpis sporočila $m$ pa je potem par $(X, y)$ oz.\ 
-$$ 
-S(s, m) = (X, y).
-$$
+    \item \textbf{Preverjanje}:
+    Za preverjanje veljavnosti podpisa $(X', y')$ sporočila $m$ je potrebno najprej izračunati
+    $$
+    e' = H(X' || m)
+    $$
+    in nato preveriti, če velja
+    $$
+    g^{y'} \stackrel{?}{=} X' \cdot I^{e'}.
+    $$
+\end{itemize}
+
+Ker Schnorrov podpis deluje v skoraj poljubnih končnih grupah, je zelo prilagodljiv in uporaben.
+V zadnjem času je precej popularna uporaba Schnorrovih podpisov v \textit{eliptičnih grupah}.
+Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj časovno in prostorsko učinkovit.
 
 \begin{opomba}
 \label{opomba:nonce}
@@ -532,7 +681,7 @@ $$
     podpisov izračuna njegov zasebni ključ $s$. Naj bosta $(X_1, y_1)$ in $(X_2, y_2)$ podpisa sporočil
     $m_1$ in $m_2$. Potem velja
     $$
-    y_1 - y_2 \equiv e_1 s + r_1 - e_2 s - r_2 \equiv (e_1 - e_2)s + (r_1 - r_2) \pmod q.
+    y_1 - y_2 = e_1 s + r_1 - e_2 s - r_2 = (e_1 - e_2)s + (r_1 - r_2).
     $$
     V primeru, da sta $r_1$ in $r_2$ enaka, lahko napadalec z enostavnim izračunom inverza $(e_1 - e_2)$
     pridobi zasebni ključ $s$ (za izračun $e_1$ in $e_2$ ima napadalec dovolj informacij, saj je
@@ -544,43 +693,72 @@ $$
     zasebni ključ~\cite{tibouchi2017attacks}.
 \end{opomba}
 
-Za preverjanje veljavnosti podpisa $(X', y')$ sporočila $m$, je potrebno izračunati 
-$$ 
-e' = H(X' || m)
-$$
-in preveriti, če velja 
-\begin{equation}
-    g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod p. \label{eq:schnorr-ver}
-\end{equation}
-Da vidmo, zakaj ta enačba preverja veljavnost Schnorrovega podpisa, moramo uporabiti nekaj lastnosti
-cikličnih grup in modularne aritmetike.
-\begin{trditev}
-\label{trd:mod-q}
-    Naj bosta $p$ in $q$ praštevili, kjer $q$ deli $p - 1$, oz.\ $q \text{ }|\text{ } p - 1$. Naj
-    bo $g$ element grupe $\Z_p^*$ reda $q$, kar pomeni, da je $g^q \equiv 1 \pmod p$. Naj bo $k$
-    naravno število. Potem velja 
-    $$ 
-    g^k \bmod p = g^{k \bmod q} \bmod p.
-    $$
-\end{trditev}
-\begin{dokaz}
-    Po osnovnem izreku o deljenju naravnih števil, lahko $k$ na en sam način zapišemo kot $k = nq + r$, 
-    kjer velja $n \in \N, r < q$.
+\subsection{Varnost Schnorrovega podpisa}
+Kot omenjeno na začetku poglavja, je varnost Schnorrovega podpisa odvisna od težavnosti problema
+diskretnega logaritma. Varnost Schnorrovega podpisa je zato odvisna od varnosti grupe, v kateri deluje.
+V primeru, da je problem diskretnega logaritma težek, je Schnorrov podpis varen.
 
-    Leva stran enačbe se potem prepiše 
+\todo{dokaz varnosti: naredim prek identifikacijske sheme + fiat shamir ali prek forking lemme? 
+se da dokazati v standardnem modelu? Pomoje prva opcija.}
+
+\subsection{Primer: Schnorrov podpis v \texorpdfstring{$\Z_p^*$}{Zp∗}}
+Za ilustrativni primer si poglejmo, kako je bil Schnorrov podpis prvotno opisan~\cite{schnorr1989sig}.
+\begin{itemize}
+    \item \textbf{Parametri}:
+    Najprrej je potrebno generirati par praštevil $p$ in $q$, tako da $q$ deli $p - 1$. Praštevilo $p$
+    definira grupo $\Z_p^*$, ki je multiplikativna grupa celih števil modulo $p$. V tej grupi je potem
+    potrebno izbrati element $g$, ki je reda $q$. Za varnost je potrebno, da ima $p$ vsaj $2048$ bitov,
+    $q$ pa vsaj $224$ bitov.
+
+    Kot v splošni verziji Schnorrovega podpisa, si morata podpisnik in preverjevalec izbrati še varno
+    kriptografsko zgoščevalno funkcijo $H : \{0, 1\}^* \rightarrow \Z_q$.
+
+    \item \textbf{Ključ}:
+    Za ustvarjanje para ključev je potreben izbor naključnega števila $s \in [0, q - 1]$
+    in izračun 
+    $$ 
+    I = g^s \bmod p.
+    $$
+    Ta izračun nam da par ključev
     \begin{align*}
-        g^k \bmod p &= g^{nq + r} \bmod p = \\ 
-                    &= (g^q)^n g^r \bmod p = \\ 
-                    &= 1^n g^r \bmod p = \\ 
-                    &= g^r \bmod p.
+    \text{pk} &= (p, q, g, I), \\
+    \text{sk} &= s.
     \end{align*}
-    Desna stran pa se prepiše kot 
-    \begin{align*}
-        g^{k \bmod q} \bmod p &= g^{(nq + r) \bmod q} \bmod p = \\ 
-                              &= g^r \bmod p.
-    \end{align*}
-    Ker sta obe strani enaki, je trditev dokazana.
-\end{dokaz}
+
+    \item \textbf{Podpis}:
+    Za podpis enega sporočila mora podpisnik generirati naključno število $r \in [0, q-1]$ in izračunati 
+    \textit{zavezo} 
+    $$ 
+    X = g^r \bmod p.
+    $$ 
+    Potem z uporabo funkcije $H$ izračunamo \textit{izziv} 
+    $$
+    e = H(X || m),
+    $$
+    Za konec je potrebno izračunati še 
+    $$ 
+    y = es + r \bmod q, 
+    $$
+    podpis sporočila $m$ pa je potem par $(X, y)$ oz.\ 
+    $$ 
+    S(s, m) = (X, y).
+    $$
+    Postopek je torej enak splošni verziji Schnorrovega podpisa, le da je v tem primeru uporabljeno
+    modularno množenje.
+
+    \item \textbf{Preverjanje}:
+    Za preverjanje veljavnosti podpisa $(X', y')$ sporočila $m$, je potrebno izračunati 
+    $$ 
+    e' = H(X' || m)
+    $$
+    in preveriti, če velja 
+    \begin{equation}
+        g^{y'} \stackrel{?}{\equiv} X' \cdot I^{e'} \pmod p. \label{eq:schnorr-ver}
+    \end{equation}
+\end{itemize}
+
+Z nekaj modularne aritmetike lahko pokažemo, da enačba~\eqref{eq:schnorr-ver} preverja veljavnost
+Schnorrovega podpisa.
 
 Po trditvi~\ref{trd:mod-q} lahko levo stran enačbe za preverjanje Schnorrovega podpisa~\eqref{eq:schnorr-ver}
 prepišemo
@@ -588,59 +766,7 @@ prepišemo
     g^{y'} \bmod p &= g^{es + r \bmod q} \bmod p = \\ 
                    &= g^{es + r} \bmod p. 
 \end{align*}
-Za pretvorbo desne strani moramo uporabiti nekaj lastnosti modularne aritmetike.
-
-\begin{trditev}
-\label{trd:mod-mn-pt}
-    Naj bodo $a$, $b$ in $p$ naravna števila. Potem za modularno množenje in potenciranje velja
-    \begin{align}
-        a \cdot b \bmod p &= (a \bmod p) \cdot (b \bmod p) \bmod p, \label{eq:mod-prod} \\
-        a^b \bmod p &= (a \bmod p)^b \bmod p. \label{eq:mod-exp} 
-    \end{align}
-\end{trditev}
-\begin{dokaz}
-    $a$ in $b$ lahko po osnovnem izreku o deljenju naravnih števil na en sam način zapišemo kot 
-    \begin{align*}
-        a &= n_a p + r_a, \\
-        b &= n_b p + r_a,
-    \end{align*}
-    kjer velja $r_a < p$.
-    
-    \eqref{eq:mod-prod}: Levo stran preoblikujemo
-    \begin{align*}
-        a \cdot b \bmod p &= (n_a p + r_a) \cdot (n_b p + r_b) \bmod p = \\
-                          &= (n_a n_b p^2 + n_a p r_b + n_b p r_a + r_a r_b) \bmod p = \\
-                          &= r_a r_b \bmod p,
-    \end{align*}
-    desno pa
-    \begin{align*}
-        (a \bmod p) \cdot (b \bmod p) \bmod p &= (n_a p + r_a \bmod p) \cdot (n_b p + r_b \bmod p) \bmod p = \\
-                          &= r_a r_b \bmod p.
-    \end{align*}
-    Ker se strani ujemata, je trditev dokazana.
-
-    \eqref{eq:mod-exp}: Ker je potenciranje samo zaporedna uporaba množenj, lahko trditev pokažemo z 
-    indukcijo na $b$ in enačbo~\eqref{eq:mod-prod}:
-    \begin{itemize}
-        \item $b = 2$: Primer, ko je $b = 1$ (ali $b = 0$) je trivialen, če pa je $b = 2$, pa se 
-            problem reducira v 
-            $$ 
-            a \cdot a \bmod p \stackrel{?}{=} (a \bmod p) \cdot (a \bmod p) \bmod p,
-            $$
-            kar drži neposredno po enačbi~\eqref{eq:mod-prod}.
-        \item $n \rightarrow n + 1$: Predpostavimo, da enačba~\eqref{eq:mod-exp} drži za $b = n$ (I.P.). 
-            Ko je $b = n + 1$, dobimo 
-            \begin{align*}
-                a^{n + 1} \bmod p &= a^n a \bmod p = \\ 
-                                  &\stackrel{\eqref{eq:mod-prod}}{=} (a^n \bmod p) (a \bmod p) \bmod p = \\
-                                  &\stackrel{\text{I.P.}}{=} (a \bmod p)^n (a \bmod p) \bmod p = \\
-                                  &= (a \bmod p)^{n + 1} \bmod p.
-            \end{align*}
-    \end{itemize}
-    S tem je indukcija končana in trditev dokazana.
-\end{dokaz}
-
-Desno stran enačbe~\eqref{eq:schnorr-ver} torej lahko prepišemo
+Desno stran enačbe~\eqref{eq:schnorr-ver} pa po trditvi~\ref{trd:mod-mn-pt} lahko prepišemo
 \begin{align*}
 X' \cdot I^{e'} \bmod p &= g^r \bmod p \cdot (g^s \bmod p)^e \bmod p = \\
                         &\stackrel{\eqref{eq:mod-exp}}{=} (g^r \bmod p) \cdot (g^{es} \bmod p) \bmod p = \\ 
@@ -649,89 +775,6 @@ X' \cdot I^{e'} \bmod p &= g^r \bmod p \cdot (g^s \bmod p)^e \bmod p = \\
 kjer smo pri prehodu v drugo vrstico uporabili lastnost~\eqref{eq:mod-exp}, pri prehodu v tretjo 
 pa lastnost~\eqref{eq:mod-prod}. Ker se obe strani ujemata za veljavne podpisne vrednosti, ta enačba 
 res preverja Schnorrov podpis.
-
-\subsection{Schnorrov podpis v splošnih grupah}
-Čeprav je Schnorr originalno~\cite{schnorr1989sig} opisal podpis v multiplikativnih grupah naravnih
-števil modulo $p$ $\Z_p^*$, pri njem zares ni nič, kar bi specifično delalo samo v teh grupah. Zares
-je Schnorrov podpis mogoče posplošiti na katerekoli končne grupe, kjer obstaja učinkovit algoritem
-za množenje in je problem diskretnega logaritma težek.
-
-Naj bo grupa $G$ taka končna grupa reda $p$. V njej si izberemo element $g$ reda $q$, kjer mora
-veljati, da je $q$ dovolj velik (velikost je odvisna od varnostnega parametra). Pri osnovni verziji
-je tu moralo veljati, da $q$ deli $p - 1$, v splošnem pa sta lahko $p$ in $q$ tudi enaka. Efektivno
-grupo, v kateri računamo določa $q$, tako da se v tem primeru navadno predpostavi, da je red grupe
-$G$ kar $q$. Za generiranje ključa si potem izberemo naključno število $s \in [0, q - 1]$ in izračunamo
-$$
-I = g^s
-$$
-z uporabo učinkovitega algoritma za množenje. Javni ključ $I$ je torej element grupe $G$, zasebni ključ
-$s$ pa je element $\Z_q$.
-
-Izračun podpisa poteka podobno, kot pri osnovni verziji. Najprej si izbreremo naključno število
-$r \in [0, q - 1]$ in izračunamo
-$$
-X = g^r.
-$$
-Potem z uporabo zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$ izračunamo $e = H(X || m)$,
-drugi del podpisa pa izračunamo kot
-$$
-y = es + r.
-$$
-
-Preverjanje podpisa poteka praktično enako kot prej, ob predloženem podpisu $(X', y')$ sporočila $m$
-je potrebno izračunati $e = H(X' || m)$ in preveriti, če velja
-$$
-g^{y'} \stackrel{?}{=} X' \cdot I^{e'}.
-$$
-
-Schnorrov podpis je tako precej splošno orodje, v zadnjem času je precej popularna uporaba Schnorrovih
-podpisov v \textit{eliptičnih grupah}. Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj
-časovno in prostorsko učinkovit.
-
-
-\subsection{Varnost Schnorrovega podpisa}
-\label{subsec:sch-varnost}
-Najbolj očitna nevarnost kateregakoli kriptosistema z javnimi ključi bi bila možnost izračuna zasebnega 
-ključa iz javnega. Slednji je dostopen vsem, zato bi lahko kdorkoli pridobil zasebni ključ, kar 
-popolnoma izniči pomen šifriranja ali podpisovanja. 
-
-Pri Schnorrovem podpisu je javni ključ poleg parametrov uporabljene grupe $p, q$ in $g$, še število 
-$I$, izračunano kot 
-$$ 
-I = g^s \bmod p.
-$$
-Za izračun je torej neposredno uporabljen zasebni ključ $s$. Zaradi notacije bi morda kdo hitro pomislil, 
-da lahko zgornjo enačbo obrnemo in $s$ izračunamo kot 
-$$ 
-s = \log_g(I) \bmod p.
-$$
-Taki izračuni v grupah $\Z_p^*$ žal (ali pa na srečo) niso tako enostavni, prišli smo do koncepta 
-\textit{diskretnega logaritma}. V diskretnih grupah, kot je $\Z_p^*$, ni koncepta urejenosti, kar
-smo videli tudi v primeru~\ref{primer:Z11}, zato nam ">približki"< logaritma ne pomagajo čisto nič.
-Za izračun takih logaritmov se moramo zanesti na drugačne metode, kot za izračun navadnih.
-
-\begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
-    Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
-    grupe $G$. Naj velja $g^x = h$. $x$ Potem imenujemo \textbf{Diskretni logaritem (DL)}.
-
-    Zamislimo si igro, kjer izzivalec in nasprotnik kot vhod prejmeta opis grupe $G$ (torej $q$ in 
-    $g \in G$). Izzivalec potem izbere naključen element $\alpha \in G$ in izračuna $h = g^{\alpha}$.
-    $h$ pošlje nasprotniku, le-ta pa mora odgovoriti nazaj z elementom $\alpha$. To igro imenujemo 
-    \textbf{problem diskretnega logaritma (PDL)} (angl.\ \textit{discrete logarithm problem}).
-
-    Pri tej igri nas zanima verjetnost pravilnega odgovora nasprotnika, ki je računsko omejen. S tem 
-    mislimo, da ima na voljo polinomsko mnogo časa (glede na velikost grupe). Če je grupa $G$ takšna, 
-    da je verjetnost zanemarljiva, pravimo, da za grupo $G$ drži \textit{predpostavka diskretnega 
-    logaritma}.
-\end{definicija}
-
-Izkaže se, da za grupe, kot je $\Z_p^*$, ne poznamo učinkovitega (subeksponentnega) algoritma za 
-izračun diskretnega logaritma, torej v njih drži predpostavka DL. To torej pomeni, da ob pridobljenem 
-javnem ključu za Schnorrov podpis, napadalec ne more učinkovito izračunati zasebnega.
-
-\subsubsection{Dokaz varnosti Schnorrovega podpisa}
-\todo{dokaz varnosti: naredim prek identifikacijske sheme + fiat shamir ali prek forking lemme? 
-se da dokazati v standardnem modelu?}
 
 \section{Pregled skupinskih podpisov}
 \label{sec:skpine}
