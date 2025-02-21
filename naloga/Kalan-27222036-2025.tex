@@ -603,7 +603,19 @@ urejenosti, kar smo videli tudi v primeru~\ref{primer:Z11}, zato nam ">približk
 nam to zagotavlja, da iz javnega ključa ni računsko izvedljivo pridobiti zasebnega. To je osnova
 za varnost mnogih kriptografskih sistemov, kot sta npr.\ ElGamal in Schnorrov podpis.
 
-\todo{kaj je to zanemarljiva verjetnost/funkcija (negligible function)?}
+Preden nadaljujemo, natančneje definirajmo, kaj pomeni, da je verjetnost zanemarljiva.
+
+\begin{definicija}[Zanemarljiva funkcija~\cite{boneh2023appcry}]
+    Zanemarljiva funkcija je taka funkcija $\mu : \N \rightarrow \R$, da za vsako število
+    $c > 0$ obstaja naravno število $n_0 \in \N$, da za vsak $n > n_0$ velja
+    $$
+    |\mu(n)| < \frac{1}{n^c}.
+    $$
+\end{definicija}
+
+To so torej funkcije, ki padajo proti nič hitreje, kot inverz kateregakoli polinoma. V kontekstu
+diskretnega logaritma je verjetnost izračuna pravilnega odgovora nasprotnika zanemarljiva v
+odvisnosti od velikosti grupe.
 
 \section{Schnorrov podpis}
 \label{sec:schnorr}
@@ -794,8 +806,8 @@ definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
 \end{itemize}
 
 V nadaljevanju bomo skupino potencialnih podpisnikov (torej podpisnikov, ki imajo možnost sodelovati pri 
-podpisovanju) označili z $G = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
-generiral samo del skupine $S \subseteq G$.
+podpisovanju) označili z $P = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
+generiral samo del skupine $S \subseteq P$.
 
 \todo{je smiselno dati tu formalne definicije vseh vrst podpisov?}
 
@@ -818,8 +830,8 @@ zamislila Chaum in van Heyst~\cite{chaum1991group}.
 Če želimo zagotoviti, da se s podpisom strinja zadosten delež skupine, lahko uporabimo \textbf{pragovni 
 podpis} (angl.\ \textit{threshold signature}). Ta nam omogoča določeno mero prilagodljivosti, saj lahko 
 katerikoli zadosten delež skupine ustvari podpis. Še vedno je nemogoče upoštevati morebitno hierarhično
-strukturo skupine. Pragovni podpisi omogočajo tudi popolno anonimnost podpisnikov, in s tem torej 
-nično odgovornost. 
+strukturo skupine. Po definiciji pragovnih podpisov, ti ne omogočajo odgovornosti, nekateri celo
+zagotavljajo popolno anonimnost podpisnikov.
 
 Večina pragovnih podpisov temelji na interpolaciji polinoma $(l - 1)$-stopnje z $l$ točkami. Podpis je 
 potem ustvarjen s pomočjo vrednosti polinoma v neki točki. Po interpolaciji se informacija o tem, točno 
@@ -861,17 +873,17 @@ odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito prev
 
 \subsection{Agregirani podpisi}
 Rezultat agregiranega podpisa je zelo podoben večstranskemu. Poleg standardnih algoritmov pri digitalnih
-podpisih za ustvarajanje ključev $\mathcal{G}$, podpisovanje $\mathcal{S}$ in preverjanje $\mathcal{V}$,
-imajo agregirani podpisi (angl.\ \textit{aggregate signatures}) še dodaten algoritem za združevanje
-podpisov $\mathcal{C}$. Ta algoritem prejme seznam trojic javnih ključev, sporočil in podpisov, vrne
-pa en sam podpis. Od večstranskih podpisov se razlikuje po tem, da sporočila niso nujno vsa
-enaka~\cite{boneh2011aggregate}.
+podpisih za ustvarjanje parametrov $\mathcal{P}$, ustvarjanje ključev $\mathcal{G}$, podpisovanje 
+$\mathcal{S}$ in preverjanje $\mathcal{V}$, imajo agregirani podpisi (angl.\ \textit{aggregate signatures})
+še dodaten algoritem za združevanje podpisov $\mathcal{C}$. Ta algoritem prejme seznam trojic javnih
+ključev, sporočil in podpisov, vrne pa en sam podpis. Od večstranskih podpisov se razlikuje po tem,
+da sporočila niso nujno vsa enaka~\cite{boneh2011aggregate}.
 
 \begin{primer}
     Recimo, da avtentičnost ključev posameznih podpisnikov preverja niz centrov za certificiranje
     podpisov, kjer vsak naslednji center jamči za avtentičnost centra pod njem. Prvi center zajamči
     avtentičnost našega ključa, naslednji zajamči avtentičnost centra in tako naprej. Ko bi želel
-    nekdo prejeti naš certificiran javni kljč, bi moral preveriti veljavnost podpisov vseh centrov,
+    nekdo prejeti naš certificiran javni ključ, bi moral preveriti veljavnost podpisov vseh centrov,
     s pomočjo agregiranih podpisov bi to lahko storil z enim samim preverjanjem.
 \end{primer}
 
@@ -886,32 +898,35 @@ in argument varnosti.
 \subsection{Večstranski podpis podskupine z odgovornostjo}
 Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le bolj formalno definira idejo 
 večstranskega podpisa, predstavljeno v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega 
-podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $G$, brez potrebe po 
+podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $P$, brez potrebe po 
 \textbf{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. 
-Generiranje ključev je torej popolnoma v domeni skupine $G$. Podpis, ki ga ustvari $S$ predstavlja 
+Generiranje ključev je torej popolnoma v domeni skupine $P$. Podpis, ki ga ustvari $S$ predstavlja 
 splošno preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine stoji za (torej podpisuje) 
 sporočilom $m$.
 
 \begin{definicija}[Večstranski podpis (podskupine z odgovornostjo)] 
-    Skupina $G$ je sestavljena iz $L$ podpisnikov, torej
+    Skupina $P$ je sestavljena iz $L$ podpisnikov, torej
     $$ 
-    G = P_1, P_2, \dots, P_L.
+    P = P_1, P_2, \dots, P_L.
     $$
-    Podpisnik predstavlja verjetnostni Turingov stroj, omejen s polinomskim časom. Vsak podpisnik pozna 
-    svojo identifikacijsko številko (eno od števil $1, \dots, L$) in pa \textit{varnostni parameter} $k$, 
+    Podpisnik predstavlja naključnostni polinomski algoritem. Vsak podpisnik pozna svojo 
+    identifikacijsko številko (eno od števil $1, \dots, L$) in pa \textit{varnostni parameter} $k$, 
     ki je enak za vse podpisnike.
 
-    Kot vsi digitalni podpisi~\ref{def:digisig}, ima tudi ta tri glavne komponente: 
+    Kot vsi digitalni podpisi~\ref{def:digisig}, ima tudi ta štiri glavne komponente: 
     \begin{itemize}
-        \item $\mathcal{G}$ je algoritem za ustvarjanje ključev. Za neko skupino podpisnikov $G$ je pognan samo 
-            enkrat, na začetku sodelovanja. Vsak podpisnik $P_i$ dobi kot vhod seznam vseh podpisnikov v $G$ 
+        \item $\mathcal{P}$ je algoritem za ustvarjanje parametrov. Pognan je samo enkrat, na začetku 
+            sodelovanja. Vrne par parametrov $(G, q, g)$, kjer je $G$ grupa reda $q$, ki jo generira 
+            $g$. Velikost parametrov je odvisna od varnostnega parametra $k$.
+        \item $\mathcal{G}$ je algoritem za ustvarjanje ključev. Za neko skupino podpisnikov $P$ je pognan samo 
+            enkrat, na začetku sodelovanja. Vsak podpisnik $P_i$ dobi kot vhod seznam vseh podpisnikov v $P$ 
             in požene $\mathcal{G}$, ki vrne par ključev $(\text{pk}_i, \text{sk}_i)$. Zapišemo lahko torej 
             $$ 
             \mathcal{G}_i(L) = (\text{pk}_i, \text{sk}_i),
             $$
             kjer smo brez škode za splošnost predpostavili, da velikost skupine $L$ enolično opiše 
-            skupino $G$.
-        \item $\mathcal{S}$ je algoritem za podpisovanje. Pognan je vsakič, ko neka podskupina $S$ želi 
+            skupino $P$ (npr.\ vsak podpisnik je predstavljen z indeksom v skupini).
+        \item $\mathcal{S}$ je protokol za podpisovanje. Pognan je vsakič, ko neka podskupina $S$ želi 
             ustvariti podpis. Vsak podpisnik kot vhod prejme seznam vseh podpisnikov $S$, njihove 
             javne ključe $\text{pk}_j$, kjer $j$ teče po identifikacijskih številkah vseh članov $S$, 
             sporočilo $m$ in lasten zasebni ključ $\text{sk}_i$. Algoritem $\mathcal{S}$ je porazdeljen 
@@ -924,67 +939,69 @@ sporočilom $m$.
             % kjer je $l$ velikost podskupine $S$, $(id_1, \dots, id_l)$ pa identifikacijske številke 
             % članov.
         \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
-            preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $G$. 
+            preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $P$. 
             Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
             morebiten podpis $\sigma$. Algoritem potem vrne
             $$ 
             \mathcal{V}((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \sigma) = 
             \begin{cases}
-                veljaven, & \sigma = podpis(S, m), \\
-                neveljaven, & \sigma \neq podpis(S, m).
+                veljaven, & \text{podpis veljaven}, \\
+                neveljaven, & \text{sicer}.
             \end{cases}
             $$
     \end{itemize}
 \end{definicija}
 
 \subsubsection{Robustnost, varnost in napadalec}
-Definiran večstranski podpis ni robusten. To pomeni, da v primeru izpada enega od podpisnikov $P_i$, 
-ki je del podskupine $S$, ta ne more ustvariti večstranskega podpisa. Podpis še vedno lahko ustvari 
-$S \setminus \{P_i\}$. To dejstvo nam dovoli definicijo napadalca, ki ima zelo velik vpliv na celoten 
-sistem, saj ne iščemo robustnosti. 
+Definiran večstranski podpis ni robusten. To pomeni, da v primeru izpada enega od podpisnikov $P_i$,
+ki je del podskupine $S$, ta ne more ustvariti večstranskega podpisa. Podpis še vedno lahko ustvari
+$S \setminus \{P_i\}$. To dejstvo nam dovoli definicijo napadalca, ki ima zelo velik vpliv na celoten
+sistem, saj ne iščemo robustnosti.
 
 \begin{definicija}[Napadalec pri ASM]
 \label{def:asm-napadalec}
     Napadalec v modelu večstranskih podpisov podskupine z odgovornostjo ima naslednje zmožnosti:
     \begin{itemize}
-        \item Ima popoln nadzor nad vsemi komunikacijskimi kanali med člani skupine $G$. Lahko bere, 
-            spreminja in preprečuje dostavo vseh sporočil. Prav tako lahko v imenu kateregakoli 
+        \item Ima popoln nadzor nad vsemi komunikacijskimi kanali med člani skupine $P$. Lahko bere,
+            spreminja in preprečuje dostavo vseh sporočil. Prav tako lahko v imenu kateregakoli
             podpisnika pošlje sporočilo.
-        \item Kadarkoli lahko \textit{pokvari} kateregakoli podpisnika. Ko je podpisnik pokvarjen, 
+        \item Kadarkoli lahko \textit{pokvari} kateregakoli podpisnika. Ko je podpisnik pokvarjen,
             napadalec izve njegovo celotno notranje stanje, vključno z vsemi skrivnostmi.
-        \item Nadzira lahko vhod algoritma za ustvarjanje ključev $\mathcal{G}$ za vse podpisnike. 
-            Vsakemu lahko poda drugačno skupino $G$.
-        \item Od kateregakoli nepokvarjenega podpisnika lahko kadarkoli zahteva podpis nekega sporočila 
-            skupaj s podskupino, ki jo določi napadalec. To je \textit{napad z izbranim sporočilom 
+        \item Nadzira lahko vhod algoritma za ustvarjanje ključev $\mathcal{G}$ za vse podpisnike.
+            Vsakemu lahko poda drugačno skupino $P$.
+        \item Od kateregakoli nepokvarjenega podpisnika lahko kadarkoli zahteva podpis nekega sporočila
+            skupaj s podskupino, ki jo določi napadalec. To je \textit{napad z izbranim sporočilom
             in podskupino}.
     \end{itemize}
 \end{definicija}
 
-Zaradi obširnih zmožnosti napadalca, ta lahko vedno prepreči podpis sporočila. Naš cilj, kar se 
-tiče varnosti, je, da preprečimo eksistencialno ponarejanje podpisa. Želimo torej, da napadalec ni 
+Zaradi obširnih zmožnosti napadalca, ta lahko vedno prepreči podpis sporočila. Naš cilj, kar se
+tiče varnosti, je, da preprečimo eksistencialno ponarejanje podpisa. Želimo torej, da napadalec ni
 zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupine.
 
 \begin{definicija}[Varnost pri ASM]
 \label{def:asm-varnost}
     Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
-    Naj bo $F$ napadalec, čigar računska moč je omejena s polinomskim časom v parametru $k$. Naj bo 
-    $p$ verjetnost, da  $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
+    Naj bo $F$ napadalec, ki ustreza definiciji~\ref{def:asm-napadalec}, torej lahko nadzoruje in
+    spreminja dejanja podpisnikov skupine $S$. Naj bo njegova računska moč omejena s polinomskim časom
+    v parametru $k$. Naj bo $p$ verjetnost, da $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
     \begin{itemize}
         \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
-        \item Obstaja nepokvarjen podpisnik $P$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
+        \item Obstaja nepokvarjen podpisnik $P_j$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
             sporočila $m$ s strani skupine $S$.
     \end{itemize}
     Shemi za večstranske 
-    podpise podskupine z odgovornostjo bomo rekli, da je \textbf{varna}, če velja 
+    podpise podskupine z odgovornostjo bomo rekli, da je \textbf{varna}, če je verjetnost $p$ zanemarljiva,
+    oz.\ velja
     $$ 
     p < k^{-c}.
     $$
 \end{definicija}
 
-Kot ponavadi pri digitalnih podpisih, tudi tu predpostavimo, da tisti, ki preverja veljavnost podpisa, lahko vedno 
-pridobi prave javne ključe podpisnikov iz $S$. Zaradi močnega napadalca pri ASM, lahko tudi pridemo 
-v situacijo, ko podpisnik $P_1$ ne ve, kdo je zares podpisnik $P_2$. Tukaj predpostavimo, da preverjevalec
-natančno ve, kdo je $P_2$ v resnici, in lahko pridobi ustrezen javni ključ. 
+Kot je standardno pri varnostni obravnavi digitalnih podpisov, tudi tu predpostavimo, da preverjevalec
+kljub močnemu napadalcu lahko vedno pridobi prave javne ključe podpisnikov iz $S$. To pomeni, da
+pozna prave identitete podpisnikov, tudi če napadalec lahko doseže, da podpisnik $P_1$ ne ve, kdo
+je zares podpisnik $P_2$ v času podpisovanja.
 
 \subsubsection{Model slučajnega oraklja}
 Ko obravnavamo varnost kriptosistemov, ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
@@ -1010,7 +1027,7 @@ varna (npr.\ zanjo nihče še ni našel trčenja).
 
 \begin{definicija}[Slučajni oraklelj pri ASM]
     Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega 
-    oraklja. Zato predpostavimo, da je $k_2$ še en varnostni parameter. Vsi člani skupine $G$ in 
+    oraklja. Zato predpostavimo, da je $k_2$ še en varnostni parameter. Vsi člani skupine $P$ in 
     napadalec imajo dostop do slučajnega oraklja $H: \{0, 1\}^* \rightarrow \{0, 1\}^{k_2}$, ki je 
     naključno izbrana funkcija med vsemi funkcijami, ki slikajo med $\{0, 1\}^*$ in $\{0, 1\}^{k_2}$.
 \end{definicija}
@@ -1023,7 +1040,7 @@ privede do formalne definicije v razdelku~\ref{sec:def_multi_schnorr} in dokaza 
 razdelku~\ref{sec:proof_multi_schnorr}.
 
 \subsubsection{Naivna verzija}
-Vsi podpisniki v skupini $G$ poznajo skupne parametre $p, q$ in $g$. Vsak podpisnik $P_i$ si 
+Vsi podpisniki v skupini $P$ poznajo skupne parametre $p, q$ in $g$. Vsak podpisnik $P_i$ si 
 neodvisno in naključno izbere skrivno število $s_i \in [0, \dots q-1]$ in izračuna 
 $$ 
 I_i = g^{s_i} \bmod p.
@@ -1034,7 +1051,7 @@ Tako vsak podpisnik ustvari svoj par ključev
     \text{sk}_i &= s_i.
 \end{align*}
 
-Poljubna podskupina $S =\{P_{id_1}, \dots, P_{id_l}\}$ skupine $G$ podpiše sporočilo $m$ s tremi 
+Poljubna podskupina $S =\{P_{id_1}, \dots, P_{id_l}\}$ skupine $P$ podpiše sporočilo $m$ s tremi 
 krogi komunikacije:
 \begin{enumerate}
     \item Vsak podpisnik $P_i$ iz podskupine $S$ si izbere naključen element $r_i \in [0, q-1]$ 
@@ -1081,7 +1098,7 @@ $$
 Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo. 
 Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa $p, q$ in $g$. Ker si podpisniki 
 delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za parametre uporabiti 
-$H$ na vnprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih 
+$H$ na vnaprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih 
 parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo, 
 da to ne predstavlja nevarnosti, in generiranje parametrov dodamo k predpostavki diskretnega 
 logaritma za večstranske podpise. 
@@ -1091,22 +1108,23 @@ logaritma za večstranske podpise.
     Predpostavka o varnosti je poleg standardnega PDL tu razširjena še z algoritmom za pridobivanje 
     deljenih parametrov in jo lahko zapišemo:
     \begin{itemize}
-        \item \textit{Parametri}: Verjetnostni algoritem $Gen(k)$~\ref{alg:gen} teče v pričakovanem 
+        \item \textit{Parametri}: Verjetnostni algoritem $GenPrimes(k)$~\ref{alg:gen} teče v pričakovanem 
             polinomskem času: 
             \begin{algorithm}
-                \caption{Algoritem $Gen(k)$ za generiranje praštevil.}
+                \caption{Algoritem $GenPrimes(k)$ za generiranje praštevil.}
                 \label{alg:gen}
                 \begin{algorithmic}
-                    \State $q \gets \text{naključno izbran $k$-bitni niz}$
+                    \State $q \gets \text{naključno izbrano $k$-bitno število}$
                     \State $p \gets 2q + 1$
                     \While{$q$ ni praštevilo in $p$ ni praštevilo}
-                        \State $q \gets \text{naključno izbran $k$-bitni niz}$
+                        \State $q \gets \text{naključno izbrano $k$-bitno število}$
                         \State $p \gets 2q + 1$
                     \EndWhile
                     \State \Return{$p, q$}
                 \end{algorithmic}
             \end{algorithm}
-        \item \textit{Težavnost PDL}: Naj bo $A$ algoritem, ki za svoje parametre sprejme 
+        \item \textit{Težavnost DL}: Naj bo $A$ poljuben verjetnostni algoritem, ki teče v polinomskem
+            času in svoje parametre sprejme 
             \begin{itemize}
                 \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
                 \item naključni element $g \in \Z_p^*$ reda $q$,
@@ -1116,8 +1134,8 @@ logaritma za večstranske podpise.
             $$
             I \equiv g^s \pmod p.
             $$
-            Potem za vsak verjetnostni algoritem $A$, ki teče v polinomskem času, za vsako konstanto 
-            $c > 0$ in za vsak dovolj velik $k$ velja 
+            Potem za vsako konstanto $c > 0$ in za vsak dovolj velik $k$ velja, da je verjetnost $p_k^A$
+            zanemarljiva, oz.\
             $$ 
             p_k^A < k^{-c}.
             $$
@@ -1145,13 +1163,13 @@ Za rešitev tega problema potrebujemo nekaj novih kriptografskih orodij. Prvo iz
 poglejmo primer. 
 
 \begin{primer}[Jama Ali Babe~\cite{quisquater1990children}]
-    V zgodbi o Jami Ali Babe nastopata Ana in Bojan. Živita ob Jami Ali Babe, ki je v obliki prstana. 
+    V zgodbi o jami Ali Babe nastopata Ana in Bojan. Živita ob jami Ali Babe, ki je v obliki prstana. 
     Pri vhodu sta na levo in desno vidni dve poti, ki se kasneje združita, vendar prehod preprečujejo 
     vrata, ki jih lahko odpre samo skrivno geslo. Ana je ugotovila, kaj to geslo je, vendar ga ne želi 
     povedati Bojanu, vseeno pa ga želi prepričati, da geslo pozna. 
 
     Da Ana Bojanu dokaže svoje znanje, si zamisli igro. Najprej bo ona odšla v jamo po eni izmed poti. 
-    Potem bo v jamo vstopil Bojan in povedal, če želi da se Ana vrne po levi ali desni poti. Če se 
+    Potem bo v jamo vstopil Bojan in povedal, če želi, da se Ana vrne po levi ali desni poti. Če se 
     bo Ana dovolj velikokrat vrnila po poti, ki jo je povedal Bojan (in nikoli po napačni), bo lahko 
     z veliko verjetnostjo prepričan, da Ana res pozna geslo. Primer enega kroga protokola je prikazan 
     na sliki~\ref{fig:alibaba}. 
@@ -1355,7 +1373,7 @@ oraklja $H$. Na dogovorjen način ga uporabijo, da ustvarijo pet neodvisnih orak
     H_3, H_5: \{0, 1\}^* &\rightarrow \{0, 1\}^{k'}, \\
     H_4: \{0, 1\}^* &\rightarrow \{0, 1\}^{2k'}.
 \end{align*}
-Prav tako predpostavimo, da imajo vsi podpisniki dostop do algoritma $Gen(k)$~\ref{alg:gen}.
+Prav tako predpostavimo, da imajo vsi podpisniki dostop do algoritma $GenPrimes(k)$~\ref{alg:gen}.
 
 Za lažjo obravnavo si izberemo še enega izmed podpisnikov, in ga označimo z $D$. Ta podpisnik bo 
 vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. $D$ lahko tudi predstavlja vse podpisnike, 
@@ -1367,7 +1385,7 @@ koncu imajo vsi vse potrebne podatke za izračune).
 
 \subsubsection{Generiranje ključev}
 Vsi podpisniki morajo sami generirati parametre $p, q$ in $g$. Za prva dva uporabijo algoritem 
-$Gen(k)$~\ref{alg:gen}. Za izvor naključnosti uporabijo zaporedje $H_1(2^k), H_1(2^k + 1), \dots$.
+$GenPrimes(k)$~\ref{alg:gen}. Za izvor naključnosti uporabijo zaporedje $H_1(2^k), H_1(2^k + 1), \dots$.
 Za generiranje elementa $g$ reda $q$ uporabijo izvor naključnosti $H_2(2^k), H_2(2^k + 1), \dots$.
 
 Ko ima vsak podpisnik $P_i$ ($1 \le i \le L$) na voljo skupne parametre, si izbere svoj zasebni 
