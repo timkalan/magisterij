@@ -513,10 +513,6 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
     \end{itemize}
 \end{definicija}
 
-\subsection{Interaktivni protokoli}
-\todo{si interaktivni protokoli, identifikacijske in avtentikacijske sheme, dokazi (znanja) brez 
-razkritja znanja, fiat-shamirjeva hevristika zasluži obravnavo posebaj?}
-
 \subsection{Varnost}
 Poglavitna lastnost vsakega kriptosistema je njegova \textit{varnost}. Ker je namen digitalnih podpisov
 zagotoviti sogovorniku, da je sporočilo res poslal lastnik zasebnega ključa, je največja varnostna
@@ -619,6 +615,115 @@ odvisnosti od velikosti grupe.
 
 V besedilu bomo večkrat govorili o ">zanemarljivih verjetnostih"<, kar pomeni, da se bodo
 verjetnosti v odvisnosti od določene spremenljivke vedle kot zanemarljive funkcije.
+
+\subsection{Interaktivni protokoli}
+V tem razdelku bomo govorili o \textit{interaktivnih protokolih} (angl.\ \textit{interactive protocols}).
+To so protokoli, kjer si dva sogovornika izmenjujeta sporočila, dokler ne prideta do skupnega zaključka.
+Pogosto se uporabljajo za namene avtentikacije, kjer ena stran dokazuje svojo identiteto drugi.
+Zaradi te uporabe, bomo sogovornika poimenovali \textit{dokazovalec} (angl.\ \textit{prover}) in
+\textit{preverjevalec} (angl.\ \textit{verifier}).
+
+Avtentikacijo lahko vidimo kot poseben primer dokazovanja. Dokazovalec želi dokazati preverjevalcu, da
+je res tisti, za katerega se izdaja. Protokoli, kjer je cilj dokazati neko trditev, sodijo v skupino
+\textit{interaktivnih sistemov dokazovanja} (angl.\ \textit{interactive proof systems}). Formalno
+morajo taki protokoli zadoščati dvema lastnostma:
+\begin{itemize}
+    \item \textbf{Kompletnost} (angl.\ \textit{completeness}): Če trditev, ki se dokazuje,
+        drži, potem bo preverjevalec sprejel dokaz dokazovalca (če noben od njiju ne bo goljufal).
+    \item \textbf{Zadostnost} (angl.\ \textit{soundness}): Če trditev, ki se dokazuje, ne
+        drži, potem noben dokazovalec (tudi tak, ki goljufa) ne more predložiti dokaza, ki bi 
+        ga preverjevalec sprejel, razen z zanemarljivo verjetnostjo.
+\end{itemize}
+Dejanski interaktivni protokol pa potem deluje kot izmenjava sporočil, kjer dokazovalec poskuša
+prepričati preverjevalca, da trditev drži, preverjevalec pa s serijo vprašanj preverja, če je
+dokazovalec iskren in če trditev res drži. Pogosto predpostavimo, da ima dokazovalec neomejeno
+računsko moč, vendar ni iskren, preverjevalec pa je omejen na polinomsko računsko moč in je iskren.
+
+\begin{primer}[Reševanje sudokuja]
+    Za enostaven primer interaktivnega dokaza si oglejmo reševanje posplošenega Sudokuja. Tradicionalni
+    Sudoku je problem, kjer moramo v $9 \times 9$ mrežo zapolniti števila od $1$ do $9$ tako, da se v vsaki
+    vrstici, stolpcu in $3 \times 3$ kvadratu ne ponovijo nobena števila. Problem posplošimo tako, da
+    ga prenesemo na poljubno mrežo velikosti $n^2 \times n^2$ in dovolimo uporabo števil od $1$ do $n^2$.
+
+    Znano je, da je ta problem NP-poln, kar pomeni, da je težko najti rešitev, vendar je enostavno
+    preveriti, če je rešitev pravilna. Če želi dokazovalec prepričati preverjevalca, da zna rešiti
+    vse Sudokuje, lahko to storita tako, da si preverjevalec izbere naključne Sudokuje, jih pošlje
+    dokazovalcu, ta pa jih reši in vrne rešitve. Preverjevalec nato preveri, če so rešitve pravilne.
+    Po dovolj velikem številu preverjenih Sudokujev, bo preverjevalec lahko prepričan, da dokazovalec
+    res zna reševati Sudokuje.
+\end{primer}
+
+\begin{opomba}
+    Interaktivni sistemi dokazovanja ne proizvedejo pravih dokazev v matematičnem smislu. Vedno
+    obstaja določena verjetnost (ki je sicer zanemraljiva), da lahko goljufiv dokazovalec prepriča
+    iskrenega preverjevalca o trditvi, ki ne drži. Ker pa je ta verjetnost zanemarljiva, nas to
+    dejstvo ne moti.
+\end{opomba}
+
+\subsubsection{Dokazi brez razkritja znanja}
+\textit{Dokazi brez razkritja znanja} (angl.\ \textit{zero-knowledge proofs}) so posebna vrsta interaktivnih
+sistemov dokazovanja, ki poleg kompletnosti in zadostnosti zadoščajo še tretji lastnosti:
+\begin{itemize}
+    \item \textbf{Brez razkritja znanja} (angl.\ \textit{zero-knowledge}): Če trditev, ki se dokazuje, 
+        drži, potem noben preverjevalec (tudi tak, ki goljufa) ne bo iz dokaza izvedel ničesar več, 
+        kot samo to, da trditev drži.
+\end{itemize}
+To je torej orodje, prek katerega lahko dokazovale dokaže, da nekaj ve, brez da bi izdal, kaj to je.
+
+\begin{primer}[Jama Ali Babe~\cite{quisquater1990children}]
+    V zgodbi o jami Ali Babe nastopata Ana in Bojan. Živita ob jami Ali Babe, ki je v obliki prstana. 
+    Pri vhodu sta na levo in desno vidni dve poti, ki se kasneje združita, vendar prehod preprečujejo 
+    vrata, ki jih lahko odpre samo skrivno geslo. Ana je ugotovila, kaj to geslo je, vendar ga ne želi 
+    povedati Bojanu, vseeno pa ga želi prepričati, da geslo pozna. 
+
+    Da Ana Bojanu dokaže svoje znanje, si zamisli igro. Najprej bo ona odšla v jamo po eni izmed poti. 
+    Potem bo v jamo vstopil Bojan in povedal, če želi, da se Ana vrne po levi ali desni poti. Če se 
+    bo Ana dovolj velikokrat vrnila po poti, ki jo je povedal Bojan (in nikoli po napačni), bo lahko 
+    z veliko verjetnostjo prepričan, da Ana res pozna geslo. Primer enega kroga protokola je prikazan 
+    na sliki~\ref{fig:alibaba}. 
+    \begin{figure}[ht]
+      \centering
+        \begin{subfigure}{0.28\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp1.png}
+        \end{subfigure}
+        \hspace{0.25cm}
+        \begin{subfigure}{0.25\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp2.png}
+        \end{subfigure}
+        \hspace{0.25cm}
+        \begin{subfigure}{0.25\textwidth}
+            \includegraphics[width=\textwidth]{images/zkp3.png}
+        \end{subfigure}
+        \caption[Jama Ali Babe.]{Igra Ane in Bojana v jami Ali Babe. Vir slike Wikipedia~\cite{zkp}.}
+        \label{fig:alibaba}
+    \end{figure}
+\end{primer}
+
+\subsubsection{Dokazi znanja brez razkritja znanja}
+\subsubsection{Schnorrova identifikacijska shema}
+\subsubsection{Fiat-Shamirjeva hevristika}
+
+
+Dokazi znanja brez razkritja znanja (definicija, primer dl)
+
+Schnorrova identifikacijska shema
+
+Fiat-Shamirjeva hevristika
+
+\todo[
+kaj je fiat shamir~\cite{fiat1987heuristic}:  
+Če dokazovalec $A$ želi prepričati preverjevalca $B$ o svoji identiteti, lahko uporabi eno od treh
+vrst shem:
+\begin{itemize}
+    \item \textbf{avtentikacijska shema} (angl.\ \textit{authentication scheme}) dovoli $A$, da dokaže
+        $B$ svojo identiteto, vendar nihče drug ne more $B$ dokazati, da je $A$.
+    \item \textbf{identifikacijska shema} (angl.\ \textit{identification scheme}) dovoli $A$, da dokaže
+        $B$ svojo identiteto, vendar more $B$ dokazati nikomur drugemu, da je $A$.
+    \item \textbf{podpisna shema} (angl.\ \textit{signature scheme}) dovoli $A$, da dokaže
+        $B$ svojo identiteto, vendar niti $B$ ne more sebi dokazati, da je $A$.
+\end{itemize}
+dokaz varnosti~\cite{pointcheval1996forking}:]
+{natančneje o zkp: sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
 
 \section{Schnorrov podpis}
 \label{sec:schnorr}
@@ -1154,7 +1259,7 @@ definicije~\ref{def:asm_dlp}. Predpostavka o težavnosti diskretnega logaritma j
 na njem standardna, prva predpostavka pa nam zagotavlja učuinkovit in standarden način za generiranje
 skupnih parametrov, ki napadalcu ne izda dodatnih informacij.
 
-\subsubsection{Napad na generiranje ključev: Dokazi brez razkritja znanja}
+\subsubsection{Napad na generiranje ključev}
 Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso komunikacijo, 
 si lahko privošči vstopiti v podpisovanje kot zadnji izmed podpisnikov $P_L$, in lahko zadnji generira svoj
 par ključev. Če si torej izbere naključen $s \in [0, q- 1]$, lahko izračuna svoj javni ključ kot 
@@ -1164,78 +1269,7 @@ $$
 To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj bo pri množenju v enačbi za preverjanje
 tako izničil vse ostale javne ključe.
 
-Za rešitev tega problema potrebujemo nekaj novih kriptografskih orodij. Prvo izmed njih so 
-\textbf{dokazi brez razkritja znanja} (angl.\ \textit{zero-knowledge proofs}). Za intuicijo si najprej 
-poglejmo primer. 
-
-\begin{primer}[Jama Ali Babe~\cite{quisquater1990children}]
-    V zgodbi o jami Ali Babe nastopata Ana in Bojan. Živita ob jami Ali Babe, ki je v obliki prstana. 
-    Pri vhodu sta na levo in desno vidni dve poti, ki se kasneje združita, vendar prehod preprečujejo 
-    vrata, ki jih lahko odpre samo skrivno geslo. Ana je ugotovila, kaj to geslo je, vendar ga ne želi 
-    povedati Bojanu, vseeno pa ga želi prepričati, da geslo pozna. 
-
-    Da Ana Bojanu dokaže svoje znanje, si zamisli igro. Najprej bo ona odšla v jamo po eni izmed poti. 
-    Potem bo v jamo vstopil Bojan in povedal, če želi, da se Ana vrne po levi ali desni poti. Če se 
-    bo Ana dovolj velikokrat vrnila po poti, ki jo je povedal Bojan (in nikoli po napačni), bo lahko 
-    z veliko verjetnostjo prepričan, da Ana res pozna geslo. Primer enega kroga protokola je prikazan 
-    na sliki~\ref{fig:alibaba}. 
-    \begin{figure}[ht]
-      \centering
-        \begin{subfigure}{0.28\textwidth}
-            \includegraphics[width=\textwidth]{images/zkp1.png}
-        \end{subfigure}
-        \hspace{0.25cm}
-        \begin{subfigure}{0.25\textwidth}
-            \includegraphics[width=\textwidth]{images/zkp2.png}
-        \end{subfigure}
-        \hspace{0.25cm}
-        \begin{subfigure}{0.25\textwidth}
-            \includegraphics[width=\textwidth]{images/zkp3.png}
-        \end{subfigure}
-        \caption[Jama Ali Babe.]{Igra Ane in Bojana v jami Ali Babe. Vir slike Wikipedia~\cite{zkp}.}
-        \label{fig:alibaba}
-    \end{figure}
-\end{primer}
-
-Dokazi brez razkritja znanja so torej orodje, s katerim lahko pokažemo, da nekaj vemo, brez da bi 
-izdali skrivnost. V osnovi so to interaktivni protokoli med \textit{dokazovalcem} in \textit{preverjevalcem}. 
-Dokazovalec želi preverjevalca prepričati, da pozna skrivnost, brez da bi mu jo izdal. Taki protokoli 
-sodijo med \textbf{interaktivne dokaze}, kar pomeni, da morajo zadoščati dvema lastnostima:
-\begin{itemize}
-    \item \textbf{Kompletnost} (angl.\ \textit{completeness}): Če trditev, ki se dokazuje,
-        drži, potem bo preverjevalec sprejel dokaz dokazovalca (če noben od njiju ne bo goljufal).
-    \item \textbf{Zadostnost} (angl.\ \textit{soundness}): Če trditev, ki se dokazuje, ne
-        drži, potem noben dokazovalec (tudi tak, ki goljufa) ne more predložiti dokaza, ki bi 
-        ga preverjevalec sprejel, razen z zanemarljivo verjetnostjo.
-\end{itemize}
-Poleg teh dveh lastnosti, mora dokaz brez razkritja znanja zadoščati še eni, o njej govori že samo ime:
-\begin{itemize}
-    \item \textbf{Brez razkritja znanja} (angl.\ \textit{zero-knowledge}): Če trditev, ki se dokazuje, 
-        drži, potem noben preverjevalec (tudi tak, ki goljufa) ne bo iz dokaza izvedel ničesar več, 
-        kot samo to, da trditev drži.
-\end{itemize}
-
-\begin{opomba}
-    Dokazi brez razkritja znanja niso dokazi v matematičnem smislu. Vedno obstaja določena verjetnost
-    (ki je sicer zanemraljiva), da lahko goljufiv dokazovalec prepriča iskrenega preverjevalca o 
-    trditvi, ki ne drži. Ker pa je ta verjetnost zanemarljiva, nas to dejstvo ne moti.
-\end{opomba}
-
-\todo[
-kaj je fiat shamir~\cite{fiat1987heuristic}:  
-Če dokazovalec $A$ želi prepričati preverjevalca $B$ o svoji identiteti, lahko uporabi eno od treh
-vrst shem:
-\begin{itemize}
-    \item \textbf{avtentikacijska shema} (angl.\ \textit{authentication scheme}) dovoli $A$, da dokaže
-        $B$ svojo identiteto, vendar nihče drug ne more $B$ dokazati, da je $A$.
-    \item \textbf{identifikacijska shema} (angl.\ \textit{identification scheme}) dovoli $A$, da dokaže
-        $B$ svojo identiteto, vendar more $B$ dokazati nikomur drugemu, da je $A$.
-    \item \textbf{podpisna shema} (angl.\ \textit{signature scheme}) dovoli $A$, da dokaže
-        $B$ svojo identiteto, vendar niti $B$ ne more sebi dokazati, da je $A$.
-\end{itemize}
-dokaz varnosti~\cite{pointcheval1996forking}:]
-{natančneje o zkp: sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
-
+Za rešitev tega problema se lahko zanesemo na dokaze o znanju brez razkritja znanja.
 Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg 
 svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ 
 glede na javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $I_i$ modulo $g$. 
