@@ -616,6 +616,41 @@ odvisnosti od velikosti grupe.
 V besedilu bomo večkrat govorili o ">zanemarljivih verjetnostih"<, kar pomeni, da se bodo
 verjetnosti v odvisnosti od določene spremenljivke vedle kot zanemarljive funkcije.
 
+\subsubsection{Model slučajnega oraklja}
+Ko obravnavamo varnost kriptosistemov, ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
+Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu 
+je na voljo (tu je ponavadi predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo 
+v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. V tem primeru govorimo o 
+alternativnih modelih kriptografije. 
+
+Ko imamo opravka z zgoščevalnimi funkcijami, je pogosto potrebno sprejeti dodatne predpostavke, da lahko 
+pokažemo varnost. Specifično, ko imamo opravka z zgoščevalno funkcijo $H: A \rightarrow B$ predpostavimo, 
+da je bila ta funkcija izbrana naključno med vsemi funkcijami, ki slikajo $A$ v $B$. To idealizirano 
+verzijo zgoščevalne funkcije imenujemo \textbf{slučajni orakelj} (angl.\ \textit{random oracle}).
+Za poljuben vhod torej vedno vrne enak odgovor, vendar je bil ta odgovor popolnoma naključno izbran.
+
+\textbf{Model slučajnega oraklja} (angl.\ \textit{random oracle model}) je model kriptografije, kjer poleg 
+standardnih predpostavk, vsako uporabo zgoščevalne funkcije nadomestimo s slučajnim 
+orakljem~\cite{boneh2023appcry}. Predpostavimo, da imajo do oraklja dostop vsi vpleteni v kriptosistem, 
+vključno z napadalcem.
+
+Varnostni dokazi, ki temeljijo na uporabi takih slučajnih orakljev, vseeno pričajo o varnosti shem,
+ki namesto orakljev uporabljajo zgoščevalne funkcije, vsaj dokler je uporabljena zgoščevalna funkcija
+varna (npr.\ zanjo nihče še ni našel trčenja).
+
+\subsubsection{Dokazovanje varnosti: simulatorji}
+Pogosto je cilj varnostnih dokazov pokazati, da je varnost neke sheme enakovredna težavnosti nekega
+problema, za katerega domnevamo, da je težek. V takih primerih je pogosto uporabljena metoda
+\textit{dokazovanja z redukcijo} (angl.\ \textit{reduction proof}). Ta metoda temelji na
+predpostavki, da če bi napadalec lahko učinkovito napadel shemo, bi lahko tudi rešil težaven
+problem.
+
+V takih dokazih se pogosto uporabljajo \textit{simulatorji}. Simulator je algoritem, ki posnema
+napadalca, vendar ne potrebuje nobenih skrivnih informacij, ki jih ima napadalec. Če lahko
+simulator, omejen s polinomskim časom
+
+\todo{Dokončaj}
+
 \subsection{Interaktivni protokoli}
 V tem razdelku bomo govorili o \textit{interaktivnih protokolih} (angl.\ \textit{interactive protocols}).
 To so protokoli, kjer si dva sogovornika izmenjujeta sporočila, dokler ne prideta do skupnega zaključka.
@@ -873,8 +908,11 @@ Kot omenjeno na začetku poglavja, je varnost Schnorrovega podpisa odvisna od te
 diskretnega logaritma. Varnost Schnorrovega podpisa je zato odvisna od varnosti grupe, v kateri deluje.
 V primeru, da je problem diskretnega logaritma težek, je Schnorrov podpis varen.
 
-\todo{dokaz varnosti: naredim prek identifikacijske sheme + fiat shamir ali prek forking lemme? 
-se da dokazati v standardnem modelu? Pomoje prva opcija.}
+Varnost podpisa je mogoče dokazati tako, da pokažemo varnost Schnorrove identifikacijske sheme,
+opazimo, da nam uporaba Fiat-Shamirjeve hevristike vrne ravno Schnorrov podpis, in pokažemo, da
+je ta transformacija varna.
+
+\todo{dokaz varnosti: naredim prek identifikacijske sheme + fiat shamir + oraklej}
 
 \subsection{Primer: Schnorrov podpis v \texorpdfstring{$\Z_p^*$}{Zp∗}}
 Za ilustrativni primer si poglejmo, kako je bil Schnorrov podpis prvotno opisan~\cite{schnorr1989sig}.
@@ -1169,34 +1207,11 @@ kljub močnemu napadalcu lahko vedno pridobi prave javne ključe podpisnikov iz 
 pozna prave identitete podpisnikov, tudi če napadalec lahko doseže, da podpisnik $P_1$ ne ve, kdo
 je zares podpisnik $P_2$ v času podpisovanja.
 
-\subsubsection{Model slučajnega oraklja}
-Ko obravnavamo varnost kriptosistemov, ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
-Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu 
-je na voljo (tu je ponavadi predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo 
-v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. V tem primeru govorimo o 
-alternativnih modelih kriptografije. 
-
-Ko imamo opravka z zgoščevalnimi funkcijami, je pogosto potrebno sprejeti dodatne predpostavke, da lahko 
-pokažemo varnost. Specifično, ko imamo opravka z zgoščevalno funkcijo $H: A \rightarrow B$ predpostavimo, 
-da je bila ta funkcija izbrana naključno med vsemi funkcijami, ki slikajo $A$ v $B$. To idealizirano 
-verzijo zgoščevalne funkcije imenujemo \textbf{slučajni orakelj} (angl.\ \textit{random oracle}).
-Za poljuben vhod torej vedno vrne enak odgovor, vendar je bil ta odgovor popolnoma naključno izbran.
-
-\textbf{Model slučajnega oraklja} (angl.\ \textit{random oracle model}) je model kriptografije, kjer poleg 
-standardnih predpostavk, vsako uporabo zgoščevalne funkcije nadomestimo s slučajnim 
-orakljem~\cite{boneh2023appcry}. Predpostavimo, da imajo do oraklja dostop vsi vpleteni v kriptosistem, 
-vključno z napadalcem.
-
-Varnostni dokazi, ki temeljijo na uporabi takih slučajnih orakljev, vseeno pričajo o varnosti shem,
-ki namesto orakljev uporabljajo zgoščevalne funkcije, vsaj dokler je uporabljena zgoščevalna funkcija
-varna (npr.\ zanjo nihče še ni našel trčenja).
-
-\begin{definicija}[Slučajni oraklelj pri ASM]
-    Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega 
-    oraklja. Zato predpostavimo, da je $k_2$ še en varnostni parameter. Vsi člani skupine $P$ in 
-    napadalec imajo dostop do slučajnega oraklja $H: \{0, 1\}^* \rightarrow \{0, 1\}^{k_2}$, ki je 
-    naključno izbrana funkcija med vsemi funkcijami, ki slikajo med $\{0, 1\}^*$ in $\{0, 1\}^{k_2}$.
-\end{definicija}
+\subsubsection{Slučajni orakelj pri ASM}
+Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega 
+oraklja. Zato predpostavimo, da je $k_2$ še en varnostni parameter. Vsi člani skupine $P$ in 
+napadalec imajo dostop do slučajnega oraklja $H: \{0, 1\}^* \rightarrow \{0, 1\}^{k_2}$, ki je 
+naključno izbrana funkcija med vsemi funkcijami, ki slikajo med $\{0, 1\}^*$ in $\{0, 1\}^{k_2}$.
 
 \subsection{Konstrukcija večstranskega Schnorrovega podpisa}
 V nadaljevanju bomo konstruirali večstransko verzijo Schnorrovega podpisa, predstavljenega v
