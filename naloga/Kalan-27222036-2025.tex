@@ -645,10 +645,10 @@ računsko moč, vendar ni iskren, preverjevalec pa je omejen na polinomsko raču
     vrstici, stolpcu in $3 \times 3$ kvadratu ne ponovijo nobena števila. Problem posplošimo tako, da
     ga prenesemo na poljubno mrežo velikosti $n^2 \times n^2$ in dovolimo uporabo števil od $1$ do $n^2$.
 
-    Znano je, da je ta problem NP-poln, kar pomeni, da je težko najti rešitev, vendar je enostavno
-    preveriti, če je rešitev pravilna. Če želi dokazovalec prepričati preverjevalca, da zna rešiti
-    vse Sudokuje, lahko to storita tako, da si preverjevalec izbere naključne Sudokuje, jih pošlje
-    dokazovalcu, ta pa jih reši in vrne rešitve. Preverjevalec nato preveri, če so rešitve pravilne.
+    Znano je, da je ta problem NP-poln~\cite{yato2003sudoku}, kar pomeni, da je težko najti rešitev,
+    vendar je enostavno preveriti, če je rešitev pravilna. Če želi dokazovalec prepričati preverjevalca,
+    da zna rešiti vse Sudokuje, lahko to storita tako, da si preverjevalec izbere naključne Sudokuje,
+    jih pošlje dokazovalcu, ta pa jih reši in vrne rešitve. Preverjevalec nato preveri, če so rešitve pravilne.
     Po dovolj velikem številu preverjenih Sudokujev, bo preverjevalec lahko prepričan, da dokazovalec
     res zna reševati Sudokuje.
 \end{primer}
@@ -700,30 +700,85 @@ To je torej orodje, prek katerega lahko dokazovale dokaže, da nekaj ve, brez da
 \end{primer}
 
 \subsubsection{Dokazi znanja brez razkritja znanja}
-\subsubsection{Schnorrova identifikacijska shema}
+Za namene kriptografije so pogosto zanimivi dokazi brez razkritja znanja. Da vzpostavimo zaupanje
+(npr.\ med dvema strankama, ki se ne poznata), pa ne želimo samo, da ena stranka dokaže obstoj neke
+skrivnosti, ampak tudi, da to skrivnost dejansko pozna. To je osnovna ideja \textit{dokazov znanja
+brez razkritja znanja} (angl.\ \textit{zero-knowledge proofs of knowledge}).
+
+Odličen primer tovrstnega dokaza je dokaz znanja o tem, da poznamo diskretni logaritem dane vrednosti.
+Ta dokaz ima neposredno uporabo v kriptografiji, saj tako lahko dokažemo, da nek javni ključ res
+pripada nam. Denimo, da smo ustvarili par ključev $(I, s)$, kjer je $I = g^s$ javni ključ, $s$ pa
+zasebni ključ. Če nam preverjevalec predloži vrednost $I = g^s$, mi pa ga uspemo prepričati, da poznamo
+vrednost $s$, potem je to dovolj, da preverjevalec verjame, da je $I$ res naš javni ključ (razen z
+zanemarljivo verjetnostjo).
+
+\begin{primer}[Schnorrov identifikacijski protokol]
+    En izmed najenostavnejših protokolov za dokaz znanja brez razkritja znanja je Schnorrov
+    protokol~\cite{schnorr1989sig}. Tesno je povezan s Schnorrovim podpisom, ki ga bomo spoznali v
+    naslednjem razdelku. Protokol poteka med dokazovalcem, ki želi dokazati preverjevalcu, da
+    pozna diskretni logaritem dane vrednosti, in preverjevalcem, ki želi to preveriti.
+
+    Pred začetkom se morata strinjati o ciklični grupi $G$ reda $q$, ki jo generira element $g$. Ta
+    grupa predstavlja ogrodje za protokol. Prav tako je obema na voljo javni podatek
+    $$
+    I = g^s \in G.
+    $$
+    Cilj dokazovalca je, da preverjevalca prepriča, da pozna vrednost $s \in [0, q-1]$, ne da bi mu
+    o njej razkril karkoli drugega. Protokol poteka v več korakih:
+    \begin{enumerate}
+        \item \textbf{Zaveza:}
+            Dokazovalec si enakomerno naključno izbere vrednost $r \in [0, q-1]$ in izračuna
+            $$
+            X = g^r \in G.
+            $$
+            To vrednost pošlje preverjevalcu.
+        \item \textbf{Izziv:}
+            Preverjevalec si izbere naključno vrednost $e \in [0, q-1]$ in jo pošlje dokazovalcu.
+        \item \textbf{Odgovor:}
+            Dokazovalec izračuna odgovor
+            $$
+            y = r + es
+            $$
+            in ga pošlje preverjevalcu.
+        \item \textbf{Preverjanje:}
+            Preverjevalec preveri, če velja
+            $$
+            g^y = X \cdot I^e.
+            $$
+            Če enakost drži, preverjevalec verjame, da dokazovalec pozna vrednost $s$, saj je
+            $$
+            g^y = g^{r + es} = g^r \cdot g^{es} = X \cdot I^e.
+            $$
+    \end{enumerate}
+\end{primer}
+
 \subsubsection{Fiat-Shamirjeva hevristika}
+Dokazi znanja brez razkritja znanja so torej odlično splošno orodje, s katerim se lahko prepričamo
+o identiteti sogovornika, brez da bi ta rabil razkriti skrivni ključ. V praksi pa je težava, da so
+taki protokoli interaktivni, kar pomeni, da zahtevajo neposredno komunikacijo med dokazovalcem in
+preverjevalcem. Ta komunikacija je zamudna in draga.
 
+Fiat in Shamir sta leta $1987$~\cite{fiat1987heuristic} predlagala način, kako lahko interaktivne
+dokaze znanja spremenimo v neinteraktivne. Osnovna ideja je, da namesto preverjevalca, breme izbire
+izziva prenesemo na slučajnega oraklja, do katerega imata dostop tako dokazovalec kot preverjevalec.
+Hevristika torej deluje samo v modelu slučajnega oraklja.
 
-Dokazi znanja brez razkritja znanja (definicija, primer dl)
+\begin{primer}[Schnorrova shema in Fiat-Shamirjeva hevristika]
+    S pomočjo Fiat-Shamirjeve hevristike lahko Schnorrovo identifikacijsko shemo spremenimo v
+    neinteraktivno, kar praktično neposredno privede do Schnorrovega podpisa, ki ga bomo spoznali
+    v naslednjem razdelku.
 
-Schnorrova identifikacijska shema
+    Glavna ideja je, da se znebimo preverjevalčevega izziva. Namesto tega dokazovalec uporabi
+    oraklja $H$, da pridobi zgostitev vseh javnih vrednosti:
+    $$
+    e = H(g || q || I || X).
+    $$
+    Na podlagi te zgostitve dokazovalec izračuna odgovor $y = r + es$ in ga pošlje preverjevalcu
+    skupaj z vrednostjo $X$ in $e$.
 
-Fiat-Shamirjeva hevristika
-
-\todo[
-kaj je fiat shamir~\cite{fiat1987heuristic}:  
-Če dokazovalec $A$ želi prepričati preverjevalca $B$ o svoji identiteti, lahko uporabi eno od treh
-vrst shem:
-\begin{itemize}
-    \item \textbf{avtentikacijska shema} (angl.\ \textit{authentication scheme}) dovoli $A$, da dokaže
-        $B$ svojo identiteto, vendar nihče drug ne more $B$ dokazati, da je $A$.
-    \item \textbf{identifikacijska shema} (angl.\ \textit{identification scheme}) dovoli $A$, da dokaže
-        $B$ svojo identiteto, vendar more $B$ dokazati nikomur drugemu, da je $A$.
-    \item \textbf{podpisna shema} (angl.\ \textit{signature scheme}) dovoli $A$, da dokaže
-        $B$ svojo identiteto, vendar niti $B$ ne more sebi dokazati, da je $A$.
-\end{itemize}
-dokaz varnosti~\cite{pointcheval1996forking}:]
-{natančneje o zkp: sigma protocols, \\ zero knowledge proof (of knowledge) fiat-shamir}
+    Preverjevalec ima sedaj dovolj podatkov, da tudi sam izračuna vrednost zgostitve in preveri
+    enakost.
+\end{primer}
 
 \section{Schnorrov podpis}
 \label{sec:schnorr}
