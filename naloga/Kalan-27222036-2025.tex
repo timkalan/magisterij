@@ -339,7 +339,7 @@ definiramo:
         \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
             zgostitve. Zapišemo lahko $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
         \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
-            času. Izračun zgostitve mora biti računsko učinkovit. Ponavadi tu zahtevamo, da je časovna
+            času. Izračun zgostitve mora biti računsko učinkovit. Običajno tu zahtevamo, da je časovna
             zahtevnost funkcije $H$ polinomska v dolžini vhodnega niza.
         \item \textbf{Enosmernost} oz.\ \textbf{odpornost na prasliko} pomeni, da iz predložene 
             zgostitve zelo težko ugotovimo, kateri niz je funkcija prejela kot vhod. Če torej poznamo 
@@ -349,7 +349,7 @@ definiramo:
             neizvedljivo najti zgostitev $m_2$, da velja $H(m_1) = H(m_2)$.
         \item \textbf{Skoraj brez trčenj} oz.\ \textbf{odpornost na trčenja} pomeni, da je verjetnost,
             da imata dva izraza enako zgostitev, majhna. Želimo, da je računsko neizvedljivo
-            najti dva niza  $m_1$ in $m_2$, ki imata enako zgostitev, oz.\ da velja $H(m_1) = H(m_2)$.
+            najti dva niza  $m_1$ in $m_2$, ki imata enako zgostitev, oz.,\ da velja $H(m_1) = H(m_2)$.
         \item \textbf{Učinek plazu} pomeni, da vsaka sprememba v vhodnem nizu povzroči veliko spremembo 
             v zgostitvi. Ob katerikoli spremembi se vsak bit zgostitve se spremeni z verjetnostjo 
             vsaj $1/2$.
@@ -617,9 +617,9 @@ V besedilu bomo večkrat govorili o ">zanemarljivih verjetnostih"<, kar pomeni, 
 verjetnosti v odvisnosti od določene spremenljivke vedle kot zanemarljive funkcije.
 
 \subsubsection{Model slučajnega oraklja}
-Ko obravnavamo varnost kriptosistemov, ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
+Ko obravnavamo varnost kriptosistemov, se ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
 Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu 
-je na voljo (tu je ponavadi predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo 
+je na voljo (tu je običajno predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo 
 v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. V tem primeru govorimo o 
 alternativnih modelih kriptografije. 
 
@@ -804,6 +804,10 @@ zanemarljivo verjetnostjo).
             g^y = g^{r + es} = g^r \cdot g^{es} = X \cdot I^e.
             $$
     \end{enumerate}
+    Varnost protokola temelji na težavnosti problema diskretnega logaritma in pa na dejstvu, da je
+    izziv določen po zavezi. Zato dokazovalec ne more izračunati prepričjivega odgovora, preden
+    dobi izziv. Bolj formalno bomo varnost dokazali pri dokazu varnosti Schnorrovega podpisa v
+    razdelku~\ref{sec:schnorr-sec}.
 \end{primer}
 
 \subsubsection{Fiat-Shamirjeva hevristika}
@@ -818,6 +822,7 @@ izziva prenesemo na slučajnega oraklja, do katerega imata dostop tako dokazoval
 Hevristika torej deluje samo v modelu slučajnega oraklja.
 
 \begin{primer}[Schnorrova shema in Fiat-Shamirjeva hevristika]
+\label{primer:fiat-shamir}
     S pomočjo Fiat-Shamirjeve hevristike lahko Schnorrovo identifikacijsko shemo spremenimo v
     neinteraktivno, kar praktično neposredno privede do Schnorrovega podpisa, ki ga bomo spoznali
     v naslednjem razdelku.
@@ -832,6 +837,10 @@ Hevristika torej deluje samo v modelu slučajnega oraklja.
 
     Preverjevalec ima sedaj dovolj podatkov, da tudi sam izračuna vrednost zgostitve in preveri
     enakost.
+
+    Fiat-Shamirjeva hevristika tu ohranja varnost, saj dokazovalec še vedno ne more izračunati
+    prepričljivega odgovora, preden izračuna zavezo (razen, če najde trčenje v $H$). Varnost bomo
+    dokazali v razdelku~\ref{sec:schnorr-sec}.
 \end{primer}
 
 \section{Schnorrov podpis}
@@ -923,13 +932,67 @@ Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj časovno in pro
 \end{opomba}
 
 \subsection{Varnost Schnorrovega podpisa}
+\label{sec:schnorr-sec}
+Ko govorimo o varnosti Schnorrovega podpisa, imamo v mislih odpornost sheme proti eksistencialnem
+ponarejanju, kjer napadalec lahko za katerokoli sporočilo dobi veljaven podpis. Želimo torej, da
+napadalcu ne uspe ponarediti podpisa za katerokoli sporočilo, ki še ni bilo podpisano.
+
 Kot omenjeno na začetku poglavja, je varnost Schnorrovega podpisa odvisna od težavnosti problema
 diskretnega logaritma. Varnost Schnorrovega podpisa je zato odvisna od varnosti grupe, v kateri deluje.
 V primeru, da je problem diskretnega logaritma težek, je Schnorrov podpis varen.
 
+\begin{definicija}[Varnost Schnorrovega podpisa]
+    Za Schnorrov podpis v grupi $G$ pravimo, da je varen, če:
+    \begin{itemize}
+        \item Je problem diskretnega logaritma v grupi $G$ težek.
+        \item Obstaja napadalec, ki lahko pridobi veljaven podpis $(X, y)$ za katerokoli sporočilo $m$,
+            ki ga je podpisnik že podpisal. Vendar pa je verjetnost, da napadalec uspešno ponaredi
+            podpis za novo sporočilo $m'$, ki ga podpisnik še ni podpisal, zanemarljiva.
+        \item Obstaja slučajni orakelj $H$, do katerega imajo dostop vsi deležniki. Z drugimi besedami,
+            smo v modelu slučajnega oraklja.
+    \end{itemize}
+\end{definicija}
+
 Varnost podpisa je mogoče dokazati tako, da pokažemo varnost Schnorrove identifikacijske sheme,
 opazimo, da nam uporaba Fiat-Shamirjeve hevristike vrne ravno Schnorrov podpis, in pokažemo, da
 je ta transformacija varna.
+
+\begin{izrek}
+    Naj bo $G$ ciklična grupa v kateri je problem diskretnega logaritma težek. Potem je Schnorrova
+    identifikacijska shema v grupi $G$ varna (napadalec ne more prepričati dokazovalca, da je
+    on pravi dokazovalec, brez da bi poznal zasebni ključ).
+\end{izrek}
+
+\begin{dokaz}
+    Dokaz poteka z redukcijo uspešnega napada na rešitev problema diskretnega logaritma. Naj bo $F$
+    verjetnostni algoritem, ki teče v polinomskem času. Algoritem $F$ imenujemo napadalec. Na
+    podlagi napadalca $F$ konstruirajmo algoritem $A$, ki iz uspešnega napada napadalca $F$ na
+    Schnorrovo identifikacijsko shemo konstruira rešitev problema diskretnega logaritma.
+
+    Algoritem $A$ prejme vse javne parametre sheme $(G, g, q, I)$ kot vhod. Potem algoritem deluje
+    v naslednjih korakih:
+    \begin{enumerate}
+        \item 
+    \end{enumerate}
+\end{dokaz}
+
+Kot smo videli v primeru~\ref{primer:fiat-shamir}, lahko Fiat-Shamirjevo hevristiko uporabimo, da
+iz Schnorrove identifikacijske sheme pridobimo neinteraktivno verzijo. Če namesto zgostitve vseh
+javnih vrednosti zgostimo zavezo in sporočilo, dobimo ravno Schnorrov podpis. Če torej lahko pokažemo,
+da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
+
+\begin{izrek}
+    Naj bo $\mathcal{S'}$ identifikacijska shema in $\mathcal{S}$ podpisna shema, pridobljena iz
+    $\mathcal{S'}$ z uporabo Fiat-Shamirjeve hevristike. Če je $\mathcal{S'}$ varna, potem je tudi
+    $\mathcal{S}$ varna.
+\end{izrek}
+
+\begin{dokaz}
+    
+\end{dokaz}
+
+Ker je varna Schnorrova identifikacijska shema in pretvorba iz identifikacijske sheme v podpisno,
+lahko zaključimo, da je Schnorrov podpis varen.
 
 \todo{dokaz varnosti: naredim prek identifikacijske sheme + fiat shamir + oraklej}
 
