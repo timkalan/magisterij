@@ -638,18 +638,37 @@ Varnostni dokazi, ki temeljijo na uporabi takih slučajnih orakljev, vseeno pri�
 ki namesto orakljev uporabljajo zgoščevalne funkcije, vsaj dokler je uporabljena zgoščevalna funkcija
 varna (npr.\ zanjo nihče še ni našel trčenja).
 
-\subsubsection{Dokazovanje varnosti: simulatorji}
+\subsubsection{Simulatorji}
 Pogosto je cilj varnostnih dokazov pokazati, da je varnost neke sheme enakovredna težavnosti nekega
-problema, za katerega domnevamo, da je težek. V takih primerih je pogosto uporabljena metoda
+problema, za katerega domnevamo, da je težek. V takih primerih je govorimo o metodi
 \textit{dokazovanja z redukcijo} (angl.\ \textit{reduction proof}). Ta metoda temelji na
-predpostavki, da če bi napadalec lahko učinkovito napadel shemo, bi lahko tudi rešil težaven
-problem.
+predpostavki, da če bi napadalec lahko učinkovito napadel shemo, bi lahko tudi učinkovito rešil težaven
+problem. Simulatorji so način, kako lahko izpeljemo redukcijo iz napada na reševanje težavnega problema.
 
-V takih dokazih se pogosto uporabljajo \textit{simulatorji}. Simulator je algoritem, ki posnema
-napadalca, vendar ne potrebuje nobenih skrivnih informacij, ki jih ima napadalec. Če lahko
-simulator, omejen s polinomskim časom
+V takih dokazih se ponavadi uporabljajo \textit{simulatorji}. To so algoritmi, ki posnemajo delovanje
+iskrenih podpisnikov ali pa kar celotne kriptografske sheme. Ideja je, da simulator ne pozna zasebnih
+ključev, vendar pa za napadalca lahko posnema celotno delovanje sheme. Cilj dokazov varnosti je
+pokazati, da če lahko napadalec uspešno izvede napad na shemo (npr.\ ponaredi podpis ali pa pridobi
+zasebni ključ), potem lahko simulator uporabi informacije iz napadalčevega napada, da reši domnevno
+težek problem (npr.\ problem diskretnega logaritma). Ker domnevamo, da se tega problema ne da rešiti
+učinkovito, lahko zaključimo, da je shema varna. Za večino shem so koristni le simulatorji, ki
+delujejo v polinomskem času.
 
-\todo{Dokončaj}
+Da je simulator uporaben za dokaz varnosti, mora zadoščati naslednjim lastnostim:
+\begin{itemize}
+    \item \textbf{Nerazločljivost}: Napadalec ne ve, ali komunicira s pravim podpisnikom ali s
+        simulatorjem. Če bi lahko napadalec razlikoval, potem bi lahko zaključili, da shema napadalcu
+        razkrije neko skrivnost (ker je prisotnost skrivnosti edina razlika med pravim podpisnikom in
+        simulatorjem).
+    \item \textbf{Brez skrivnosti}: Simulator ne pozna zasebnih ključev. Ta lastnost je ključna, saj
+        nam pove, da napadalec prek interakcije z dejanskim podpisnikom ne izve nobene dodatne informacije.
+        Če je napadalec uspešen pri interakciji s simulatorjem ali pa podpisnikom, ki ima zasebni
+        ključ, potem smo lahko prepričani, da prisotnost zasebnega ključa ne pomaga pri napadu.
+    \item \textbf{Prilagodljivost}: Simulator in napadalec med seboj komunicirata. Pogosto je potrebno,
+        da simulator prilagodi svoje odločitve na podlagi napadalčevih odločitev. Zato mora biti
+        sposoben ">previti"< napadalca nazaj na prejšnje stanje, potencialno prilagoditi svoj
+        odgovor in ponovno simulirati korak sheme.
+\end{itemize}
 
 \subsection{Interaktivni protokoli}
 V tem razdelku bomo govorili o \textit{interaktivnih protokolih} (angl.\ \textit{interactive protocols}).
@@ -1355,13 +1374,13 @@ vse dokaze javnih ključev. Posamezni preverjevalec podpisov lahko sicer dodatno
 za vsako skupino, če natančno beleži rezultate preverjanja dokazov.
 
 \subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
-Kot bomo videli, je za dokaz varnosti potrebno, da lahko algoritem, ki bo simuliral proces podpisovanja
-in napadanja (pogosto se tak algoritem imenuje \textit{simulator}), v polinomskem času za vsakega
-pokvarjenega podpisnika $P_j$ pridobi diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez
-razkritja znanja. Izkaže pa se, da če je $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem
-simulator uspešno pridobi diskretni logaritem z verjetnostjo največ $1/q$. Še več, če je $k$ pokvarjenih
-podpisnikov, bo simulator uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo
-polinomski simulator, je podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
+Kot bomo videli, je za dokaz varnosti potrebno, da lahko simulator (torej algoritem, ki bo simuliral
+proces podpisovanja napadalcu), v polinomskem času za vsakega pokvarjenega podpisnika $P_j$ pridobi
+diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, da če
+je $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem simulator uspešno pridobi diskretni
+logaritem z verjetnostjo največ $1/q$. Še več, če je $k$ pokvarjenih podpisnikov, bo simulator
+uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo polinomski simulator, je
+podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
 
 \todo{kaj pomeni logaritemsko mnogo - je to prav?}
 
