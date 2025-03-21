@@ -483,9 +483,9 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
         \item $\mathcal{P}$ je algoritem za ustvarjanje javnih parametrov podpisa. Definira grupo $G$,
             ki bo uporabljena pri podpisu. V praksi je ta korak izpuščen, sodelujoči pri podpisu
             uporabijo dobro poznane varne grupe. Formalno pa je to algoritem, ki prejme varnostni
-            parameter $\lambda$ in vrne parametre grupe $G$, oz.\
+            parameter $k$ in vrne parametre grupe $G$, oz.\
             $$
-            G = \mathcal{P}(\lambda).
+            G = \mathcal{P}(k).
             $$
         \item $\mathcal{G}$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
             ki za svoj vhod prejme parametre grupe $G$ (javno dostopni ali pa ustvarjeni prek $\mathcal{P}$).
@@ -766,6 +766,9 @@ zasebni ključ. Če nam preverjevalec predloži vrednost $I = g^s$, mi pa ga usp
 vrednost $s$, potem je to dovolj, da preverjevalec verjame, da je $I$ res naš javni ključ (razen z
 zanemarljivo verjetnostjo).
 
+Dokazovanje dejstva, da nek javni ključ res pripada nam prek interaktivnega protokola ima veliko
+uporabno vrednost. Tovrstne dokaze imenujemo \textit{identifikacijski protokoli} oz.\ sheme.
+
 \begin{primer}[Schnorrov identifikacijski protokol]
     En izmed najenostavnejših protokolov za dokaz znanja brez razkritja znanja je Schnorrov
     protokol~\cite{schnorr1989sig}. Tesno je povezan s Schnorrovim podpisom, ki ga bomo spoznali v
@@ -856,7 +859,7 @@ za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
 \begin{itemize}
     \item \textbf{Parametri}:
     Naj bo grupa $G$ končna grupa reda $p$. V njej si izberemo element $g$ reda $q$, pri čemer mora
-    biti $q$ dovolj veliko praštevilo (njegova velikost je odvisna od varnostnega parametra).
+    biti $q$ dovolj veliko praštevilo (njegova velikost je odvisna od varnostnega parametra $k$).
     V splošnem pa sta lahko $p$ in $q$ tudi enaka. Ker računanje potega v podgrupi, ki jo določa $g$,
     se običajno privzame, da je $G$ kar grupa reda $q$, ki jo generira $g$.
 
@@ -923,11 +926,11 @@ Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj časovno in pro
     $$
     V primeru, da sta $r_1$ in $r_2$ enaka, lahko napadalec z enostavnim izračunom inverza $(e_1 - e_2)$
     pridobi zasebni ključ $s$ (za izračun $e_1$ in $e_2$ ima napadalec dovolj informacij, saj je
-    izbrana zgoščevalna funkcija javna). 
+    izbrana zgoščevalna funkcija javna).
 
     Izkaže se, da je lahko problematična že uporaba generatorja naključnih števil za pridobivanje
-    $r$, ki ne vrača enakomerno porazdeljenih števil. Če napadalec dobi dovolj veliko količino 
-    sporočil in podpisov, lahko v tem primeru reši \textit{problem skritega števila} in pridobi 
+    $r$, ki ne vrača enakomerno porazdeljenih števil. Če napadalec dobi dovolj veliko količino
+    sporočil in podpisov, lahko v tem primeru reši \textit{problem skritega števila} in pridobi
     zasebni ključ~\cite{tibouchi2017attacks}.
 \end{opomba}
 
@@ -988,7 +991,13 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 \end{izrek}
 
 \begin{dokaz}
-    
+    Naj bo napadalec $F$ na podpisno shemo $\mathcal{S}$ verjetnostni algoritem, ki teče v
+    polinomskem času. Naj bo število napadalčevih klicev slučajnega oraklja polinomsko omejeno
+    v varnostnem parametru $k$.
+
+    Brez škode za splošnost predpostavimo, da bo napadalec $F$ vsak klic slučajnega oraklja na
+    nekem vhodu opravil največ enkrat. Predpostavimo tudi, da če napadalec $F$ prejme veljaven
+    podpis nekega sporočila, 
 \end{dokaz}
 
 Ker je varna Schnorrova identifikacijska shema in pretvorba iz identifikacijske sheme v podpisno,
@@ -1270,10 +1279,10 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
     Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
     Naj bo $F$ napadalec, ki ustreza definiciji~\ref{def:asm-napadalec}, torej lahko nadzoruje in
     spreminja dejanja podpisnikov skupine $S$. Naj bo njegova računska moč omejena s polinomskim časom
-    v parametru $k$. Naj bo $p$ verjetnost, da $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
+    v parametru $k$. Naj bo $p$ verjetnost, da napadalec $F$ vrne trojico $(\sigma, m, S)$, za katero velja: 
     \begin{itemize}
         \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
-        \item Obstaja nepokvarjen podpisnik $P_j$ iz skupine $S$, od katerega $F$ ni zahteval podpisa 
+        \item Obstaja nepokvarjen podpisnik $P_j$ iz skupine $S$, od katerega napadalec $F$ ni zahteval podpisa 
             sporočila $m$ s strani skupine $S$.
     \end{itemize}
     Shemi za večstranske 
@@ -1598,10 +1607,16 @@ Potem si podpisniki med seboj izmenjajo vrednosti $(X_i, I_i)$. Vsak na tem mest
     e &= H_3(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L), \\
     y_i &= e s_i + r_i,
 \end{align*}
-in pošlje $y_i$ vsem ostalim podpisnikom. Vsak podpisnik je na tem mestu prejel Schnorrove podpise
-(in s tem dokaze znanja brez razkritja znanja) zasebnih ključev vse ostalih podpisnikov. Na tem mestu
-mora torej $P_i$ preveriti veljavnost vseh podpisov $(X_j, y_j)$ vseh ostalih podpisnikov $P_j$ 
-($1 \le j \le L$). To stori s standardnim izračunom za preverjanje Schnorrovega podpisa~\eqref{eq:schnorr-ver}: 
+in pošlje $y_i$ vsem ostalim podpisnikom.
+
+Na tem mestu ima vsak podpisnik $P_i$ na voljo par $(X_j, y_j)$ vseh ostalih podpisnikov ($1 \le j
+\le L$). Ta par predstavlja Schnorrov podpis in s tem dokaz znanja brez razkritja znanja zasebnega
+ključa $s_j$ glede na javni ključ $I_j$. Ker je izziv $e$ izračunan iz podatkov vseh podpisnikov,
+onemogoča naknadne spremembe ključev. 
+
+Vsak podpisnik $P_i$ mora preveriti veljavnost vseh podpisov $(X_j, y_j)$ vseh ostalih podpisnikov
+$P_j$ ($1 \le j \le L$). To stori s standardnim izračunom za preverjanje Schnorrovega 
+podpisa~\eqref{eq:schnorr-ver}: 
 $$
 g^{y_j} \stackrel{?}{\equiv} X_j \cdot I_j^{e} \pmod p.
 $$
@@ -1722,32 +1737,38 @@ da je $F'$ bistveno šibkejši, oz.\ ima manj nadzora nad potekom podpisovanja i
 podpisniki.
 
 \begin{definicija}[Šibek napadalec pri ASM]
-Šibek napadalec nima zmožnosti pokvariti podpisnikov. Vse, kar lahko stori $F'$ je, da si preden skupina
-generira svoje ključe, izbere podpisnika $P_i$, ki ga bo napadal. Edina interakcija, ki je potem dovoljena
-šibkemu napadalcu, je s podpisnikom $P_i$. Ko je podpisnik napaden, mora zanj $F'$ priskrbeti vse vhode
-za algoritme in vse vhodna sporočila, ki jih prejme. Prav tako lahko vidi vsa poslana sporočila
-podpisnika. Situacija je torej taka, kot da ostali podpisniki sploh ne obstajajo, pri podpisovanju 
-sodleujeta samo $P_i$ in $F'$. Ko podpisnik $P_i$ generira svoj ključ, $F'$ nad njim izvede napad z izbranim 
-sporočilom in podskupino.
+\label{def:asm-sibek-napadalec}
+    Šibek napadalec $F'$ v modelu večstranskega Schnorrovega podpisa ima naslednje zmožnosti:
+    \begin{itemize}
+        \item Preden skupina $P$ generira svoje ključe, izbere podpisnika $P_i$, ki ga bo napadel.
+        \item Ko je podpisnik $P_i$ napaden, mora $F'$ zanj priskrbeti vse vhode za algoritme in
+            vse vhodna sporočila, ki jih prejme. Prav tako lahko vidi vsa poslana sporočila
+            podpisnika. Efektivno pri podpisovanju sodelujeta le $F'$ in $P_i$.
+        \item Po generiranju ključev, lahko šibek napadalec $F'$ od podpisnika $P_i$ zahteva podpis
+            izbranega sporočila skupaj z izbrano podskupino $S$ (napad z izbranim sporočilom in
+            podskupino).
+    \end{itemize}
 \end{definicija}
 
 Ker mora šibek napadalec za izbranega podpisnika predložiti vse vhode in komunikacijo, lahko vidimo
-delovanje šibkega napadalca kot delovanje napadalca, ki pokvari vse podpisnike, razen podpisnika $P_i$.
-V obeh primerih bo podpisnik $P_i$ v podpisu sodeloval le z napadalcem, ki zanj nadzoruje celoten
-potek podpisovanja. Ta povezava tipov napadalcev je formalno opisana v izreku~\ref{izr:šibka-varnost}.
-Pred dokazom izreka pa moramo, tako kot za napadalca $F$, tudi tu definirati kaj pomeni varnost sheme.
+delovanje šibkega napadalca $F'$ kot delovanje napadalca $F$, ki pokvari vse podpisnike, razen
+podpisnika $P_i$. V obeh primerih bo podpisnik $P_i$ v podpisu sodeloval le z napadalcem, ki zanj
+nadzoruje celoten potek podpisovanja. Ta povezava tipov napadalcev je formalno opisana v
+izreku~\ref{izr:šibka-varnost}. Pred dokazom izreka pa moramo, tako kot za napadalca $F$, tudi tu
+definirati, kaj pomeni varnost sheme.
 
 \begin{definicija}[Šibka varnost pri ASM]
     Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
-    Naj bo $F'$ šibek napadalec, ki je omejen s polinomskim časom v parametru $k$. Naj bo $p$ 
-    verjetnost, da $F'$ vrne trojico $(\sigma, m, S)$, za katero velja: 
+    Naj bo $F'$ šibek napadalec, ki je omejen s polinomskim časom v parametru $k$ in ustreza
+    definiciji~\ref{def:asm-sibek-napadalec}. Naj bo $P_i$ podpisnik, ki ga šibek napadalec napada.
+    Naj bo $p$ verjetnost, da šibek napadalec $F'$ vrne trojico $(\sigma, m, S)$, za katero velja: 
     \begin{itemize}
         \item $\sigma$ je veljaven večstranski podpis sporočila $m$ s strani skupine $S$.
-        \item Obstaja nepokvarjen podpisnik $P$ iz skupine $S$, od katerega $F'$ ni zahteval podpisa 
-            sporočila $m$ s strani skupine $S$.
+        \item Podpisnik $P_i$ je v skupini $S$, vendar šibek napadalec $F'$ od njega ni zahteval
+            podpisa sporočila $m$ s strani skupine $S$.
     \end{itemize}
-    Shemi za večstranske 
-    podpise podskupine z odgovornostjo bomo rekli, da je \textbf{šibko varna}, če velja 
+    Shemi za večstranske podpise podskupine z odgovornostjo bomo rekli, da je \textbf{šibko varna},
+    če je verjetnost $p$ zanemarljiva, oz.\ velja 
     $$ 
     p < k^{-c}.
     $$
@@ -1758,13 +1779,9 @@ ekvivalentnost šibkega napadalca in napadalca.
 
 \begin{izrek}
 \label{izr:šibka-varnost}
-    Naj bo $Q$ tak polinom, da je pri poljubno izbranem varnostnem parametru $k$ za velikost $L$ 
-    skupine podpisnikov $G$ velja
-    $$
-    L < Q(k).
-    $$
-    Potem je večstranski Schnorrov podpis iz razdelka~\ref{sec:def_multi_schnorr} varen natanko
-    tedaj, ko je šibko varen.
+    Naj bo velikost $L$ skupine podpisnikov $P$ polinomsko omejena v varnostnem parametru $k$.
+    Potem je večstranski Schnorrov podpis skupine velikosti $L$ iz razdelka~\ref{sec:def_multi_schnorr}
+    varen natanko tedaj, ko je šibko varen.
 \end{izrek}
 
 \begin{dokaz}
@@ -1774,24 +1791,33 @@ ekvivalentnost šibkega napadalca in napadalca.
 
     $(\Rightarrow)$: Predpostavimo, da podpis ni šibko varen. Kot smo že prej smo omenili, je delovanje
     šibkega napadalca $F'$ enako delovanju napadalca $F$, ki pokvari vse podpisnike razen enega.
-    Napadalec $F$ ima torej vse zmožnosti, ki jih ima napadalec $F'$ (in še mnogo več). Če podpis ni
-    šibko varen, lahko $F$ s simulacijo $F'$, opisano zgoraj, z nezanmarljivo verjetnostjo vrne
-    ponarejen podpis, torej sheam tudi ni varna.
+    Napadalec $F$ ima torej vse zmožnosti, ki jih ima šibek napadalec $F'$. Če podpis ni šibko varen,
+    lahko $F$ s simulacijo $F'$, opisano zgoraj, z nezanemarljivo verjetnostjo vrne ponarejen podpis,
+    torej shema tudi ni varna.
 
     $(\Leftarrow)$: Predpostavimo, da podpis ni varen. Obstaja torej napadalec $F$, ki je omejen
-    s polinomskim čason v parametru $k$ in uspešno izvede napad z izbranim sporočilom in podskupino.
-    Na tej točki omenimo še, da je za smiselen ponaredek podpisa potrebno, da pri podpisovanju sodeluje
-    vsaj en nepokvarjen podpisnik. Sicer je napadalec edini ki podpisuje, zato varnost sheme ni ogrožena.
-    Če pa pri podpisovanju sodeluje iskren podpisnik, in napadalec uspešno ustvari ponaredek, pa
-    to kaže na težave v varnosti.
+    s polinomskim časom v varnostnem parametru $k$ in uspešno izvede napad z izbranim sporočilom in
+    podskupino.
 
-    Konstruirajmo šibkega napadalca $F'$, ki deluje tako, da pred začetkom podpisovanja izbere naključnega
-    podpisnika $P_i$ ($1 \le i \le L$) za tarčo svojega napada. $F'$ se torej za podpisnika $P_i$ postavi
-    v vlogo vseh ostalih podpisnikov. $F'$ lahko torej $F$ simulira delovanje vseh podpisnikov razen
-    $P_i$. Če se $F$ odloči pokvariti kateregakoli podpisnika, ki ni $P_i$, mu lahko $F'$ posreduje
-    potrebne zasebne informacije. Podobno tudi, če si $F$ izbere podpisnika (razen $P_i$) za tarčo napada z
-    izbarnim sporočilom in podskupino. V primeru, da je tarča napada $P_i$, $F'$ prejme zahtevek za
-    napad od $F$ in ga posreduje podpisniku $P_i$, ta pa normalno pošlje svoj odgovor napadalcu $F$.
+    Konstruirajmo šibkega napadalca $F'$: skladno z definicijo si pred generiranjem ključev izbere
+    podpisnika $P_i$ ($1 \le i \le L$), ki ga bo napadel. Od tega trenutka naprej pri podpisovanju
+    sodelujeta samo podpisnik $P_i$ in šibek napadalec $F'$, ki ima vlogo vseh ostalih podpisnikov.
+
+    Ko napadalec $F$ izvede napad, mora torej šibek napadalec $F'$ simulirati delovanje vseh podpisnikov
+    razen $P_i$. Vedenje šibkega napadalca $F'$ je tekom napada odvisno od dejanj napadalca $F$:
+    \begin{itemize}
+        \item Če se napadalec $F$ odloči pokvariti kateregakoli podpisnika, ki ni $P_i$, mu mora 
+            šibek napadalec $F'$ (v vlogi podpisnika) posredovati potrebne zasebne informacije. To
+            lahko stori, saj simulira delovanje podpisnika.
+        \item Če napadalec $F$ pokvari podpisnika $P_i$, je šibek napadalec pri svojem napadu neuspešen.
+        \item Če si napadalec $F$ izbere podpisnika (razen $P_i$) za tarčo napada z izbranim sporočilom
+            in podskupino, mora šibek napadalec $F'$ simulirati odziv podpisnika. To ponovno lahko
+            stori, saj simulira delovanje podpisnika.
+        \item Če napadalec $F$ izbere podpisnika $P_i$ za tarčo napada z izbranim sporočilom in podskupino,
+            šibek napadalec $F'$ prejme zahtevek za napad od $F$ in ga posreduje podpisniku $P_i$.
+            Ta podpisnik normalno pošlje svoj odgovor napadalcu $F$.
+
+    \end{itemize}
 
     Ko $F$ konča svoj napad, vrne trojico $(\sigma, m, S)$. Če je to veljaven ponaredek, jo vrne tudi
     šibek napadalec $F'$. Če ponaredek ni veljaven, če $P_i$ ni eden izmed podpisnikov v $S$, ali pa
@@ -1816,11 +1842,11 @@ ekvivalentnost šibkega napadalca in napadalca.
     \label{eq:geq1}
     \sum_{i=1}^L \text{Pr}(\text{$P_i \in S$ in ni pokvarjen | $F$ vrne veljaven ponaredek}) \geq 1.
     \end{equation}
-    Neenačba~\eqref{eq:geq1} drži, saj mora pri uspešnem ponarejanju sodelovati vsaj en nepokvajren
+    Neenačba~\eqref{eq:geq1} drži, saj mora pri uspešnem ponarejanju sodelovati vsaj en nepokvarjen
     podpisnik. Če torej $F$ vrne veljaven ponaredek, bo vsaj ena od verjetnosti v zgornji vsoti enaka $1$.
 
     Pri ponarejanju je torej $F$ uspešen največ $L$-krat več kot $F'$, kar pomeni, da shema ni šibko
-    varna.
+    varna, saj je velikost skupine $L$ polinomsko omejena.
 \end{dokaz}
 
 \subsubsection{Dokaz varnosti}
@@ -1835,8 +1861,10 @@ napadalca, shema pa je potem tudi varna po izreku~\ref{izr:šibka-varnost}.
 Želimo torej pokazati, da če obstaja šibek napadalec, ki je omejen s polinomskim časom v parametru
 $k$, potem obstaja nek algoritem $A$, ki prav tako teče v polinomskem času, s katerim lahko prekršimo
 predpostavko o diskretnem logaritmu pri ASM. Bolj specifično, prekršimo lahko predpostavko o
-težavnosti PDL. $A$ je torej algoritem, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
-da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira podpisovanje za šibkega napadalca,
+težavnosti DL.
+
+Želimo torej konstruirati algoritem $A$, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
+da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira podpisovanje za šibkega napadalca $F'$,
 ki vrne ponarejen podpis, iz katerega $A$ lahko razbere diskretni logaritem, ki ga išče.
 
 Bolj specifično, med svojim delovanjem šibki napadalec opravlja dve vrsti poizvedb. Prva je
