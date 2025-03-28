@@ -665,9 +665,11 @@ Da je simulator uporaben za dokaz varnosti, mora zadoščati naslednjim lastnost
         Če je napadalec uspešen pri interakciji s simulatorjem ali pa podpisnikom, ki ima zasebni
         ključ, potem smo lahko prepričani, da prisotnost zasebnega ključa ne pomaga pri napadu.
     \item \textbf{Prilagodljivost}: Simulator in napadalec med seboj komunicirata. Pogosto je potrebno,
-        da simulator prilagodi svoje odločitve na podlagi napadalčevih odločitev. Zato mora biti
-        sposoben ">previti"< napadalca nazaj na prejšnje stanje, potencialno prilagoditi svoj
-        odgovor in ponovno simulirati korak sheme.
+        da simulator prilagodi svoje odločitve na podlagi napadalčevih odločitev.
+
+        V modelu slučajnega oraklja prilagodljivost dobi dodatno dimenzijo. Simulator poleg
+        celotnega protokola simulira tudi delovanje oraklja. To mu omogoča, da napadalca ">previje"<
+        na prejšnje stanje, prilagodi odgovor oraklja in ponovno izvede korak sheme.
 \end{itemize}
 
 \subsection{Interaktivni protokoli}
@@ -1929,28 +1931,54 @@ znanja in pri dokazih varnosti v modelu slučajnega oraklja. Metoda dovoli, da p
 algoritem odgovori na poizvedbo, preden je postavljena, za ceno največ toliko previjanj, kot ima
 poizvedba odgovorov.
 
+\begin{opomba}
+    V kontekstu dokaza varnosti je napadalec verjetnostni algoritem, omejen s polinomskim časom.
+    Simulator (algoritem $A$), ki ga konstruiramo, pa je algoritem, ki tekom svojega delovanja
+    uporablja napadalca kot podprogram. To simulatorju omogoča, da pozna celotno interno stanje
+    napadalca, vključno z vsemi naključnimi izbirami, ki jih je napadalec opravil. Zato lahko
+    simulator shranjuje stanja napadalca, in shranjena stanja uporabi, da ga previje nazaj na
+    prejšnje stanje.
+\end{opomba}
+
 V tem primeru je previjanje nazaj nujno potrebno za simuliranje iskrenega podpisnika $P_i$. To je zato,
-ker je izbira $\tilde{X}$ s strani $\mathcal{F}$ tista, ki odloči izziv $e$, ki ga $P_i$ uporabi za
-izračun $y_i$. Algoritem $A$ pa mora zavezo $X_i$ poslati v prvem krogu poizvedbe, preden je znano,
-kaj bo izziv $e$. Zato mora uganiti, kater odgovor oraklja $H_5$ bi bil pravi. Ker je možnih vrednosti
-$q_H$, bo v najslabšem primeru potreboval $q_H$ previjanj.
+ker poenostavljen napadalec $\mathcal{F}$ igra vlogo vseh ostalih podpisnikov, torej ima odločilno
+vlogo pri izbiri skupne zaveze $\tilde{X}$. Na podlagi te zaveze je izračunan skupni izziv 
+$e = H_5(\tilde{X} || m || S)$, ki ga $P_i$ uporabi za izračun $y_i$. 
+
+Ko algoritem $A$ simulira podpisni proces za poenostavljenega napadalca $\mathcal{F}$, mora torej
+$A$ izračunati zavezo $X_i$ in jo poslati v prvem krogu poizvedbe (namesto podpisnika $P_i$). Problem
+je, da na tej točki še ni znan izziv $e$. Za uspešno simulacijo mora algoritem $A$ uganiti, kater
+odgovor oraklja $H_5$ bo ustrezal vhodu. Ker je možnih odgovorov oraklja $q_H$ in je vsaka enako
+verjetna, je verjetnost, da algoritem $A$ izbere pravilen odgovor, $1/q_H$. Pričakovano število
+potrebnih previjanj je torej $q_H$.
 
 Sedaj lahko konstruiramo algoritem $A$ na podlagi poenostavljenega napadalca $\mathcal{F}$. $A$ torej
 prejme instanco problema diskretnega logaritma s podatki $p, q, g$ in $I$ (kot predstavljeno v 
-definiciji~\ref{def:asm_dlp}). $P_i$ naj označuje podpisnika, ki ga poenostavljen napadalec napada
-(to je torej edini nepokvarjeni podpisnik). Ker ima $A$ absoluten nadzor, lahko brez problema
-nastavi oraklja $H_1$ in $H_2$ tako, da so $p, q$ in $g$ točno deljeni parametri pri večstranskem
-Schnorrovem podpisu. Potem lahko izbere $I_i = I$ in nastavi $H_3$ tako, da lahko dokaže znanje
-diskretnem logaritmu $I_g$ modulo $g$. \todo{to si lahko malo razjasnemo}. Tu naletimo na podoben
-problem, kot pri odgovarjanju na druge kroge podpisovalnih poizvedb. $A$ mora poslati zavezo $X_i$
-preden pozna skupni izziv $e$. Problem ponovno rešimo s previjanjem poenostavljenega napadalca
-$\mathcal{F}$. Previti je treba največ tolikokrat, kot je poizvedb, ki jih $\mathcal{F}$ pošlje
-$H_3$ (označimo $q_{H_3}$).
+definiciji~\ref{def:asm_dlp}). Podpisnika, ki ga poenostavljen napadalec napada, označimo $P_i$
+(to je torej edini nepokvarjeni podpisnik, v njegovo vlogo se mora postaviti algoritem $A$).
 
-Potem lahko $A$ požene $\mathcal{F}$ in odgovarja na njegove poizvedbe kot opisano zgoraj. Ideja
-dokaza od tu naprej je, da ko $\mathcal{F}$ vrne ponarejen podpis, $A$ uporabi previjanje in
-\textbf{lemo o razcepu}~\ref{izr:forking} (angl.\ \textit{forking lemma}), da pridobi še en ponarejen 
-podpis. Iz teh dveh ponaredkov potem lahko izlušči odgovor na dani problem diskretnega logaritma.
+Algoritem $A$ mora najprej doseči, da so parametri $p, q$ in $g$ iz predloženega problema diskretnega
+logaritma točno deljeni javni parametri pri večstranskem Schnorrovem podpisu. To doseže prek
+manipulacije izvora naključnosti za generiranje parametrov, torej orakljev $H_1$ in $H_2$. Ker
+algoritem $A$ simulira delovanje vseh slučajnih orakljev, lahko nastavi $H_1$ in $H_2$ tako, da
+bodo rezultati algoritma za generiranje ključev točno $p, q$ in $g$. Za konec nastavi še javni
+ključ $I_i$ podpisnika $P_i$ na $I$.
+
+Naslednji korak je dokaz znanja diskretnega logaritma $g^s \equiv I \pmod q$. Ta diskretni logaritem
+je točno ta, ki ga algoritem $A$ išče, torej ga na tem mestu še ne pozna. Dokaz znanja lahko zaobidemo
+na podoben način, kot pri odgovarjanju na podpisovalne poizvedbe. V jedru problema je ponovno dejstvo,
+da mora $A$ poslati zavezo $X_i$, preden pozna izziv $e$. Algoritem $A$ mora torej ponovno uganiti
+pravilen odgovor, tokrat oraklja $H_3$. Ponovno to lahko doseže s postopkom previjanja poenostavljenega
+napadalca $\mathcal{F}$. Če označimo število poizvedb, ki jih $\mathcal{F}$ pošlje oraklju $H_3$ s
+$q_{H_3}$, lahko izračunamo, da je pričakovano število previjanj, ki jih opravi algoritem $A$,
+enako $q_{H_3}$.
+
+Na tem mestu je vse pripravljeno, da lahko algoritem $A$ začne simulirati postopek podpisovanja in
+požene poenostavljenega napadalca $\mathcal{F}$ ter odgovarja na njegove poizvedbe kot opisano zgoraj.
+Ideja dokaza od tu naprej je, da ko poenostavljen napadalec $\mathcal{F}$ vrne ponarejen podpis,
+algoritem $A$ uporabi previjanje in \textbf{lemo o razcepu}~\ref{izr:forking} (angl.\
+\textit{forking lemma}), da pridobi še en ponarejen podpis. Iz teh dveh ponaredkov potem lahko
+izlušči odgovor na dani problem diskretnega logaritma.
 
 \begin{izrek}[Lema o razcepu~\cite{pointcheval1996forking}]
 \label{izr:forking}
@@ -1959,12 +1987,12 @@ podpis. Iz teh dveh ponaredkov potem lahko izlušči odgovor na dani problem dis
     podpisu je ta zgostitev izziv  $e = H(X || m)$). Naj slučajni orakelj $H$ vrača zgostitve
     dolžine $k$. Velikost zasebnega ključa naj bo $n$, tako da velja $k \gg \log(n)$.
 
-    Naj bo $F$ verjetnostni Turingov stroj, omejen s polinomskim časom, ki ima na voljo vse javne
-    podatke pri podpisni shemi $\mathcal{S}$. Če lahko $F$ z nezanemarljivo verjetnostjo vrne par 
-    $(m, \sigma)$, kjer je $\sigma$  veljaven podpis sporočila $m$, potem lahko z nezanemarljivo 
-    verjetnostjo z enakimi vhodnimi podatki (enakim trakom v Turingovem stroju) in uporabo drugega 
-    oraklja, $F$ vrne dva para  $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na 
-    drugačnih zgostitvah.
+    Naj bo $F$ naključnostni polinomski algoritem, ki ima na voljo vse javne podatke pri podpisni
+    shemi $\mathcal{S}$ in dostop do oraklja $H$. Če lahko $F$ z nezanemarljivo verjetnostjo vrne par
+    $(m, \sigma)$, kjer je $\sigma$  veljaven podpis sporočila $m$, potem lahko z nezanemarljivo
+    verjetnostjo z enakimi vhodnimi podatki (enakim trakom v Turingovem stroju) in uporabo drugega
+    oraklja, $F$ vrne dva para  $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na drugačnih
+    zgostitvah.
 \end{izrek}
 
 Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verjetnosti.
