@@ -1990,39 +1990,47 @@ izlušči odgovor na dani problem diskretnega logaritma.
     Naj bo $F$ naključnostni polinomski algoritem, ki ima na voljo vse javne podatke pri podpisni
     shemi $\mathcal{S}$ in dostop do oraklja $H$. Če lahko $F$ z nezanemarljivo verjetnostjo vrne par
     $(m, \sigma)$, kjer je $\sigma$  veljaven podpis sporočila $m$, potem lahko z nezanemarljivo
-    verjetnostjo z enakimi vhodnimi podatki (enakim trakom v Turingovem stroju) in uporabo drugega
-    oraklja, $F$ vrne dva para  $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na drugačnih
-    zgostitvah.
+    verjetnostjo z enakimi vhodnimi podatki in uporabo drugega oraklja, $F$ vrne dva para
+    $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na drugačnih zgostitvah.
 \end{izrek}
 
 Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verjetnosti.
 
 \begin{lema}
 \label{lema:verjetnost}
-    Naj bo $A \subset X \times Y$ dogodek in $0 < \epsilon < 1$. Naj velja $\text{Pr}(A(x, y)) \geq \epsilon$. 
-    Potem obstaja $\Omega \subset X$, tako da \begin{itemize}
+    Naj bosta $X$ in $Y$ množici. Naj bo $0 < \epsilon < 1$ in $A$ podmnožica $X \times Y$. Naj bo
+    par $(x, y)$ naključno izbran iz poljubne verjetnostne porazdelitve nad $X \times Y$, tako da
+    velja
+    $$
+    \text{Pr}((x, y) \in A) \geq \epsilon.
+    $$
+
+    Potem obstaja podmnožica $\Omega \subset X$, tako da
+    \begin{itemize}
         \item $\text{Pr}(x \in \Omega) > \epsilon / 2$ in
-        \item če je $a \in \Omega$, potem je $\text{Pr}(A(a, y)) \geq \epsilon / 2$.
+        \item za vsak $a$ iz $\Omega$ velja, da $\text{Pr}((a, y) \in A) \geq \epsilon / 2$.
     \end{itemize}
 \end{lema}
 
 \begin{dokaz}
     Definirajmo množico $\Omega$ kot
     $$
-    \Omega = \{x \in X \text{ }|\text{ Pr}(A(x, y)) \geq \epsilon / 2\}.
+    \Omega = \{x \in X \text{ }|\text{ Pr}((x, y) \in A) \geq \epsilon / 2\}.
     $$
-    Neposredno iz definicije množice sledi drugi del izreka. Če je $a \in \Omega$, mora zanj veljati
-    $\text{Pr}(A(a, y)) \geq \epsilon / 2$. Za prvi del leme pa uporabimo izrek o popolni verjetnosti, 
-    da $\text{Pr}(A(x, y))$ razdelimo:
-    $$
-    \text{Pr}(A(x, y)) = \text{Pr}(x \in \Omega) \cdot \text{Pr}(A(x, y) \text{ }|\text{ } x \in \Omega) + 
-        \text{Pr}(x \notin \Omega) \cdot \text{Pr}(A(x, y) \text{ }|\text{ } x \notin \Omega)
-    $$
-    Zaradi definicije množice $\Omega$ velja $\text{Pr}(A(x, y) \text{ }|\text{ } x \in \Omega) 
+    Neposredno iz definicije množice sledi drugi del leme: če je $a$ v $\Omega$, mora zanj veljati
+    $\text{Pr}((a, y) \in A) \geq \epsilon / 2$. Za prvi del leme pa uporabimo izrek o popolni verjetnosti, 
+    da $\text{Pr}((x, y) \in A)$ razdelimo:
+    \begin{align*}
+        \text{Pr}((x, y) \in A) &= \text{Pr}(x \in \Omega) \cdot
+                                    \text{Pr}((x, y) \in A \text{ }|\text{ } x \in \Omega) \\
+                                &+ \text{Pr}(x \notin \Omega) \cdot
+                                    \text{Pr}((x, y) \in A \text{ }|\text{ } x \notin \Omega)
+    \end{align*}
+    Zaradi definicije množice $\Omega$ velja $\text{Pr}((x, y) \in A \text{ }|\text{ } x \in \Omega)
     \geq \epsilon / 2$ in $\text{Pr}(A(x, y) \text{ }|\text{ } x \notin \Omega) < \epsilon / 2$.
     Zapišemo lahko torej
     \begin{align*}
-        \epsilon &\leq \text{Pr}(A(x, y)) \\
+        \epsilon &\leq \text{Pr}((x, y) \in A) \\
                  &\leq \text{Pr}(x \in \Omega) \cdot 1 + (1 - \text{Pr}(x \in \Omega)) \cdot \epsilon / 2 \\
                  &= \epsilon / 2 + (1 - \epsilon / 2) \cdot (\text{Pr}(x \in \Omega)).
     \end{align*}
