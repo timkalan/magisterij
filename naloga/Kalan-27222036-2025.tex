@@ -1864,38 +1864,52 @@ predpostavko o diskretnem logaritmu pri ASM. Bolj specifično, prekršimo lahko 
 težavnosti DL.
 
 Želimo torej konstruirati algoritem $A$, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
-da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira podpisovanje za šibkega napadalca $F'$,
-ki vrne ponarejen podpis, iz katerega $A$ lahko razbere diskretni logaritem, ki ga išče.
+da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira proces podpisovanja, ki ga napada šibek
+napadalec $F'$. Cilj algoritma $A$ je, da iz vrnjenega ponarejenega podpisa, pridobljenega ob
+uspešnem napadu, razbere diskretni logaritem, ki ga išče. Za doseganje tega cilja, mora algoritem $A$
+biti sposoben simulirati delovanje vseh aspektov procesa podpisovanja (od slučajnega oraklja do
+podpisnika $P_i$, ki ga na začetku izbere šibek napadalec $F'$ za svojo tarčo).
 
-Bolj specifično, med svojim delovanjem šibki napadalec opravlja dve vrsti poizvedb. Prva je
-\textit{zgoščevalna poizvedba}, kjer napadalec pošlje slučajnemu oraklju nek niz, ta pa mu odgovori
-z njegovo zgostitvijo. $A$ lahko simulira odgovor na tovrstne poizvedbe z vračanjem naključnih odgovorov.
+Bolj specifično, med svojim delovanjem šibki napadalec $F'$ opravlja dve vrsti poizvedb pri slučajnem
+oraklju. Prva je \textit{zgoščevalna poizvedba}, kjer $F'$ pošlje slučajnemu oraklju nek niz, ta pa
+mu odgovori z njegovo zgostitvijo. Algoritem $A$ lahko simulira odgovor na tovrstne poizvedbe z vračanjem
+naključnih odgovorov.
 
-Druga vrsta poizvedb je \textit{podpisovalna poizvedba}, kjer napadalec podpisniku $P_i$ (ki ga je 
-izbral na začetku) pošlje sporočilo $m$ in skupino $S$, ta pa mu nazaj pošlje zavezo $X_i$. Potem
-mora napadalec igrati vlogo podpisnika $D$, ki agregira informacije. Podpisniku $P_i$ pošlje skupno
-zavezo $\tilde{X}$, nazaj pa dobi $y_i$. Podpisovalne poizvedbe torej potekajo v dveh krogih in
-predstavljajo izvedbo napada z izbranim sporočilom in podskupino nad podpisnikom $P_i$.
+Druga vrsta poizvedb je \textit{podpisovalna poizvedba}, kjer šibek napadalec $F'$ podpisniku $P_i$
+(ki ga je izbral na začetku) pošlje sporočilo $m$ in skupino $S$, ta pa mu nazaj pošlje zavezo $X_i$.
+Potem mora šibek napadalec $F'$ igrati vlogo podpisnika $D$, ki agregira informacije (tekom podpisovanja
+zbere individualne zaveze in podpise, vrača pa skupne). Podpisniku $P_i$ pošlje skupno zavezo
+$\tilde{X}$, nazaj pa dobi $y_i$. Podpisovalne poizvedbe torej potekajo v dveh krogih in predstavljajo
+izvedbo napada z izbranim sporočilom in podskupino nad podpisnikom $P_i$, katerega delovanje mora
+uspešno simulirati algoritem $A$.
 
 Za lažjo konstrukcijo algoritma $A$, je smotrno šibkega napadalca $F'$ še dodatno poenostaviti. Naj
 $q_{\text{zgoščevalna}}$ označuje največje število zgoščevalnih poizvedb, ki jih opravi $F'$,
-$q_{\text{podpisovalna}}$ pa največje število podpisovalnih. Poenostavljen napadalec $\mathcal{F}$
-deluje popolnoma enako kot $F'$, le da pred drugim krogom podpisovalne poizvedbe $\mathcal{F}$
-najprej pošlje zgoščevalno poizvedbo slučajnemu oraklju $H_5$ z vhodom $(\tilde{X}, m, S)$. Podobno,
-preden $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}, \tilde{y})$ sporočila $m_F$, najprej opravi
-zgoščevalno poizedbo pri slučajnemu oraklju $H_5$ z vhodom $(\tilde{X}, m_F, S)$. Tako $\mathcal{F}$
-vsaki podpisovalni poizvedbi in ponaredku dodeli zgostitev. Ker opravi $q_{\text{podpisovalna}}$
-podpisovalnih poizvedb in $q_{\text{zgoščevalna}} + q_{\text{podpisovalna}} + 1$ zgoščevalnih in
-ker $F'$ po predpostavki teče v polinomskem času, tudi $\mathcal{F}$ teče v polinomskem času.
-Dodatno predpostavimo še, da $\mathcal{F}$ po vsaki zgoščevalni poizvedbi shrani odgovor, zato vsako
-zgoščevalno poizvedbo za določen vhod opravi le enkrat. Število klicev oraklja $H_5$ označimo s $q_H$.
-$A$ bo za delovanje uporabljal napadalce $\mathcal{F}$, saj bo tako za vsak potencialni ponaredek in
-vsak napad prejel predogled rezultata prek zgostitve, ki jo vrne $H_5$.
+$q_{\text{podpisovalna}}$ pa največje število podpisovalnih. Naj $\mathcal{F}$ označuje
+\textit{poenostavljenega napadalca}, ki deluje popolnoma enako kot šibek napadalec $F'$, le da pred
+drugim krogom podpisovalne poizvedbe $\mathcal{F}$ najprej pošlje zgoščevalno poizvedbo slučajnemu
+oraklju $H_5$ z vhodom $(\tilde{X}, m, S)$. Podobno, preden $\mathcal{F}$ vrne ponarejen podpis
+$(\tilde{X}, \tilde{y})$ sporočila $m_F$, najprej opravi zgoščevalno poizedbo pri slučajnemu oraklju
+$H_5$ z vhodom $(\tilde{X}, m_F, S)$. Tako $\mathcal{F}$ vsaki podpisovalni poizvedbi in ponaredku
+dodeli zgostitev.
 
-$A$ mora torej znati odgovoriti na vse poizvedbe poenostavljenega napadalca $\mathcal{F}$. Na zgoščevalne 
-poizvedbe odgovarja naključno, s pomočjo vnaprej izbranih simuliranih odgovorov $e_1, e_2, \dots, 
-e_{q_H}$ oraklja $H_5$. Odgovor na podpisovalno poizvedbo za podpisnika $P_i$ na vhodu $m$ in $S$
-je malce bolj zapleten. $A$ stori sledeče:
+Dodatno predpostavimo še, da poenostavljen napadalec $\mathcal{F}$ po vsaki zgoščevalni poizvedbi
+shrani odgovor, zato vsako zgoščevalno poizvedbo za določen vhod opravi le enkrat. 
+
+Poenostavljen napadalec $\mathcal{F}$ torej opravi $q_{\text{podpisovalna}}$ podpisovalnih poizvedb
+in $q_{\text{zgoščevalna}} + q_{\text{podpisovalna}} + 1$ zgoščevalnih poizvedb. Skupno število
+klicev oraklja $H_5$ s strani $\mathcal{F}$ označimo $q_H$. Shranjevanje odgovorov na poizvedbe je
+računsko zanemarljivo, zato $\mathcal{F}$ opravi toliko dela, kot šibek napadalec $F'$ skupaj s
+stroškom poizvedb. Če torej predpostavimo učinkovitost slučajnega oraklja, teče $\mathcal{F}$ v
+polinomskem času, saj tudi šibek napadalec $F'$ teče v polinomskem času.
+
+Algoritem $A$ bo za delovanje uporabljal poenostavljenega napadalca $\mathcal{F}$, saj bo tako za
+vsak potencialni ponaredek in vsak napad prejel predogled rezultata prek zgostitve, ki jo vrne $H_5$.
+
+Algoritem $A$ mora torej znati odgovoriti na vse poizvedbe poenostavljenega napadalca $\mathcal{F}$.
+Na zgoščevalne poizvedbe odgovarja naključno, s pomočjo vnaprej izbranih simuliranih odgovorov $e_1,
+e_2, \dots, e_{q_H}$ oraklja $H_5$. Odgovor na podpisovalno poizvedbo za podpisnika $P_i$ na vhodu
+$m$ in $S$ je malce bolj zapleten. Algoritem $A$ stori sledeče:
 \begin{enumerate}
     \item Shrani konfiguracijo poenostavljenega napadalca $\mathcal{F}$.
     \item \label{rewind} Si izbere naključen odgovor $e_j$ ($1 \le j \le q_H$) oraklja $H_5$, 
@@ -1907,7 +1921,7 @@ je malce bolj zapleten. $A$ stori sledeče:
         $$
         in pošlje $X_i$ v odgovor prvega kroga poizvedbe poenostavljenemu napadalcu $\mathcal{F}$.
     \item Po prejetju $\tilde{X}$ od $\mathcal{F}$ preveri, če $e_j$ ustreza poizvedbi na vhodu
-        $(\tilde{X}, m, S)$. Če ja, vrne $y$, sicer se vrne na korak~\ref{rewind}.
+        $(\tilde{X}, m, S)$. Če da, vrne $y$, sicer se vrne na korak~\ref{rewind}.
 \end{enumerate}
 Zgornje je primer splošne metode za analiziranje varnosti v kriptografiji, ki se imenuje 
 \textbf{previjanje nazaj} (angl.\ \textit{rewinding}). Popularna je pri analizi dokazov brez razkritja
