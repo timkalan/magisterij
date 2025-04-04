@@ -2013,32 +2013,41 @@ Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verje
 \end{lema}
 
 \begin{dokaz}
+    Za vsak $x$ iz $X$ definirajmo
+    $$
+    p(x) = \text{Pr}((x, y) \in A \text{ }|\text{ } x).
+    $$
+    Zakon o popolni verjetnosti nam pove, da velja
+    $$
+    \text{Pr}((x, y) \in A) = \sum_{x \in X} \text{Pr}(x) \cdot p(x) = \text{E}[p(x)].
+    $$
+    Ker je po predpostavki velja $\text{Pr}((x, y) \in A) \geq \epsilon$, velja tudi
+    $$
+    \text{E}[p(x)] \geq \epsilon.
+    $$
+
     Definirajmo množico $\Omega$ kot
     $$
-    \Omega = \{x \in X \text{ }|\text{ Pr}((x, y) \in A) \geq \epsilon / 2\}.
+    \Omega = \{x \in X \text{ }|\text{ p}(x) \geq \epsilon / 2\}.
     $$
     Neposredno iz definicije množice sledi drugi del leme: če je $a$ v $\Omega$, mora zanj veljati
-    $\text{Pr}((a, y) \in A) \geq \epsilon / 2$. Za prvi del leme pa uporabimo izrek o popolni verjetnosti, 
-    da $\text{Pr}((x, y) \in A)$ razdelimo:
-    \begin{align*}
-        \text{Pr}((x, y) \in A) &= \text{Pr}(x \in \Omega) \cdot
-                                    \text{Pr}((x, y) \in A \text{ }|\text{ } x \in \Omega) \\
-                                &+ \text{Pr}(x \notin \Omega) \cdot
-                                    \text{Pr}((x, y) \in A \text{ }|\text{ } x \notin \Omega)
-    \end{align*}
-    Zaradi definicije množice $\Omega$ velja $\text{Pr}((x, y) \in A \text{ }|\text{ } x \in \Omega)
-    \geq \epsilon / 2$ in $\text{Pr}(A(x, y) \text{ }|\text{ } x \notin \Omega) < \epsilon / 2$.
-    Zapišemo lahko torej
-    \begin{align*}
-        \epsilon &\leq \text{Pr}((x, y) \in A) \\
-                 &\leq \text{Pr}(x \in \Omega) \cdot 1 + (1 - \text{Pr}(x \in \Omega)) \cdot \epsilon / 2 \\
-                 &= \epsilon / 2 + (1 - \epsilon / 2) \cdot (\text{Pr}(x \in \Omega)).
-    \end{align*}
-    Od tu lahko izrazimo
     $$
-    \text{Pr}(x \in \Omega) \geq \frac{\epsilon / 2}{1 - \epsilon / 2} > \epsilon / 2,
+    p(a) = \text{Pr}((a, y) \in A \text{ }|\text{ } a) \geq \epsilon / 2.
     $$
-    s čimer smo pokazali še prvi del leme.
+
+    Za prvi del leme pa najprej predpostavimo obratno, da je $\text{Pr}(x \in \Omega) \leq \epsilon / 2$.
+    Ker za $x$, ki ni v $\Omega$ velja $p(x) < \epsilon / 2$ (zunaj $\Omega$ je $p(x)$ strogo manjši
+    od $\epsilon / 2$), lahko pričakovano vrednost ocenimo kot
+    \begin{align*}
+        \text{E}[p(x)] &= \text{E}[p(x) \mathbb{I}_{x \in \Omega}] + \text{E}[p(x) \mathbb{I}_{x \notin \Omega}]. \\
+                       &\leq 1 \cdot \text{Pr}(x \in \Omega) + \frac{\epsilon}{2} \cdot \text{Pr}(x \notin \Omega) \\
+                       &= \text{Pr}(x \in \Omega) + \frac{\epsilon}{2} \cdot (1 - \text{Pr}(x \in \Omega)) \\
+                       &\leq \frac{\epsilon}{2} + \frac{\epsilon}{2} \cdot \left(1 - \frac{\epsilon}{2}\right) \\
+                       &= \epsilon - \frac{\epsilon^2}{4} \\
+                       &< \epsilon.
+    \end{align*}
+    To je v nasprotju z našo predpostavko, da velja $\text{E}[p(x)] \geq \epsilon$. Tako smo pokazali,
+    da mora veljati $\text{Pr}(x \in \Omega) > \epsilon / 2$, s čimer smo dokazali prvi del leme.
 \end{dokaz}
 
 Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
