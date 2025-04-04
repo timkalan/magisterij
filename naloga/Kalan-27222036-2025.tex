@@ -2053,26 +2053,33 @@ Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verje
 Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
 
 \begin{dokaz}[Dokaz leme o razcepu~\ref{izr:forking}]
-    Naj bo $F$ napadalec, ki nima na voljo nobenega sporočila. Denimo, da med svojim napadom napadalec
-    $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb v parametru $n$ (dolžini
-    zasebnega ključa). Označimo  poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1, \mathcal{Q}_2, \dots,
-    \mathcal{Q}_Q$ (brez škode za splošnost lahko prepdostavimo, da so poizvedbe med seboj različne).
-    Odgovore oraklja označimo  z $\rho_1, \rho_2 , \dots, \rho_Q$.
+    Naj bo $F$ napadalec (verjetnostni algoritem, ki teče v polinomskem času), ki nima na voljo
+    nobenega sporočila. Z $\omega$ označimo vir naključnih bitov, prek katerih deluje $F$. Denimo,
+    da med svojim napadom napadalec $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb
+    v varnostnem parametru $k$. Označimo  poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1, \mathcal{Q}_2,
+    \dots, \mathcal{Q}_Q$ (brez škode za splošnost lahko predpostavimo, da so poizvedbe med seboj
+    različne). Pripadajoče odgovore oraklja na poizvedbe označimo z $\rho_1, \rho_2 , \dots, \rho_Q$.
 
-    Predpostavimo, da lahko za naključno izbran vhodni trak $\omega$ in naključno izbran orakelj $H$,
-    $F$ z nezanemarljivo verjetnostjo vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis
-    sporočila $m$. Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila
-    ena izmed poizvedb oraklju prav tista, ki je vsebovala sporočilo in delni podpis, nezanemarljiva.
-    Sicer bi moral $F$ uganiti odgovor na to poizvedbo za to, da bi lahko ustvaril drugi del podpisa
-    (uganiti bi torej moral naključno vrednost, kar lahko stori z največ zanemarljivo verjetnostjo).
-    Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta$ ($1 < \beta < Q$). Ker je poizvedb polinomsko
-    mnogo v parametru $n$ in je verjetnost uspeha nezanemarljiva, mora obstajati polinom $P(n)$, za
-    katerega je verjetnost uspeha
+    Predpostavimo, da lahko za naključno izbran vir bitov $\omega$ in naključno izbran orakelj $H$,
+    napadalec $F$ z nezanemarljivo verjetnostjo vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis
+    sporočila $m$. Verjetnost tu jemljemo nad vsemi viri bitov $\omega$ in nad vsemi orakljevimi
+    odgovori $\rho_1, \rho_2, \dots, \rho_Q$. To verjetnost označimo z $\text{Pr}_{\omega, \rho_1,
+    \rho_2 , \dots, \rho_Q}$. 
+
+    Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila ena izmed
+    poizvedb oraklju prav tista, ki je vsebovala sporočilo in delni podpis, nezanemarljiva. Sicer bi
+    moral napadalec $F$ uganiti odgovor na to poizvedbo. To je zato, da bi lahko ustvaril drugi del
+    podpisa (uganiti bi torej moral naključno vrednost, kar lahko stori z največ zanemarljivo
+    verjetnostjo). Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta$ ($1 < \beta < Q$). Ker je
+    poizvedb polinomsko mnogo v varnostnem parametru $k$ in je verjetnost uspeha nezanemarljiva,
+    morata obstajati polinom $P(k)$ in število $\beta$, za katera je verjetnost uspeha
     $$
-    \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek}) \geq \frac{1}{P(n)},
+    \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek}) \geq \frac{1}{P(k)},
     $$
     kjer je poizvedba $\mathcal{Q}_\beta$ res temeljila na sporočilu in delnem podpisu, slučajnost
-    pa izvira iz izbire traku $\omega$ in orakljevih odgovorov $\rho_1, \rho_2, \dots, \rho_Q$.
+    pa izvira iz vira bitov $\omega$ in orakljevih odgovorov $\rho_1, \rho_2, \dots, \rho_Q$.
+
+    % Če označimo z $\Omega$ množico vseh naključnih virov bitov $\omega$ in z $R$ množico vseh
 
     Sedaj lahko za tako $\beta$ po lemi~\ref{lema:verjetnost} definiramo množico $\Omega_\beta$, ki
     vsebuje tiste naključne trakove $\omega$, za katere je verjetnost uspeha po orakljevih odgovorih
