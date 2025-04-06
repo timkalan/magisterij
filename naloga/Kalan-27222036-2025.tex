@@ -1985,7 +1985,7 @@ izlušči odgovor na dani problem diskretnega logaritma.
     Naj bo $\mathcal{S}$ podpisna shema, ki vrača dvodelne podpise $\sigma = (\sigma_1, \sigma_2)$,
     kjer $\sigma_2$ temelji na zgostitvi vhodnega sporočila $m$ in $\sigma_1$ (npr.\ pri Schnorrovem 
     podpisu je ta zgostitev izziv  $e = H(X || m)$). Naj slučajni orakelj $H$ vrača zgostitve
-    dolžine $k$. Velikost zasebnega ključa naj bo $n$, tako da velja $k \gg \log(n)$.
+    dolžine $n$. Varnostni parameter naj bo $k$, tako da velja $n \gg \log(k)$.
 
     Naj bo $F$ naključnostni polinomski algoritem, ki ima na voljo vse javne podatke pri podpisni
     shemi $\mathcal{S}$ in dostop do oraklja $H$. Če lahko $F$ z nezanemarljivo verjetnostjo vrne par
@@ -2067,40 +2067,57 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
     \rho_2 , \dots, \rho_Q}$. 
 
     Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila ena izmed
-    poizvedb oraklju prav tista, ki je vsebovala sporočilo in delni podpis, nezanemarljiva. Sicer bi
-    moral napadalec $F$ uganiti odgovor na to poizvedbo. To je zato, da bi lahko ustvaril drugi del
-    podpisa (uganiti bi torej moral naključno vrednost, kar lahko stori z največ zanemarljivo
-    verjetnostjo). Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta$ ($1 < \beta < Q$). Ker je
-    poizvedb polinomsko mnogo v varnostnem parametru $k$ in je verjetnost uspeha nezanemarljiva,
-    morata obstajati polinom $P(k)$ in število $\beta$, za katera je verjetnost uspeha
+    poizvedb oraklju prav tista, ki je vsebovala sporočilo $m$ in delni podpis $\sigma_1$,
+    nezanemarljiva. Sicer bi moral napadalec $F$ uganiti odgovor na to poizvedbo. To je zato, da bi
+    lahko ustvaril drugi del podpisa $\sigma_2$ (uganiti bi torej moral naključno vrednost, kar lahko
+    stori z največ zanemarljivo verjetnostjo). Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta
+    = (m, \sigma_1)$ ($1 < \beta < Q$). Ker je poizvedb polinomsko mnogo v varnostnem parametru $k$
+    in je verjetnost uspeha nezanemarljiva, morata obstajati polinom $P(k)$ in število $\beta$, za
+    katera je verjetnost uspeha
     $$
-    \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek}) \geq \frac{1}{P(k)},
+    \text{Pr}_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek in } \mathcal{Q}_\beta
+    = (m, \sigma_1)) \geq \frac{1}{P(k)},
     $$
     kjer je poizvedba $\mathcal{Q}_\beta$ res temeljila na sporočilu in delnem podpisu, slučajnost
     pa izvira iz vira bitov $\omega$ in orakljevih odgovorov $\rho_1, \rho_2, \dots, \rho_Q$.
 
-    % Če označimo z $\Omega$ množico vseh naključnih virov bitov $\omega$ in z $R$ množico vseh
+    Če označimo z $\Omega$ množico vseh naključnih virov bitov $\omega$ in z $R$ množico vseh
+    zaporedij $\rho_1, \rho_2, \dots, \rho_Q$ orakljevih odgovorov, lahko uporabimo lemo~\ref{lema:verjetnost},
+    kjer je $X = \Omega$, $Y = R$, $A$ je dogodek, da je $F$ uspešen in $\epsilon = 1/P(k)$.
+    Lema nam zagotavlja obstoj množice $\Omega_\beta$, ki vsebuje vse vire bitov $\omega$, za katere
+    velja, da je verjetnost uspeha po orakljevih odgovorih $\rho_1, \dots, \rho_Q$ navzdol omejena z
+    $1/2P(k)$, oz.,\ da za vir bitov $\omega$ iz množice $\Omega_\beta$ velja
+    $$
+    \text{Pr}_{\rho_1, \rho_2, \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek in } \mathcal{Q}_\beta
+    = (m, \sigma_1)) \geq \frac{1}{2P(k)}.
+    $$
 
-    Sedaj lahko za tako $\beta$ po lemi~\ref{lema:verjetnost} definiramo množico $\Omega_\beta$, ki
-    vsebuje tiste naključne trakove $\omega$, za katere je verjetnost uspeha po orakljevih odgovorih
-    $\rho_1, \dots, \rho_Q$ navzdol omejena z $1/2P(n)$, če res velja $\mathcal{Q}_\beta = (m, \sigma_1)$. 
-    To nam da par $\beta$ in $\omega$, ki ga lahko uporabimo, da ponovno prek leme~\ref{lema:verjetnost} 
-    definiramo množico $R_{\beta, \omega}$, ki vsebuje tiste $(\rho_1, \dots, \rho_{\beta - 1})$, 
-    za katere je verjetnost uspeha po $(\rho_\beta, \dots, \rho_Q)$ s $\mathcal{Q}_\beta = (m, \sigma_1)$ 
-    večja od $1/4P(n)$.
+    Sedaj lahko poleg $\beta$ fiksiramo še vir bitov $\omega$ iz množice $\Omega_\beta$. To nam da
+    deterministično zaporedje poizvedb $Q_1, Q_2, \dots, Q_Q$, kjer velja $\mathcal{Q}_\beta =
+    (m, \sigma_1)$, napadalec pa uspe z nezanemaljivo verjetnostjo. Na tem mestu lahko ponovno
+    uporabimo lemo~\ref{lema:verjetnost}, kjer je $X$ množica odgovoro na prvih $\beta - 1$ poizvedb,
+    $Y$ množica odgovorov na preostalih $Q - \beta + 1$ poizvedb, $A$ je dogodek, da je $F$ uspešen
+    in $\epsilon = 1/2P(k)$. To nam zagotavlja obstoj množice $R_{\beta, \omega}$, ki vsebuje vsa
+    zaporedja $(\rho_1, \dots, \rho_{\beta - 1})$, za katera velja, da je verjetnost uspeha po
+    preostanku odgovorov $(\rho_\beta, \dots, \rho_Q)$ večja od $1/4P(k)$. To pomeni, da za
+    zaporedje $(\rho_1, \dots, \rho_{\beta - 1})$ iz množice $R_{\beta, \omega}$, velja
+    $$
+    \text{Pr}_{\rho_\beta, \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek in } \mathcal{Q}_\beta
+    = (m, \sigma_1)) \geq \frac{1}{4P(k)}.
+    $$
 
-    Sedaj imamo določene $\beta, \omega$ in $(\rho_1, \dots, \rho_{\beta - 1})$, za katere si lahko
-    izberemo dve množici odgovorov $(\rho_\beta, \dots, \rho_Q)$ in $(\rho_\beta', \dots, \rho_Q')$,
-    za kateri $F$ z nezanemraljivo verjetnostjo vrne dva para $(m, \sigma)$ in $(m, \sigma')$, kjer
-    sta $\sigma$ in $\sigma'$ veljavna podpisa sporočila $m$, ki temeljita na drugačnih zgostitvah.
-    Tu smo uporabili pogoj $k \gg \log(n)$, ki nam zagotavlja, da je vsaj $n$ različnih $k$-bitov
-    dolgih odgovorov oraklja $H$.
+    Množici $\Omega_\beta$ in $R_{\beta, \omega}$ določata možne $\beta, \omega$ in $(\rho_1, \dots,
+    \rho_{\beta - 1})$, za katere si lahko izberemo dve množici odgovorov $(\rho_\beta, \dots, \rho_Q)$
+    in $(\rho_\beta', \dots, \rho_Q')$, za kateri napadalec $F$ z nezanemarljivo verjetnostjo vrne
+    dva para $(m, \sigma)$ in $(m, \sigma')$, kjer sta $\sigma$ in $\sigma'$ veljavna podpisa sporočila
+    $m$, ki temeljita na drugačnih zgostitvah. Tu smo uporabili pogoj $n \gg \log(k)$ oz.,\ da je
+    dolžina orakljevih odgovorov $n$ veliko večja od varnostnega parametra $k$. Ta pogoj nam zagotavlja,
+    da je veliko različnih oraljevih odgovorov, oz.\ da je verjetnost, da se zgodi trčenje,
+    zanemarljiva.
 
     Torej, z naključno izbiro $\beta$, $\omega$, $(\rho_1, \dots, \rho_{\beta - 1}), (\rho_\beta, 
     \dots, \rho_Q)$ in $(\rho_\beta', \dots, \rho_Q')$ lahko z nezanemarljivo verjetnostjo dobimo
     dva veljavna podpisa $\sigma$ in $\sigma'$ sporočila $m$, ki temeljita na drugačnih zgostitvah.
-
-    \todo{n vs k, polinom P, točno kako vmestimo Qbeta}
 \end{dokaz}
 
 Vrnimo se na dokaz varnosti večstranskega Schnorrovega podpisa. Ostali smo pri algoritmu $A$, ki
