@@ -1868,7 +1868,7 @@ težavnosti DL.
 Želimo torej konstruirati algoritem $A$, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
 da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira proces podpisovanja, ki ga napada šibek
 napadalec $F'$. Cilj algoritma $A$ je, da iz vrnjenega ponarejenega podpisa, pridobljenega ob
-uspešnem napadu, razbere diskretni logaritem, ki ga išče. Za doseganje tega cilja, mora algoritem $A$
+uspešnem napadu, razbere diskretni logaritem, ki ga išče. Za doseganje tega cilja mora algoritem $A$
 biti sposoben simulirati delovanje vseh aspektov procesa podpisovanja (od slučajnega oraklja do
 podpisnika $P_i$, ki ga na začetku izbere šibek napadalec $F'$ za svojo tarčo).
 
@@ -2123,28 +2123,45 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
 Vrnimo se na dokaz varnosti večstranskega Schnorrovega podpisa. Ostali smo pri algoritmu $A$, ki
 tekom svojega delovanja poganja poenostavljenega napadalca $\mathcal{F}$. 
 
-Denimo, da $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}_0, \tilde{y}_0)$ sporočila $m_0$ s strani 
-podskupine $S_0$. Še več, ponaredek je nastal na podlagi $j_0$-te poizvedbe oraklju $H_5$ z vhodom 
-$(\tilde{X}_0, m_0, S_0)$ in odgovorom $e_{j_0}$. $A$ potem ponastavi napadalca $\mathcal{F}$ nazaj
-na začetek z enakim trakom. Na njegove poizvedbe odgovarja enako kot prej, le na $j_0$-to poizvedbo
-odgovori z novo naključno vrednostjo $e_{j_0}'$.
+Denimo, da $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}_0, \tilde{y}_0)$ sporočila $m_0$ s strani
+podskupine $S_0$. Še več, ponaredek je nastal na podlagi $j_0$-te poizvedbe oraklju $H_5$ z vhodom
+$(\tilde{X}_0, m_0, S_0)$ in odgovorom $e_{j_0}$. Ker $A$ pozna celotno interno stanje poenostavljenega
+napadalca $\mathcal{F}$ in si je shranjeval njegova interna stanja, lahko simulator $A$ previje
+poenostavljenega napadalca $\mathcal{F}$ nazaj na začetek podpisovnja z enakim virom naključnih bitov
+$\omega$. Na njegove poizvedbe odgovarja enako kot prej, le na $j_0$-to poizvedbo odgovori z novo
+naključno vrednostjo $e_{j_0}'$. Delovanje napadalca $\mathcal{F}$ pred previjanjem imenujemo prvi
+pogon, delovanje po previjanju pa drugi pogon.
 
-Označimo število podpisovalnih poizvedb, katerih prvi krog v prvem pogonu napadalec $\mathcal{F}$ 
-opravi pred $j_0$-to zgoščevalno poizvedbo z $r$. To pomeni, da nobena od prvih $r - 1$ podpisovalnih 
-poizvedb ni temeljila na $j_0$-ti zgoščevalni, saj mora za legitimen ponaredek $\mathcal{F}$ dati 
-podpis za sporočilo in skupino, na podlagi katere podpis še ni bil narejen. V drugem pogonu napadalca
-lahko $A$ torej vrne shranjene odgovore na prvih $r - 1$ podpisovalnih poizvedb. Previjanje nazaj 
-je lahko potrebno pri $r$-ti podpisovalni poizvedbi, saj se drugi krog lahko zgodi po $j_0$-ti
-podpisovalni poizvedbi. Verjetnost previjanja je $1 - 1/q_H$, kjer je $1/q_H$ verjetnost, da je
-drugi krog $r$-te podpisovalne poizvedbe izveden na podlagi enake zgoščevalne poizvedbe, kot pri
-prvem pogonu.
+Ker so podpisovalne poizvedbe razdeljene na dva kroga in temeljijo na zgoščevalnih poizvedbah (za
+pridobitev izziva $e$), se lahko zgodi, da je $j_0$-ta zgoščevalna poizvedba opravljena sredi ene
+od podpisovalnih. Označimo z $r$ število podpisovalnih poizvedb v prvem pogonu, katerih prvi krog
+poenostavljen napadalec $\mathcal{F}$ opravi pred $j_0$-to zgoščevalno poizvedbo. Ker mora legitimen
+ponarejen podpis podpisovati sporočilo s strani skupine, ki tega sporočila še ni podpisala, lahko
+sklepamo, da nobena od podpisovalnih poizvedb v prvem pogonu ni temeljila na $j_0$-ti zgoščevalni
+poizvedbi.
+
+Ker je pri drugem pogonu uporabljen enak vir naključnih bitov $\omega$ in so odgovori na poizvedbe do
+$j_0$-te enaki, nobena od prvih $r - 1$ podpisovalnih poizvedb v drugem pogonu ni temeljila na $j_0$-ti
+zgoščevalni. V drugem pogonu napadalca lahko algoritem $A$ torej vrne shranjene odgovore na prvih
+$r - 1$ podpisovalnih poizvedb, kar med drugim pomeni, da za te poizvedbe ni potrebno previjanje
+nazaj. To pa je lahko potrebno pri $r$-ti podpisovalni poizvedbi, saj se drugi krog lahko zgodi po
+$j_0$-ti podpisovalni poizvedbi. Verjetnost previjanja je $1 - 1/q_H$, kjer je $1/q_H$ verjetnost,
+da je drugi krog $r$-te podpisovalne poizvedbe izveden na podlagi enake zgoščevalne poizvedbe, kot
+pri prvem pogonu.
+
+\begin{opomba}
+    V dejstvo, da nobena od prvih $r - 1$ podpisovalnih poizvedb v drugem pogonu ni temeljila na
+    $j_0$-ti zgoščevalni poizvedbi, temelji na predpostavki, da ne dovoljujemo hkranih podpisovalnih
+    poizvedb, ki je standardna pri dokazih z lemo o razcepu.
+\end{opomba}
 
 Če previjanje pri $r$-ti podpisovalni poizvedbi ni potrebno, potem so pogoji pri $j_0$-ti zgoščevalni
-poizvedbi popolnoma enaki, kot pri prvem pogonu (enak trak napadalca in enake zgoščevalne poizvedbe).
-Od tu lahko zaključimo, da bo tudi $j_0$-ta poizdveba imela enak vhod: $(\tilde{X}_0, m_0, S_0)$, 
-odgovor pa bo seveda drugačen. Če tudi v tem pogonu napadalec $\mathcal{F}$ uspešno vrne ponaredek
-$(\tilde{X}_1, \tilde{y}_1)$ podpisa na sporočilu $m_1$ s strani podskupine $S_1$, ki temelji na 
-poizvebi $j_0$, potem smo lahko prepričani, da velja $m_1 = m_0, S_1 = S_0$ in $\tilde{X}_1, = \tilde{X}_0$.
+poizvedbi popolnoma enaki, kot pri prvem pogonu (enak vir naključnih bitov napadalca in enake
+zgoščevalne poizvedbe). Od tu lahko zaključimo, da bo tudi $j_0$-ta poizdveba imela enak vhod:
+$(\tilde{X}_0, m_0, S_0)$, odgovor pa bo seveda drugačen. Če tudi v tem pogonu poenostavljen napadalec
+$\mathcal{F}$ uspešno vrne ponaredek $(\tilde{X}_1, \tilde{y}_1)$ podpisa sporočila $m_1$ s strani
+podskupine $S_1$, ki temelji na poizvebi $j_0$, potem smo lahko prepričani, da velja $m_1 = m_0,
+S_1 = S_0$ in $\tilde{X}_1, = \tilde{X}_0$.
 
 Ključno, enačbi za preverjanje podpisov potem lahko zapišemo kot
 \begin{align*}
@@ -2172,27 +2189,35 @@ potem je
 $$
 \tilde{I}_{S_0} = \prod_{j=1}^l I_{i_j},
 $$
-kjer je vrednost, katere diskretni logaritem želimo izračunati, $I_i$, nujno ena izmed $I_{i_j}$, 
-saj mora biti del skupine $S_0$. $A$ mora sedaj pridobiti diskretne logaritme vseh ostalih $I_{i_j}$
-in jih odšteti iz diskretnega logaritma $\tilde{I}_{S_0}$. Tu uporabimo dejstvo, da mora $P_i$ med
-generiranjem ključev pridobiti dokaze znanja brez razkritja znanja o diskretnih logaritmih vseh $I_{i_j}$,
-razen za $i_j = i$. Ker te dokaze prejme $P_i$, jih mora zanj generirati napadalec $\mathcal{F}$. Tu
-lahko ponovno uporabimo lemo o razcepu~\ref{izr:forking}, prek katere $A$ lahko previje napadalca
-in prejme diskretni logaritem $s_{i_j}$, katerega znanje dokazuje $\mathcal{F}$. Ker vsi podpisniki
-za dokaz uporabijo enak izziv $H_3(X_1, I_1, \dots, X_L, I_L)$, se mora zgoditi samo en razcep.
+kjer je vrednost, katere diskretni logaritem želimo izračunati, $I_i$, nujno ena izmed $I_{i_j}$,
+saj mora podpisnik $P_i$ biti del skupine $S_0$, če želimo, da je ponaredek veljaven. $A$ mora sedaj
+pridobiti diskretne logaritme vseh ostalih $I_{i_j}$ in jih odšteti iz diskretnega logaritma
+$\tilde{I}_{S_0}$. Tu uporabimo dejstvo, da mora $P_i$ med generiranjem ključev pridobiti in preveriti
+dokaze znanja brez razkritja znanja o diskretnih logaritmih vseh $I_{i_j}$, razen za $i_j = i$.
+Spomnimo se, da poenostavljen napadalec $\mathcal{F}$ deluje tako, da si izbere tarčo (podpisnika $P_i$)
+in se nato postavi v vlogo vseh ostalih podpisnikov. To pomeni, da mora dokaze znanja generirati
+prav napadalec $\mathcal{F}$ (ki torej pozna vrednosti $s_{i_j}$).
 
-Vprašanje, ki ostane, je časovna zahtevnost algortima $A$. Standardne operacije podpisovanja
+Ker so dokazi znanja brez razkritja znanja o diskretnih logaritmih samo Schnorrovi podpisi, lahko
+uporabimo lemo o razcepu~\ref{izr:forking}, prek katere algoritem $A$ lahko previje napadalca
+$\mathcal{F}$ in prejme diskretni logaritem $s_{i_j}$, katerega znanje dokazuje $\mathcal{F}$.
+Ker vsi podpisniki za dokaz uporabijo enak izziv $H_3(X_1, I_1, \dots, X_L, I_L)$, se
+mora zgoditi samo en razcep, da algoritem $A$ alternativen izziv, na podlagi katerega lahko
+izračuna vse diskretne logaritme $s_{i_j}$.
+
+Vprašanje, ki ostane, je časovna zahtevnost algoritma $A$. Standardne operacije podpisovanja
 so polinomske v varnostnem parametru $k$, zato so polinomske tudi za $A$. Prav tako so učinkoviti
 odgovori na zgoščevalne poizvedbe. Najbolj časovno zahteven del so previjanja, ki jih je lahko $q_H$
-za vsak podpis in generiranje ključev. Časovna zahtevnost $A$ je torej proporcionalna $q_H$, ker pa
-je $\mathcal{F}$ omejen s polinomskim časom, je tudi časovna zahtevnost $A$ polinomska v $k$.
+za vsak podpis in generiranje ključev. Ker je poenostavljen napadalec $\mathcal{F}$ polinomski algoritem,
+lahko opravi največ polinomsko poizvedb, torej je $q_H$ polinomsko število v $k$. Časovna zahtevnost
+algoritma $A$ pa je proporcionalna $q_H$, torej tudi polinomska v $k$.
 
-Verjetnost uspeha algoritma $A$ je obratno proporcionalna polinomu v $q_H$, torej tudi v $k$. $A$ 
-je torej res polinomski algoritem, ki z nezanemarljivo verjetnostjo vrne odgovor na problem diskretnega
-algoritma. Ker predpostavljamo, da tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
-
-\todo{opomba o paralelnem podpisovanju - forking lemma ga ne dopušča}
-\todo{časovna zahtevnost in verjetnost uspeha: povezava med qH in k (polinomska?)}
+Verjetnost uspeha algoritma $A$ temelji na verjetnosti uspeha poenostavljenega napadalca $\mathcal{F}$.
+Ta verjetnost je pomnožena še s faktorjem, ki je obratno sorazmeren polinomu v $q_H$. Ker smo
+začeli z nezanemarljivo verjetnostjo, in jo skalirali samo s polinomskimi faktorji, je verjetnost
+uspeha algoritma $A$ še vedno nezanemarljiva. $A$ je torej res polinomski algoritem, ki z
+nezanemarljivo verjetnostjo vrne odgovor na problem diskretnega algoritma. Ker predpostavljamo, da
+tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
 
 \section{Varnost večstranskih podpisov v splošnem}
 \label{sec:varnost}
