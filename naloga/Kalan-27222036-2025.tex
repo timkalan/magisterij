@@ -472,6 +472,15 @@ večino ročnih podpisov je moč ponarediti z nekaj prakse. Preverjanje digitaln
 na kriptografiji javnega ključa. Ker je podpis nastal s pomočjo podpisnikovega zasebnega ključa,
 lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 
+Da se lažje pogovarjamo o kriptografskih sistemih, je smotrno definirati kaj točno so deležniki,
+kot so podpisnik, preverjevalec in napadalec. V kriptografskih besedilih so pogosto definirani kot
+verjetnostni Turingovi stroji, mi pa se bomo izognili tej formalizaciji in se pogovarjali enostavno
+o \textit{naključnostnih algoritmih}. To so navadni, deterministični algoritmi, ki imajo dostop do
+dodatnega parametra, \textit{vira naključnih bitov} $\omega$. Ta vir si lahko predstavljamo kot
+seznam bitov, ki ga algoritem lahko bere, ko ga potrebuje (npr.\ za generiranje naključnih števil).
+Branje je ponavadi enkratno dejanje, ko algoritem prebere bit, mora pri naslednjem klicu prebrati
+sosednji bit.
+
 \begin{definicija}
 \label{def:digisig}
     \textbf{Digitalni} ali \textbf{kriptografski podpis} $\mathcal{S} = (\mathcal{P}, \mathcal{G},
@@ -970,7 +979,7 @@ je ta transformacija varna.
 
 \begin{dokaz}
     Dokaz poteka z redukcijo uspešnega napada na rešitev problema diskretnega logaritma. Naj bo $F$
-    verjetnostni algoritem, ki teče v polinomskem času. Algoritem $F$ imenujemo napadalec. Na
+    naključnostni algoritem, ki teče v polinomskem času. Algoritem $F$ imenujemo napadalec. Na
     podlagi napadalca $F$ konstruirajmo algoritem $A$, ki iz uspešnega napada napadalca $F$ na
     Schnorrovo identifikacijsko shemo konstruira rešitev problema diskretnega logaritma.
 
@@ -993,7 +1002,7 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 \end{izrek}
 
 \begin{dokaz}
-    Naj bo napadalec $F$ na podpisno shemo $\mathcal{S}$ verjetnostni algoritem, ki teče v
+    Naj bo napadalec $F$ na podpisno shemo $\mathcal{S}$ naključnostni algoritem, ki teče v
     polinomskem času. Naj bo število napadalčevih klicev slučajnega oraklja polinomsko omejeno
     v varnostnem parametru $k$.
 
@@ -1382,7 +1391,7 @@ logaritma za večstranske podpise.
     Predpostavka o varnosti je poleg standardnega PDL tu razširjena še z algoritmom za pridobivanje 
     deljenih parametrov in jo lahko zapišemo:
     \begin{itemize}
-        \item \textit{Parametri}: Verjetnostni algoritem $GenPrimes(k)$~\ref{alg:gen} teče v pričakovanem 
+        \item \textit{Parametri}: Naključnostni algoritem $GenPrimes(k)$~\ref{alg:gen} teče v pričakovanem 
             polinomskem času: 
             \begin{algorithm}
                 \caption{Algoritem $GenPrimes(k)$ za generiranje praštevil.}
@@ -1397,7 +1406,7 @@ logaritma za večstranske podpise.
                     \State \Return{$p, q$}
                 \end{algorithmic}
             \end{algorithm}
-        \item \textit{Težavnost DL}: Naj bo $A$ poljuben verjetnostni algoritem, ki teče v polinomskem
+        \item \textit{Težavnost DL}: Naj bo $A$ poljuben naključnostni algoritem, ki teče v polinomskem
             času in svoje parametre sprejme 
             \begin{itemize}
                 \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
@@ -1932,7 +1941,7 @@ algoritem odgovori na poizvedbo, preden je postavljena, za ceno največ toliko p
 poizvedba odgovorov.
 
 \begin{opomba}
-    V kontekstu dokaza varnosti je napadalec verjetnostni algoritem, omejen s polinomskim časom.
+    V kontekstu dokaza varnosti je napadalec naključnostni algoritem, omejen s polinomskim časom.
     Simulator (algoritem $A$), ki ga konstruiramo, pa je algoritem, ki tekom svojega delovanja
     uporablja napadalca kot podprogram. To simulatorju omogoča, da pozna celotno interno stanje
     napadalca, vključno z vsemi naključnimi izbirami, ki jih je napadalec opravil. Zato lahko
@@ -2053,7 +2062,7 @@ Pred dokazom leme o razcepu, moramo najprej pokazati enostavnejšo lemo iz verje
 Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
 
 \begin{dokaz}[Dokaz leme o razcepu~\ref{izr:forking}]
-    Naj bo $F$ napadalec (verjetnostni algoritem, ki teče v polinomskem času), ki nima na voljo
+    Naj bo $F$ napadalec (naključnostni algoritem, ki teče v polinomskem času), ki nima na voljo
     nobenega sporočila. Z $\omega$ označimo vir naključnih bitov, prek katerih deluje $F$. Denimo,
     da med svojim napadom napadalec $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb
     v varnostnem parametru $k$. Označimo  poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1, \mathcal{Q}_2,
