@@ -2249,7 +2249,10 @@ podatek, ki je odvisen od okolja. Cilj primerjave je videti, kako se razlikuje �
 pri različnem številu podpisnikov.
 
 Podpisa smo implementirali v programskem jeziku Go, vsa izvorna koda je na voljo na
-\href{https://github.com/timkalan/magisterij}{https://github.com/timkalan/magisterij}.
+\href{https://github.com/timkalan/magisterij}{https://github.com/timkalan/magisterij}. Poskusi so
+bili izvedeni na računalniku z Apple M1 Pro procesorjem in 16 GB RAM-a. Vsak poskus smo ponovili
+šestkrat, da smo dobili stabilne rezultate. Vsi grafi prikazujejo povprečne vrednosti skupaj s
+standardnim odklonom.
 
 \subsubsection{Generiranje ključev}
 Generiranje ključev se pri obeh podpisih začne enako. Vsi podpisniki morajo izbrati naključne zasebne
@@ -2258,6 +2261,14 @@ Schnorrov podpis konča, pri večstranskem podpisu pa je potrebno še ustvariti 
 razkritja znanja, jih poslati vsem ostalim podpisnikom in jih preveriti. To je seveda zelo veliko
 dodatnega dela, ki pa ga je za določeno skupino potrebno opraviti samo enkrat (kot je seveda potrebno
 samo enkrat generirati par ključev pri navadnem Schnorrovem podpisu).
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/benchmark_KeyGeneration.pdf}
+  \caption[Generiranje ključev.]{Primerjava časov generiranja ključev pri navadnem in večstranskem
+    Schnorrovem podpisu.}
+  \label{fig:generiranje}
+\end{figure}
 
 Kot je razvidno iz slike~\ref{fig:generiranje}, je čas generiranja ključev pri večstranskem podpisu
 mnogo daljši, ne glede na količino podpisnikov ... 
@@ -2272,10 +2283,17 @@ razmišljati o uporabi navadnega Schnorrovga podpisa.
 Pri podpisovanju največjo razliko med podpisoma naredi potreba po komunikaciji med podpisniki pri
 večstranskem podpisu. Posebej problematično je, da so za ustvarjanje enega podpisa potrebni trije
 krogi komunikacije: izmenjava zavez $X_i$, izmenjava skupne zaveze $\tilde{X}$ in izmenjava izziva
-individualnih podpisov $y_i$.
-
 Če pa komunikacijo zanemarimo, pa je čas podpisovanja enak v obeh primerih, kot je razvidno tudi
 iz naše analize na sliki~\ref{fig:podpisovanje} (kjer smo zanemarili čas komunikacije).
+
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/benchmark_Signing.pdf}
+  \caption[Podpisovanje.]{Primerjava časov podpisovanja pri navadnem in večstranskem
+    Schnorrovem podpisu.}
+  \label{fig:podpisovanje}
+\end{figure}
 
 \subsubsection{Preverjanje}
 Največja prednost večstranskega Schnorrovega podpisa je, da je rezultat vedno en sam podpis, čigar
@@ -2287,6 +2305,15 @@ vsakega podpisa posebej, kar pomeni, da efektivno dolžina podpisa raste linearn
 To pomeni, da tako raste tudi čas preverjanja. Prednost večstranskega podpisa lahko vidimo na
 sliki~\ref{fig:preverjanje}, kjer je čas preverjanja pri večstranskem podpisu konstanten, pri
 navadnem pa linearno narašča.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.8\textwidth]{images/benchmark_Verification.pdf}
+  \caption[Preverjanje.]{Primerjava časov preverjanja veljavnosti podpisov pri navadnem in večstranskem
+    Schnorrovem podpisu.}
+  \label{fig:preverjanje}
+\end{figure}
+
 
 \subsubsection{Celotni podpis}
 

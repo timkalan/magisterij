@@ -122,6 +122,7 @@ func BenchmarkAll(b *testing.B) {
 				b.Fatalf("failed to generate parameters: %v", err)
 			}
 
+			message := []byte("Benchmark message for ASM signing")
 			b.ResetTimer()
 
 			for i := 0; i < b.N; i++ {
@@ -129,7 +130,43 @@ func BenchmarkAll(b *testing.B) {
 				if err != nil {
 					b.Fatalf("failed to generate keys: %v", err)
 				}
-				message := []byte("Benchmark message for ASM signing")
+
+				sig, err := sign(params, keys, message, nSigners)
+				if err != nil {
+					b.Fatalf("failed to sign message: %v", err)
+				}
+
+				valid, err := verify(params, keys, message, sig, nSigners)
+				if err != nil {
+					b.Fatalf("failed to verify signature: %v", err)
+				}
+				if !valid {
+					b.Fatalf("failed to verify signature")
+				}
+			}
+		})
+	}
+}
+
+// BenchmarkSigningVerification benchmarks the signing and verification process.
+func BenchmarkSigningVerification(b *testing.B) {
+
+	for _, nSigners := range testNSigners {
+		b.Run("nSigners="+fmt.Sprint(nSigners), func(b *testing.B) {
+			params, err := config.GenerateParameters(bitLength, hashFactory)
+			if err != nil {
+				b.Fatalf("failed to generate parameters: %v", err)
+			}
+
+			keys, err := generateKeys(params, nSigners)
+			if err != nil {
+				b.Fatalf("failed to generate keys: %v", err)
+			}
+
+			message := []byte("Benchmark message for ASM signing")
+			b.ResetTimer()
+
+			for i := 0; i < b.N; i++ {
 
 				sig, err := sign(params, keys, message, nSigners)
 				if err != nil {

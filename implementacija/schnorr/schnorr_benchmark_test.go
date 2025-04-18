@@ -170,3 +170,47 @@ func BenchmarkAll(b *testing.B) {
 		})
 	}
 }
+
+// BenchmarkSigningVerification benchmarks the signing and verification process.
+func BenchmarkSigningVerification(b *testing.B) {
+	for _, nSigners := range testNSigners {
+		b.Run(fmt.Sprintf("nSigners=%d", nSigners), func(b *testing.B) {
+			params, err := config.GenerateParameters(bitLength, hashFactory)
+			if err != nil {
+				b.Fatalf("Failed to generate parameters: %v", err)
+			}
+
+			allKeys := make([]*keyPair, nSigners)
+			allSigs := make([]*signature, nSigners)
+
+			// Key generation
+			for j := uint(0); j < nSigners; j++ {
+				allKeys[j], err = generateKeyPair(params)
+				if err != nil {
+					b.Fatalf("Failed to generate keys: %v", err)
+				}
+			}
+
+			message := []byte("Benchmark message")
+			b.ResetTimer()
+
+			for i := 0; i < b.N; i++ {
+
+				// Signing
+				for j := uint(0); j < nSigners; j++ {
+					allSigs[j], err = sign(params, allKeys[j].privateKey, message)
+					if err != nil {
+						b.Fatalf("Failed to sign message: %v", err)
+					}
+				}
+
+				// Verification
+				for j := uint(0); j < nSigners; j++ {
+					if !verify(params, allKeys[j].publicKey, message, allSigs[j]) {
+						b.Fatalf("Failed to verify signature")
+					}
+				}
+			}
+		})
+	}
+}

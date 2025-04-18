@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCHNORR_RESULTS="results/bench_schnorr.txt"
-ASM_RESULTS="results/bench_asm.txt"
+SCHNORR_RESULTS="results/bench_Schnorr.txt"
+ASM_RESULTS="results/bench_ASM.txt"
 BENCHMARKS="."
 RUNS=6
 
@@ -14,10 +14,10 @@ fi
 mkdir -p results
 
 echo "Running Schnorr benchmarks..."
-go test -bench=$BENCHMARKS -count=$RUNS ./schnorr | tee $SCHNORR_RESULTS
+go test -bench=$BENCHMARKS -count=$RUNS -timeout=0 ./schnorr | tee $SCHNORR_RESULTS
 
 echo "Running ASM benchmarks..."
-go test -bench=$BENCHMARKS -count=$RUNS ./asm | tee $ASM_RESULTS
+go test -bench=$BENCHMARKS -count=$RUNS -timeout=0 ./asm | tee $ASM_RESULTS
 
 # Clean up results for benchstat
 sed -i '' 's/schnorr/asm/g' $SCHNORR_RESULTS
