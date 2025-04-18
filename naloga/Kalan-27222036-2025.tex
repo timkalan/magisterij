@@ -2263,9 +2263,9 @@ določa grupo iz katere je generator, je bila $256$ bitov. Za zgoščevalno funk
 Generiranje ključev se pri obeh podpisih začne enako. Vsi podpisniki morajo izbrati naključne zasebne
 ključe in generirati javne ključe kot $X_i = g^{s_i} \pmod p$. Tu se generiranje ključev za navaden
 Schnorrov podpis konča, pri večstranskem podpisu pa je potrebno še ustvariti dokaze znanja brez
-razkritja znanja, jih poslati vsem ostalim podpisnikom in jih preveriti. To je seveda zelo veliko
-dodatnega dela, ki pa ga je za določeno skupino potrebno opraviti samo enkrat (kot je seveda potrebno
-samo enkrat generirati par ključev pri navadnem Schnorrovem podpisu).
+razkritja znanja, jih poslati vsem ostalim podpisnikom in preveriti njihovo veljavnost. To je seveda
+zelo veliko dodatnega dela, ki pa ga je za določeno skupino potrebno opraviti samo enkrat (kot je
+tudi potrebno samo enkrat generirati par ključev pri navadnem Schnorrovem podpisu).
 
 \begin{figure}[ht]
   \centering
@@ -2279,7 +2279,9 @@ Kot je razvidno iz slike~\ref{fig:generiranje}, je čas generiranja ključev pri
 mnogo daljši, ne glede na količino podpisnikov. Rast zahtevnosti v obeh primerih je linearna
 s številom podpisnikov, a je vseeno hitrejša pri večstranskem podpisu. V praksi je za večstranski
 podpis potrebno še več časa, saj smo tu zanemarili čas komunikacije, ki je v tem primeru linearen
-s številom podpisnikov. Ker pa se mora ta komunikacija zgoditi samo enkrat, jo tu zanemarimo.
+s številom podpisnikov. Ker pa se mora ta komunikacija zgoditi samo enkrat, jo tu zanemarimo. Za
+predstavo razlike, pri $100$ podpisnikih se za generiranje ključev pri navadnem podpisu porabita
+približno $2$ milisekundi, pri večstranskem pa $8$ milisekund, torej štirikrat več.
 
 Generiranje ključev predstavlja veliko prednost za uporabo navadnega Schnorrovega podpisa, vendar
 si moramo zapomniti, da je to postopek, ki ga mora skupina opraviti le enkrat, hkrati pa ne obremenjuje
@@ -2289,8 +2291,13 @@ razmišljati o uporabi navadnega Schnorrovga podpisa.
 
 \subsubsection{Podpisovanje}
 Pri podpisovanju največjo razliko med podpisoma naredi potreba po komunikaciji med podpisniki pri
-večstranskem podpisu. Posebej problematično je, da so za ustvarjanje enega podpisa potrebni trije
-krogi komunikacije: izmenjava zavez $X_i$, izmenjava skupne zaveze $\tilde{X}$ in izmenjava izziva
+večstranskem podpisu. Zahtevno je predvem to, da so za ustvarjanje enega podpisa potrebni trije
+krogi komunikacije: 
+\begin{itemize}
+    \item izmenjava zavez $X_i$,
+    \item izmenjava skupne zaveze $\tilde{X}$
+    \item in izmenjava izziva $e$.
+\end{itemize}
 Če pa komunikacijo zanemarimo, pa je čas podpisovanja enak v obeh primerih, kot je razvidno tudi
 iz naše analize na sliki~\ref{fig:podpisovanje} (kjer smo zanemarili čas komunikacije).
 
@@ -2304,13 +2311,14 @@ iz naše analize na sliki~\ref{fig:podpisovanje} (kjer smo zanemarili čas komun
 \end{figure}
 
 Graf torej odraža čas, ki ga porabi računalnik za računanje, zanemari pa čas komunikacije. Teoretično
-je čas konstanten, če lahko podpisniki hkrati pošljajo in prejemajo več sporočil. V praksi pa čas
-zavisi od mnogih pogojev, kot so hitrost povezave, število podpisnikov in stabilnost povezave.
+je čas za komunikacijo konstanten, če lahko podpisniki hkrati pošljajo in prejemajo več sporočil.
+V praksi pa čas zavisi od mnogih pogojev, kot so hitrost povezave, število podpisnikov in stabilnost
+povezave.
 
 \subsubsection{Preverjanje}
-Največja prednost večstranskega Schnorrovega podpisa je, da je rezultat vedno en sam podpis, čigar
-dolžina je primerljiva z dolžino navadnega Schnorrovega podpisa. Edina dodatna naloga preverjevalca
-je, da preveri ustreznost Merklovih korenov, kar pa je hitra operacija.
+Ena največjih prednosti večstranskega Schnorrovega podpisa je, da podpis vedno ostane enako dolg kot
+navaden podpis – ne glede na število podpisnikov. Edina dodatna naloga preverjevalca je preverjanje
+ustreznosti Merklovih korenov, kar pa je hitro in učinkovito.
 
 Tu se pojavi glavna prednost večstranskega Schnorrovega podpisa. Navaden podpis zahteva preverjanje
 vsakega podpisa posebej, kar pomeni, da efektivno dolžina podpisa raste linearno s številom podpisnikov.
@@ -2331,11 +2339,12 @@ kar pomeni, da bi bilo preverjanje še toliko bolj učinkovito.
 \end{figure}
 
 \subsubsection{Celotni podpis}
-Če združimo vse operacije, je enostranski podpis vseeno učinkovitejši, ker večstranski Schnorrov
-podpis zahteva veliko računanja za generiranje ključev. To se jasno vidi na sliki~\ref{fig:celotni}.
-Seveda pa je to nekoliko nerealistična primerjava, saj nas redko zanima celoten čas, ki ga bodo
-porabili različni deležniki. Vseeno pa nam da dobro predstavo o tem, kako se čas podpisovanja
-različnih podpisov spreminja s številom podpisnikov.
+Če združimo vse operacije -- torej generiranje ključev, podpisovanje in preverjanje -- je enostranski
+podpis vseeno učinkovitejši, ker večstranski Schnorrov podpis zahteva veliko računanja za generiranje
+ključev. To se jasno vidi na sliki~\ref{fig:celotni}. Seveda pa je to nekoliko nerealistična primerjava,
+saj nas redko zanima celoten čas, ki ga bodo porabili različni deležniki. Kljub temu nam da dobro
+predstavo o tem, kako se čas podpisovanja različnih podpisov spreminja s številom podpisnikov in kako
+na ta čas vplivajo posamezne operacije podpisa.
 
 \begin{figure}[ht]
   \centering
@@ -2358,8 +2367,23 @@ podpisa v tem primeru.
 \end{figure}
 
 \subsection{Razprava}
-Na podlagi rezultatov vidimo, da je večstranski Schnorrov podpis lahko zelo uporabno orodje, če
-so izpolnjeni določeni pogoji: 
+Na podlagi rezultatov vidimo, da je večstranski Schnorrov podpis lahko zelo uporabno orodje, če so
+izpolnjeni določeni pogoji: omejiti želimo delo za preverjevalca in imamo veliko skupino ljudi, ki
+se večkrat skupaj podpisuje. Pri obeh vrstah podpisov je vredno omembe, da časovna zahtevnost narašča
+linearno s številom podpisnikov za vse operacije.
+
+Kljub učinkovitosti pri preverjanju, ima večstranski Schnorrov podpis tudi nekatere pomanjkljivosti.
+Prva je kompleksnost generiranja ključev, ki zahteva interaktivno izmenjavo dokazov znanja in
+preverjanje Merklovega drevesa, kar je zamudno in težko razširljivo za zelo velike skupine.
+Druga težava je potreba po usklajeni komunikaciji pri podpisovanju — za vsak podpis so potrebni trije
+komunikacijski krogi, kar je lahko velik strošek v omrežjih z visoko zakasnitvijo ali nizko zanesljivostjo.
+
+Izboljšali bi lahko tudi našo implementacijo: trenutno ne upoštevamo časa, ki se porabi za
+komunikacijo med podpisniki, kar je seveda lahko velik faktor. Tako smo se odločili, ker je glavna
+prednost večstranskih podpisov preverjanje, ki pa ne zahteva komunikacije. Prav tako bi lahko
+natančneje analizirali majhne spremembe pri posotpku, kot je na primer shranjevanje Merklovega drevesa
+med zaporednimi podpisi.
+
 
 \section{Razprava}
 
