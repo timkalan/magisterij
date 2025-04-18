@@ -25,7 +25,10 @@ func NewMerkleTree(params *config.Params, data []*big.Int) (*MerkleTree, error) 
 	// 1. Build the leaves (lowest level)
 	leaves := make([]*Node, len(data))
 	for i, d := range data {
-		leaves[i] = &Node{Hash: HashBigInt(params, d)}
+		hash := HashBigInt(params, d)
+		// take 200 most significant bits
+		hash = new(big.Int).Rsh(hash, uint(hash.BitLen()-200))
+		leaves[i] = &Node{Hash: hash}
 	}
 
 	// 2. Build all levels (from leaves up to the root)
@@ -70,6 +73,8 @@ func buildNextLevel(params *config.Params, nodes []*Node) []*Node {
 				nodes[i].Hash.Bytes(),
 				nodes[i+1].Hash.Bytes(),
 			})
+
+			combinedHash = new(big.Int).Rsh(combinedHash, uint(combinedHash.BitLen()-200))
 			parents = append(parents, &Node{Hash: combinedHash})
 		} else {
 			// Odd leftover: duplicate the last node
@@ -77,6 +82,8 @@ func buildNextLevel(params *config.Params, nodes []*Node) []*Node {
 				nodes[i].Hash.Bytes(),
 				nodes[i].Hash.Bytes(),
 			})
+
+			combinedHash = new(big.Int).Rsh(combinedHash, uint(combinedHash.BitLen()-200))
 			parents = append(parents, &Node{Hash: combinedHash})
 		}
 	}
@@ -127,6 +134,9 @@ func VerifyAuthenticationPath(
 	// Start with the leaf hash.
 	hash := HashBigInt(params, publicKey)
 
+	// Take the 200 most significant bits
+	hash = new(big.Int).Rsh(hash, uint(hash.BitLen()-200))
+
 	// Re-hash up the tree, combining with siblings in `path`.
 	// If index is even => we are a "left" node => H( self, sibling ).
 	// If index is odd  => we are a "right" node => H( sibling, self ).
@@ -142,6 +152,8 @@ func VerifyAuthenticationPath(
 				hash.Bytes(),
 			})
 		}
+		// Take the 200 most significant bits
+		hash = new(big.Int).Rsh(hash, uint(hash.BitLen()-200))
 		index /= 2
 	}
 

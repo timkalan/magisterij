@@ -80,6 +80,9 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	}
 	e := utils.HashData(params, [][]byte{buffer.Bytes()})
 
+	// We actually need to use H3 here, so we take the most significant 100 bits
+	e = new(big.Int).Rsh(e, uint(e.BitLen()-100))
+
 	// Each signer calculates y_i = e s_i + r_i
 	for i := range nSigners {
 		y := new(big.Int).Mul(e, keys[i].privateKey)
@@ -103,7 +106,7 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	}
 
 	// Each signer calculates Merkle tree root, includes it in public key
-	// NOTE: the H4 hash function should be used here, in our case it will just be H
+	// NOTE: the H4 hash function should be used here
 	publicKeys := make([]*big.Int, nSigners)
 	for i := range nSigners {
 		publicKeys[i] = keys[i].publicKey
@@ -166,6 +169,9 @@ func sign(
 	}
 	e := utils.HashData(params, [][]byte{buffer.Bytes()})
 
+	// Take the most significant 100 bits
+	e = new(big.Int).Rsh(e, uint(e.BitLen()-100))
+
 	// Each signer calculates y_i = e s_i + r_i
 	for i := range nSigners {
 		y := new(big.Int).Mul(e, keys[i].privateKey)
@@ -226,6 +232,9 @@ func verify(params *config.Params, keys []*keyPair, message []byte, sig *signatu
 		buffer.Write(keys[i].publicKey.Bytes())
 	}
 	e := utils.HashData(params, [][]byte{buffer.Bytes()})
+
+	// Take the most significant 100 bits
+	e = new(big.Int).Rsh(e, uint(e.BitLen()-100))
 
 	// Check whether g^y =?= X I^e
 	lhs := new(big.Int).Exp(params.G, sig.y, params.P)
