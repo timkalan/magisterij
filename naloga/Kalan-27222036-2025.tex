@@ -720,7 +720,7 @@ računsko moč, vendar ni iskren, preverjevalec pa je omejen na polinomsko raču
 
 \begin{opomba}
     Interaktivni sistemi dokazovanja ne proizvedejo pravih dokazev v matematičnem smislu. Vedno
-    obstaja določena verjetnost (ki je sicer zanemraljiva), da lahko goljufiv dokazovalec prepriča
+    obstaja določena verjetnost (ki je sicer zanemarljiva), da lahko goljufiv dokazovalec prepriča
     iskrenega preverjevalca o trditvi, ki ne drži. Ker pa je ta verjetnost zanemarljiva, nas to
     dejstvo ne moti.
 \end{opomba}
@@ -953,7 +953,8 @@ napadalcu ne uspe ponarediti podpisa za katerokoli sporočilo, ki še ni bilo po
 
 Kot omenjeno na začetku poglavja, je varnost Schnorrovega podpisa odvisna od težavnosti problema
 diskretnega logaritma. Varnost Schnorrovega podpisa je zato odvisna od varnosti grupe, v kateri deluje.
-V primeru, da je problem diskretnega logaritma težek, je Schnorrov podpis varen.
+Cilj tega razdelka je pokazati, da je Schnorrov podpis varen, če je problem diskretnega logaritma
+težek.
 
 \begin{definicija}[Varnost Schnorrovega podpisa]
     Za Schnorrov podpis v grupi $G$ pravimo, da je varen, če:
@@ -969,25 +970,94 @@ V primeru, da je problem diskretnega logaritma težek, je Schnorrov podpis varen
 
 Varnost podpisa je mogoče dokazati tako, da pokažemo varnost Schnorrove identifikacijske sheme,
 opazimo, da nam uporaba Fiat-Shamirjeve hevristike vrne ravno Schnorrov podpis, in pokažemo, da
-je ta transformacija varna.
+je ta transformacija varna. Najprej pa moramo seveda definirati, kaj pomeni, da je identifikacijska
+shema varna. V osnovi bomo rekli, da je shema varna, če napadalec ne more prepričati preverjevalca,
+da je on pravi dokazovalec, brez da bi poznal zasebni ključ. To mora veljati tudi v primeru, da
+napadalec lahko ">posluša"< (torej vidi sporočila) več pogovorov med dokazovalcem in preverjevalcem.
 
-\begin{izrek}
-    Naj bo $G$ ciklična grupa v kateri je problem diskretnega logaritma težek. Potem je Schnorrova
+\begin{definicija}[Varnost identifikacijske sheme]
+\label{def:id-sec}
+    Naj bo $k$ varnostni parameter in $T_{sk}$ orakelj, ki ne prejme nobenega vhodnega podatka, ob klicu
+    pa vrne transkript ene izvedbe identifikacijske sheme. Definirajmo \textit{identifikacijski
+    eksperiment} $Id_F(k)$:
+    \begin{enumerate}
+        \item Na podlagi varnostnega parametra se definira par ključev $(I, s)$, kjer je $I$
+            javni ključ, $s$ pa zasebni ključ.
+        \item Napadalec $F$ prejme javni ključ $I$ in neomejen dostop do oraklja $T_{sk}$.
+        \item Napadalec $F$ na poljubni točki pošlje zavezo $X$, v odgovor pa dobi izziv $e$. Tudi
+            na tej točki lahko napadalec kliče oraklja $T_{sk}$.
+        \item Napadalec $F$ izračuna odgovor $y$. Eksperiment vrne $1$, če velja $g^y = X \cdot I^e$,
+            sicer vrne $0$.
+    \end{enumerate}
+    Identifikacijska shema je varna pred pasivnim napadom (ali samo varna), če je verjetnost, da
+    izvedba eksperimenta $Id_F(k)$ vrne $1$, zanemarljiva v varnostnem parametru $k$.
+\end{definicija}
+
+\begin{izrek}[Varnost Schnorrove identifikacijske sheme~\cite{katz2014introduction}]
+    Naj bo $G$ ciklična grupa, v kateri je problem diskretnega logaritma težek. Potem je Schnorrova
     identifikacijska shema v grupi $G$ varna (napadalec ne more prepričati dokazovalca, da je
     on pravi dokazovalec, brez da bi poznal zasebni ključ).
 \end{izrek}
 
 \begin{dokaz}
-    Dokaz poteka z redukcijo uspešnega napada na rešitev problema diskretnega logaritma. Naj bo $F$
-    naključnostni algoritem, ki teče v polinomskem času. Algoritem $F$ imenujemo napadalec. Na
-    podlagi napadalca $F$ konstruirajmo algoritem $A$, ki iz uspešnega napada napadalca $F$ na
-    Schnorrovo identifikacijsko shemo konstruira rešitev problema diskretnega logaritma.
+    Dokaz poteka z redukcijo uspešnega napada na rešitev problema diskretnega logaritma. Naj bo napadalec
+    $F$ naključnostni algoritem, ki teče v polinomskem času. Napad poteka podobno, kot opisano v
+    identifikacijskem eksperimentu iz definicije~\ref{def:id-sec}.
 
-    Algoritem $A$ prejme vse javne parametre sheme $(G, g, q, I)$ kot vhod. Potem algoritem deluje
-    v naslednjih korakih:
+
+    Na podlagi napadalca $F$ konstruirajmo algoritem $A$, ki iz uspešnega napada napadalca $F$ na
+    Schnorrovo identifikacijsko shemo pridobi rešitev problema diskretnega logaritma. Algoritem $A$
+    prejme vse javne parametre sheme $(G, g, q, I)$ kot vhod. Potem algoritem deluje v naslednjih
+    korakih:
     \begin{enumerate}
-        \item 
+        \item Algoritem $A$ zažene napadalca $F$. Ta med svojim delovanjem kliče oraklja $T_{sk}$,
+            ki napadalcu vrača transkripte izvedb identifikacijske sheme. Algoritem $A$ mora te
+            odgovore simulirati sam, to pa lahko stori tako, da izvede identifikacijsko shemo v
+            obratnem vrstnem redu (začne z veljavnim odgovorom, nato izračuna izziv in zavezo). To
+            mu uspe, saj mora namesto izračuna diskretnega logarigma izračunati samo inverzno
+            operacijo -- eksponenciranje.
+        \item Ko napadalec pošlje zavezo $X$, algoritem $A$ izbere enakomerno naključno število $e_1
+            \in [0, q - 1]$, jo pošlje napadalcu $F$, ta pa odgovori z odgovorom $y_1$.
+        \item Algoritem $A$ ponovno zažene napadalca $F$ z enakimi parametri (torej tudi enakim
+            virom naključnih bitov $\omega$) a z različnim izzivom $e_2 \in [0, q - 1]$. Napadalec
+            $F$ v tem primeru vrne odgovor $y_2$.
+        \item Če sta oba odgovora veljavna, torej velja
+            \begin{align*}
+                g^{y_1} &= X \cdot I^{e_1} \text{ in} \\
+                g^{y_2} &= X \cdot I^{e_2},
+            \end{align*}
+            potem lahko algoritem $A$ izračuna rešitev problema diskretnega logaritma kot
+            \begin{align*}
+                X = g^{y_1} \cdot I^{-e_1} &= g^{y_2} \cdot I^{-e_2} \\
+                g^{y_1} \cdot g^{-y_2} &= I^{e_1} \cdot I^{-e_2} \\
+                g^{y_1 - y_2} &= (g^s)^{e_1 - e_2} \\
+                s &= (y_1 - y_2)(e_1 - e_2)^{-1}
+            \end{align*}
     \end{enumerate}
+
+    Da dokažemo varnost, moramo sedaj obravnavati verjetnost uspeha napadalca $F$ in algoritma $A$.
+    Naj bo $V(\omega, e)$ indikator, da napadalec $F$ vrne pravilen odgovor pri napadu, če je $e$ izziv
+    in $\omega$ naključni vir bitov. Označimo z $\delta_{\omega}$ verjetnost uspeha po izzivu $e$
+    pri fiktni vrednosti $\omega$
+    $$
+    \delta_{\omega} = \text{Pr}_e(V(\omega, e) = 1).
+    $$
+    S to vrednostjo lahko izrazimo verjetnost uspeha identifikacijskega eksperimenta
+    $$
+    \text{Pr}(Id_F(k) = 1) = \text{Pr}_{\omega, e}(V(\omega, e) = 1) =
+        \sum_{\omega} \text{Pr}(\omega) \cdot \delta_{\omega}.
+    $$
+
+    Spomnimo se, da algoritem $A$ uspešno izračuna rešitev problema diskretnega logaritma, če napadalec
+    $F$ uspe dvakrat pri različnih izzivih $e_1$ in $e_2$. Potem lahko izrazimo
+    \begin{align*}
+        \text{Pr}(A \text{ uspe}) &=
+            \text{Pr}_{\omega, e_1, e_2}(V(\omega, e_1) = 1 \land V(\omega, e_2) = 1 \land e_1 \neq e_2) \\
+                                  &\geq \text{Pr}_{\omega, e_1, e_2}(V(\omega, e_1) = 1 \land V(\omega, e_2) = 1) - \text{Pr}(e_1 = e_2) \\
+                                  &= \sum_{\omega} \text{Pr}(\omega) \cdot \delta_{\omega}^2 - \frac{1}{q} \\
+                                  &\geq (\sum_{\omega} \text{Pr}(\omega) \cdot \delta_{\omega})^2 - \frac{1}{q} \\
+                                  &= \text{Pr}(Id_F(k) = 1)^2 - \frac{1}{q}.
+    \end{align*}
 \end{dokaz}
 
 Kot smo videli v primeru~\ref{primer:fiat-shamir}, lahko Fiat-Shamirjevo hevristiko uporabimo, da
@@ -995,7 +1065,7 @@ iz Schnorrove identifikacijske sheme pridobimo neinteraktivno verzijo. Če names
 javnih vrednosti zgostimo zavezo in sporočilo, dobimo ravno Schnorrov podpis. Če torej lahko pokažemo,
 da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 
-\begin{izrek}
+\begin{izrek}[Varnost Fiat-Shamirjeve hevristike~\cite{katz2014introduction}]
     Naj bo $\mathcal{S'}$ identifikacijska shema in $\mathcal{S}$ podpisna shema, pridobljena iz
     $\mathcal{S'}$ z uporabo Fiat-Shamirjeve hevristike. Če je $\mathcal{S'}$ varna, potem je tudi
     $\mathcal{S}$ varna.
