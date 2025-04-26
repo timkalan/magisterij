@@ -1082,7 +1082,7 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 \begin{dokaz}
     Naj bo napadalec $F$ na podpisno shemo $\mathcal{S}$ naključnostni algoritem, ki teče v
     polinomskem času. Naj bo število napadalčevih klicev slučajnega oraklja polinomsko omejeno
-    v varnostnem parametru $k$.
+    v varnostnem parametru $k$. Zgornjo mejo označimo s $q$.
 
     Brez škode za splošnost predpostavimo, da bo napadalec $F$ vsak klic slučajnega oraklja na
     nekem vhodu opravil največ enkrat. Predpostavimo tudi, da če napadalec $F$ uspešno ponaredi
@@ -1106,15 +1106,43 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
             Ko napadalec $F$ zahteva podpis sporočila $m$, napadalec $F'$ pokliče transkripcijskega
             oraklja $T_{sk}$, ki mu vrne transkript $(X, e, y)$. Par $(X, y)$ vrne kot podpis
             napadalcu $F$.
+        \label{step:simulate}
         \item Če napadalec $F$ uspe ponarediti podpis $(X, y)$ sporočila $m$, napadalec $F'$ preveri,
-            ali velja
-            \end{enumerate}
+            ali velja $(X, m) = (X_j, m_j)$. Če velja, napadalec $F'$ vrne $y$ kot odgovor.
+    \end{enumerate}
+    V koraku~\ref{step:simulate} je simulacija podpisne sheme uspešna, saj je izziv $e$ v vsakem
+    primeru izbran enakomerno naključno (le iz drugega vira), prav tako je par $(X, y)$ iz
+    transkripcijskega oraklja izračunan na enak način kot veljaven podpis. Napadalec $F'$ torej ne
+    loči med simulacijo in pravim podpisom. Problem nastane le, če je napadalec $F'$ že definiral
+    orakljev odgovor na s podatkoma $X$ in $m$, ko dobi transkript $(X, e', y)$ od transkripcijskega
+    oraklja $T_{sk}$. Če $e$ ni enak $e'$, simulacija ne uspe. Verjetnost, da se to zgodi, je
+    zanemarljiva.
+
+    Potrdimo še, da je rezultat napada na identifikacijsko shemo smiseln. Če v zadnjem koraku velja
+    $(X, m) = (X_j, m_j)$ in napadalec $F$ uspe ponarediti podpis $(X, y)$, potem napadalec $F'$
+    res lahko pošlje zavezo $X_j$, v odgovor pa dobi izziv $e_j$, na podlagi katerega napadalec na
+    podpis $F$ izračuna odgovor $y$. Ta odgovor je zaradi ujemanja izziva tudi veljaven odgovor
+    v zadnjem koraku identifikacijske sheme, kar pomeni, da je napadalec $F'$ uspešno napadel.
+
+    Zadnji korak je, da pogledamo verjetnost uspeha napadalca $F'$. Naj $\delta_k$ označuje verjetnost,
+    da pride do neujemanja pri odgovorih oraklja (zgoraj smo videli, da je zanemarljiva). Ker je $j$
+    izbran enakomerno naključno, je verjetnost, da velja $i=j$, enaka $1/q$. Verjetnost uspešnega
+    napada lahko izrazimo kot
+    $$
+    \text{Pr}(F' \text{ uspe}) = \frac{1}{q} \cdot (\text{Pr}(F \text{ uspe}) - \delta_k),
+    $$
+    oz.
+    $$
+    \text{Pr}(F \text{ uspe}) = q \cdot \text{Pr}(F' \text{ uspe}) + \delta_k.
+    $$
+    Ker je po predpostavki identifikacijska shema varna, je verjetnost uspeha napadalca $F'$
+    zanemarljiva. Prav tako je tudi verjetnost $\delta_k$ zanemarljiva, $q$ pa je polinomska zgornja
+    meja, kar pomeni, da je tudi verjetnost uspeha napadalca $F$ zanemarljiva. To pomeni, da je
+    Schnorrov podpis varen, če je identifikacijska shema varna.
 \end{dokaz}
 
 Ker je varna Schnorrova identifikacijska shema in pretvorba iz identifikacijske sheme v podpisno,
 lahko zaključimo, da je Schnorrov podpis varen.
-
-\todo{dokaz varnosti: naredim prek identifikacijske sheme + fiat shamir + oraklej}
 
 \subsection{Primer: Schnorrov podpis v \texorpdfstring{$\Z_p^*$}{Zp∗}}
 Za ilustrativni primer si poglejmo, kako je bil Schnorrov podpis prvotno opisan~\cite{schnorr1989sig}.
