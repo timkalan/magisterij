@@ -893,7 +893,7 @@ je Schnorrov podpis mogoče posplošiti na katerekoli končne grupe, kjer obstaj
 za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
 \begin{itemize}
     \item \textbf{Parametri}:
-    Naj bo grupa $G$ končna grupa reda $p$. V njej si izberemo element $g$ reda $q$, pri čemer mora
+    Naj bo $G$ končna grupa reda $p$. V njej si izberemo element $g$ reda $q$, pri čemer mora
     biti $q$ dovolj veliko praštevilo (njegova velikost je odvisna od varnostnega parametra $k$).
     V splošnem pa sta lahko $p$ in $q$ tudi enaka. Ker računanje potega v podgrupi, ki jo določa $g$,
     se običajno privzame, da je $G$ kar grupa reda $q$, ki jo generira $g$.
@@ -973,7 +973,7 @@ Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj časovno in pro
 \label{sec:schnorr-sec}
 Ko govorimo o varnosti Schnorrovega podpisa, imamo v mislih odpornost sheme proti eksistencialnem
 ponarejanju, kjer napadalec lahko za katerokoli sporočilo dobi veljaven podpis. Želimo torej, da
-napadalcu ne uspe ponarediti podpisa za katerokoli sporočilo, ki še ni bilo podpisano.
+napadalcu ne uspe ponarediti podpisa za nobeno sporočilo, ki še ni bilo podpisano.
 
 Kot omenjeno na začetku poglavja, je varnost Schnorrovega podpisa odvisna od težavnosti problema
 diskretnega logaritma. Varnost Schnorrovega podpisa je zato odvisna od varnosti grupe, v kateri deluje.
@@ -984,11 +984,11 @@ težek.
     Za Schnorrov podpis v grupi $G$ pravimo, da je varen, če:
     \begin{itemize}
         \item Je problem diskretnega logaritma v grupi $G$ težek.
+        \item Obstaja slučajni orakelj $H$, do katerega imajo dostop vsi deležniki. Z drugimi besedami,
+            smo v modelu slučajnega oraklja.
         \item Obstaja napadalec, ki lahko pridobi veljaven podpis $(X, y)$ za katerokoli sporočilo $m$,
             ki ga je podpisnik že podpisal. Vendar pa je verjetnost, da napadalec uspešno ponaredi
             podpis za novo sporočilo $m'$, ki ga podpisnik še ni podpisal, zanemarljiva.
-        \item Obstaja slučajni orakelj $H$, do katerega imajo dostop vsi deležniki. Z drugimi besedami,
-            smo v modelu slučajnega oraklja.
     \end{itemize}
 \end{definicija}
 
@@ -1062,7 +1062,7 @@ napadalec lahko ">posluša"< (torej vidi sporočila) več pogovorov med dokazova
     Da dokažemo varnost, moramo sedaj obravnavati verjetnost uspeha napadalca $F$ in algoritma $A$.
     Naj bo $V(\omega, e)$ indikator, da napadalec $F$ vrne pravilen odgovor pri napadu, če je $e$ izziv
     in $\omega$ naključni vir bitov. Označimo z $\delta_{\omega}$ verjetnost uspeha po izzivu $e$
-    pri fiktni vrednosti $\omega$
+    pri fiksni vrednosti $\omega$
     $$
     \delta_{\omega} = \text{Pr}_e(V(\omega, e) = 1).
     $$
@@ -1247,13 +1247,14 @@ res preverja Schnorrov podpis.
 
 \section{Pregled skupinskih podpisov}
 \label{sec:skpine}
-Ko pridemo do podpisovanja skupin, si lahko zamislimo več različnih rešitev. Micali v ~\cite{micali2001asm} 
+Ko pridemo do podpisovanja skupin, si lahko zamislimo več različnih rešitev. Micali~\cite{micali2001asm} 
 definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
 \begin{itemize}
     \item \textbf{Prilagodljivost} (angl.\ \textit{flexibility}): Popolnoma prilagodljiv podpis skupine
         je takšen, ki ga lahko proizvede katerakoli podskupina originalne skupine podpisnikov. Ko je podpis 
         preverjen, se mora tisti, ki ga je preveril, odločiti, če je ustrezen del skupine podal svoj podpis. 
-        Popolnoma neprilagodljiv podpis bi bil takšen, ki ga lahko v imenu skupine ustvari katerikoli član.
+        Popolnoma neprilagodljiv podpis bi bil takšen, ki ga lahko ustvari le celotna skupina ali pa
+        katerkoli član v imenu celotne skupine.
     \item \textbf{Odgovornost} (angl.\ \textit{accountability}): Če lahko iz podpisa ugotovimo, kateri člani 
         so sodelovali pri ustvarjanju, nam podpis omogoča odgovornost. Ta lastnost je lahko zaželena, če 
         se želimo prepričati, ali je ustrezen del skupine sodeloval pri podpisu (npr.\ ali je pri podpisovanju 
@@ -1263,10 +1264,8 @@ definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
 \end{itemize}
 
 V nadaljevanju bomo skupino potencialnih podpisnikov (torej podpisnikov, ki imajo možnost sodelovati pri 
-podpisovanju) označili z $P = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
-generiral samo del skupine $S \subseteq P$.
-
-\todo{je smiselno dati tu formalne definicije vseh vrst podpisov?}
+podpisovanju) označili s $P = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
+ustvaril samo del skupine $S \subseteq P$.
 
 \subsection{Skupinski podpisi}
 \textbf{Skupinski podpis} (angl.\ \textit{group signature}) v imenu celotne skupine $P$ ustvari en 
@@ -1295,7 +1294,7 @@ potem ustvarjen s pomočjo vrednosti polinoma v neki točki. Po interpolaciji se
 katere točke smo uporabili, izgubi. Take podpise imenujemo tudi \textit{$l$-od-$L$ sheme}.
 
 \begin{primer}
-    Denimo, da ima banka sef, v katerem hrani vse pomembne dokumente in denar, ki ga hrani. Zaradi
+    Denimo, da ima banka sef, v katerem hrani vse pomembne dokumente in denar. Zaradi
     izjemne pomembnosti sefa si ne želimo, da bi ga lahko odprla katerakoli posamezna oseba. Če 
     osebje banke uporabi pragovni podpis, lahko zagotovi, da je pri odpiranju sefa vedno prisotnih
     več ljudi, vseeno katerih. Vsak zaposleni dobi točko interpolacije, ko se jih zbere dovolj,
@@ -1329,7 +1328,7 @@ odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito prev
 \end{primer}
 
 \subsection{Agregirani podpisi}
-Rezultat agregiranega podpisa je zelo podoben večstranskemu. Poleg standardnih algoritmov pri digitalnih
+Agregirani podpisi imajo zelo podobne lastnosti kot večstranski. Poleg standardnih algoritmov pri digitalnih
 podpisih za ustvarjanje parametrov $\mathcal{P}$, ustvarjanje ključev $\mathcal{G}$, podpisovanje 
 $\mathcal{S}$ in preverjanje $\mathcal{V}$, imajo agregirani podpisi (angl.\ \textit{aggregate signatures})
 še dodaten algoritem za združevanje podpisov $\mathcal{C}$. Ta algoritem prejme seznam trojic javnih
