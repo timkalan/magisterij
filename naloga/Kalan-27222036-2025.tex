@@ -167,12 +167,19 @@ ročnemu podpisu človeka. V praktično vseh pogledih so mnogo varnejši od trad
 omogočajo bolj sistematično preverjanje (prek računalnikov) in so skorajda enostavnejši za uporabo
 in prenašanje.
 
-Prav tako lahko digitalne podpise uporabimo, če mora skupina deležnikov podpisati pogodbo -- vsak
-enostavno pripne svoj digitalni podpis. Če je skupina velika, če je računska moč omejena
-(npr.\ če želimo zmanjšati ceno transakcij pri tehnologiji veriženja blokov), ali pa če enostavno
-želimo preverjevalcu podpisov olajšati delo, lahko poskrbimo, da se skupina podpiše z enim samim,
-\textit{večstranskim} podpisom. Ta podpis vseeno priča o vseh podpisnikih, njegova verifikacija oz.\
-preverjanje, pa zajema približno enako dela, kot preverjanje enega samega podpisa.
+Digitalne podpise sta si prvič zamislila Diffie in Martin Hellman leta $1976$~\cite{diffie1976new},
+ko sta predvidevala, da lahko take sisteme ustvarimo na podlagi enosmernih funkcij in asimetrične
+kriptografije. Prvi digitalni podpis, ki je bil dejansko implementiran in široko uporabljen, pa je
+bil \textit{RSA} podpis, ki so si ga leta $1977$ zamislili Ronald Rivest, Adi Shamir in Leonard
+Adleman~\cite{rivest1978rsa}.
+
+Poleg individualnih podpisov, pa lahko digitalne podpise uporabimo tudi za podpisovanje skupin, npr.\
+če mora skupina deležnikov podpisati pogodbo. Najenostavneje to dosežemo tako, da vsak član pripne
+svoj digitalni podpis. Če je skupina velika, če je računska moč omejena (npr.\ če želimo zmanjšati
+ceno transakcij pri tehnologiji veriženja blokov), ali pa če enostavno želimo preverjevalcu podpisov
+olajšati delo, lahko poskrbimo, da se skupina podpiše z enim samim, \textit{večstranskim} podpisom.
+Ta podpis vseeno priča o vseh podpisnikih, njegova verifikacija oz.\ preverjanje, pa zajema približno
+enako dela, kot preverjanje enega samega podpisa.
 
 Taki podpisi so samo en izmed možnih načinov, kako se skupina podpiše. Od ostalih načinov izstopajo
 po tem, da omogočajo vpogled v sestavo skupine podpisnikov, kar nudi preverjevalcu več informacij
@@ -183,29 +190,41 @@ veriženja blokov je zelo pomembno, da je znano iz katerih naslovov prihajajo tr
 kombinaciji s popularizacijo Schnorrovega podpisa, je privedlo mnogo raziskovalcev do želje po
 večstranskih podpisih, ki vrnejo navadne Schnorrove podpise, in so tako enostavno zamenljivi.
 
+Prva sta si večstranske podpise zamislila Itakura in Nakamura leta $1983$~\cite{itakura1983multi},
+vendar takrat še niso videi veliko uporabe. Velik napredek je bil dosežen, ko si je Schnorr leta
+$1989$ zamislil Schnorrov podpis~\cite{schnorr1989sig}, ki se je izkazal za posebno primernega za
+večstranske podpise. Še vedno pa so bili takšni podpisi zanimivi bolj iz teoretičnega vidika. Leta
+$2001$ se je pojavil prvi formalni model in dokaz varnosti za večstranske podpise, zahvaljujoč
+Micaliju, Ohti in Reyzinu~\cite{micali2001asm}. Prvi primer široke uporabe se je pojavil z Bitcoinom.
+Njegova popularnost je tudi popularizirala raziskovanje večstranskih podpisov, leta $2020$ je izšel
+podpis MuSig2~\cite{jonas2020musig2}, ki je bil prvi večstranski podpis, ki je bil primerno učinkovit
+za uporabo v Bitcoin omrežju. Široko je uporabljen še danes.
+
 V poglavju~\ref{sec:osnove} najprej predstavimo kriptografske osnove, ki so potrebne za razumevanje besedila.
 To zajema modularno aritmetiko in grupe, zgoščevalne funkcije, kriptografijo javnega ključa, nekaj
 splošnih definicij pri digitalnih podpisih in potem še nekaj besed o varnosti. V poglavju~\ref{sec:schnorr}
 predstavimo Schnorrov podpis, ki je osnova za ostale sheme, ki jih obravnavamo. V 
-poglavju~\ref{sec:skpine} so predstavljeni vsi možni načini za podpisovanje skupin. Poglavje~\ref{sec:multischnorr}
+poglavju~\ref{sec:skpine} predstavimo nekaj možnih pristopov za podpisovanje skupin. Poglavje~\ref{sec:multischnorr}
 predstavi večstranski Schnorrov podpis, tam tudi dokažemo njegovo varnost v modelu slučajnega oraklja.
+V poglavju~\ref{sec:primerjava} primerjamo učinkovitost navadnega in večstranskega Schnorrovega podpisa.
+Na koncu pa v poglavju~\ref{sec:razprava} omenimo še kako se je področje razvijalo v zadnjem času.
 
 \section{Kriptografske osnove}
 \label{sec:osnove}
-Preden si lahko natančneje pogledamo, kako lahko skupina generira en sam podpis sporočila, si moramo 
+Preden si lahko natančneje pogledamo, kako lahko skupina ustvari en sam podpis sporočila, si moramo 
 pogledati nekaj kriptografskih osnov. Bolj kompleksnejši pojmi bodo opisani sproti, namen tega 
 poglavja je predstaviti stvari, ki so predpogoj za branje praktično kakršnegakoli kriptografskega 
 besedila s področja digitalnih podpisov.
 
 \subsection{Aritmetika v \texorpdfstring{$\Z_p^*$}{Zp∗}}
-V kriptografiji imamo pogosto opravka z multiplikativnimi grupami, najenostavnejša med njimi (in 
+V kriptografiji imamo pogosto opravka z multiplikativnimi grupami, najenostavnejša med njimi (in
 tudi tradicionalno največ uporabljena) je \textit{multiplikativna grupa naravnih števil modulo $p$},
 ki jo označimo $\Z_p^*$. Njeni elementi so števila v $\{0, 1, \dots, p - 1\}$, ki so tuja številu $p$.
-V posebnem primeru, ko je $p$ praštevilo, so to torej števila \{1, 2, \dots, p - 1\} in je red grupe
+V posebnem primeru, ko je $p$ praštevilo, so to torej števila $\{1, 2, \dots, p - 1\}$ in je red grupe
 (število elementov) $\text{ord}(\Z_p^*) = |\Z_p^*| = p - 1$. Operacija v tej grupi je, kot ime že
 nakazuje, množenje modulo $p$.
 
-Spomnimo se, da je red elementa $g$ v grupi najmanjše naravno število $q$, da velja $g^q \equiv 1 \pmod p$, 
+Spomnimo se, da je red elementa $g$ v poljubni grupi najmanjše naravno število $q$, da velja $g^q = 1$,
 kjer je $1$ enota za množenje. V primeru, da je $p$ praštevilo, je grupa $\Z_p^*$ \textit{ciklična},
 kar pomeni, da v njej obstaja element $g$, katerega red je enak redu grupe, torej $\text{ord}(g) = p - 1$.
 V tem primeru se $g$ imenuje \textit{generator}.
@@ -254,17 +273,18 @@ delovanja Schnorrovega podpisa.
     $$
 \end{trditev}
 \begin{dokaz}
-    Po osnovnem izreku o deljenju naravnih števil, lahko $k$ na en sam način zapišemo kot $k = nq + r$, 
+    Po osnovnem izreku o deljenju naravnih števil lahko $k$ na en sam način zapišemo kot $k = nq + r$, 
     kjer velja $n \in \N, r < q$.
 
     Leva stran enačbe se potem prepiše 
     \begin{align*}
-        g^k \bmod p &= g^{nq + r} \bmod p = \\ 
-                    &= (g^q)^n g^r \bmod p = \\ 
-                    &= 1^n g^r \bmod p = \\ 
-                    &= g^r \bmod p.
+        g^k \bmod p &= g^{nq + r} \bmod p = \\
+                    &= (g^q)^n g^r \bmod p = \\
+                    &= 1^n g^r \bmod p = \\
+                    &= g^r \bmod p,
     \end{align*}
-    Desna stran pa se prepiše kot 
+    kjer smo pri prehodu na tretjo vrstico upoštevali, da velja $g^q \equiv 1 \pmod p$. Desno stran
+    pa lahko preoblikujemo na naslednji način:
     \begin{align*}
         g^{k \bmod q} \bmod p &= g^{(nq + r) \bmod q} \bmod p = \\ 
                               &= g^r \bmod p.
@@ -284,9 +304,9 @@ delovanja Schnorrovega podpisa.
     $a$ in $b$ lahko po osnovnem izreku o deljenju naravnih števil na en sam način zapišemo kot 
     \begin{align*}
         a &= n_a p + r_a, \\
-        b &= n_b p + r_a,
+        b &= n_b p + r_b,
     \end{align*}
-    kjer velja $r_a < p$.
+    kjer velja $r_a < p$ in $r_b < p$.
 
     \eqref{eq:mod-prod}: Levo stran preoblikujemo
     \begin{align*}
@@ -326,7 +346,7 @@ delovanja Schnorrovega podpisa.
 V grobem so (kriptografske) \textit{zgoščevalne funkcije} take funkcije, ki prejmejo poljubno dolg binarni 
 niz (ki lahko predstavlja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima
 vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. Namen zgoščevalnih funkcij je 
-za dokument ustvariti unikaten niz, ki zelo verjetno unikatno identificira dokument. Želimo si, da
+za dokument ustvariti kratek niz, ki zelo verjetno unikatno identificira dokument. Želimo si, da
 je v praksi nemogoče najti dva različna niza z enako zgostitvijo, natančno pa zgoščevalne funkcije
 definiramo:
 
@@ -345,8 +365,8 @@ definiramo:
             zgostitve zelo težko ugotovimo, kateri niz je funkcija prejela kot vhod. Če torej poznamo 
             zgostitev $h$ za nek neznan $m$, je računsko neizvedljivo najti niz $m$, da velja $h = H(m)$.
         \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
-            zelo težko najdemo drug niz z enako zgostitvijo. Če torej poznamo niz $m_1$, je računsko 
-            neizvedljivo najti zgostitev $m_2$, da velja $H(m_1) = H(m_2)$.
+            zelo težko najdemo drug niz z enako zgostitvijo. Če torej poznamo niz $m_1$ z zgostitvijo
+            $h_1$, je računsko neizvedljivo najti zgostitev $m_2$, da velja $H(m_2) = h_1$.
         \item \textbf{Skoraj brez trčenj} oz.\ \textbf{odpornost na trčenja} pomeni, da je verjetnost,
             da imata dva izraza enako zgostitev, majhna. Želimo, da je računsko neizvedljivo
             najti dva niza  $m_1$ in $m_2$, ki imata enako zgostitev, oz.,\ da velja $H(m_1) = H(m_2)$.
@@ -362,10 +382,10 @@ definiramo:
 \end{opomba}
 
 \begin{primer}
-    Ena izmed najbolj znanih zgoščevalnih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure 
-    Hash Algorithm} (slov.\ varen zgoščevalni algoritem), $256$ pa predstavlja dolžino vrnjene zgostitve. 
-    Pogostokrat to ime zasledimo pri nameščanju programske opreme, kjer služi kot avtentikator, da smo res 
-    naložili pravo stvar. Preverja namreč, da se zgostitvi naloženih in prenešenih datotek ujemajo.
+    Ena izmed najbolj znanih zgoščevalnih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure
+    Hash Algorithm} (slov.\ varen zgoščevalni algoritem), $256$ pa predstavlja dolžino vrnjene zgostitve.
+    Pogostokrat to ime zasledimo pri nameščanju programske opreme, kjer služi kot avtentikator, da smo res
+    naložili pravi program. Preverja namreč, da se zgostitvi naloženih in prenešenih datotek ujemajo.
 
     Za primer si lahko ogledamo zgostitvi dveh podobnih nizov, \textit{Ljubljana} in \textit{Ljubljena}. 
     Kljub podobnosti bomo videli, da sta rezultata popolnoma drugačna, kar si tudi želimo pri zgoščevalnih 
@@ -383,9 +403,9 @@ definiramo:
 \end{primer}
 
 \subsection{Kriptografija javnega ključa}
-Prve šifre, ki smo jih uporabljali ljudje, so bile \textit{simetrične}, kar pomeni, da sta osebi 
-za komunikacijo obe morali poznati skriven \textit{ključ}, ki je definiral, kako je bila šifra 
-ustvarjena. 
+Prve šifre, ki smo jih uporabljali ljudje, so bile \textit{simetrične}, kar pomeni, da sta osebi
+za komunikacijo obe morali poznati skriven \textit{ključ}, s pomočjo katerega sta tako ustvarjali
+šifre, kot jih tudi dešifrirali. Ključ je običajno neko dolgo (binarno) število.
 
 \begin{primer}[Cezarjeva šifra]
     Ena najbolj znanih šifer, ki izvira iz Antičnega Rima, je \textit{Cezarjeva šifra}. Njen ključ 
@@ -401,17 +421,17 @@ ustvarjena.
 \end{primer}
 
 V prejšnjem stoletju pa se je pojavila alternativa, imenovana \textit{asimetrična kriptografija}, oz.\
-\textit{kriptografija javnega ključa}. Glavna prednost te je, da osebi za komunikacijo ne rabita 
-poznati enakega skrivnega ključa, vendar ima vsak od njiju par ključev, ki ju imenujemo \textbf{javni 
-ključ} (angl.\ \textit{public key}) in \textbf{zasebni ključ} (angl.\ \textit{secret/private key}) in 
+\textit{kriptografija javnega ključa}. Glavna prednost te je, da osebi za komunikacijo ne rabita
+poznati enakega skrivnega ključa, vendar ima vsak od njiju par ključev, ki ju imenujemo \textbf{javni
+ključ} (angl.\ \textit{public key}) in \textbf{zasebni ključ} (angl.\ \textit{secret/private key}) in
 označimo kot par $(\text{pk}, \text{sk})$. Vsaka oseba objavi svoj javni ključ in poskrbi, da nihče 
-ne izve, kaj je njen zasebni ključ. 
+ne izve, kaj je njen zasebni ključ.
 
-Šifriranje potem poteka tako, da pridobimo javni ključ od osebe, s katero želi komunicirati, ga uporabimo
-za šifriranje in objavimo šifrirano sporočilo. Lastnik ustreznega zasebnega ključa (vsakemu javnemu pripada 
-natanko en zasebni) potem pridobi šifrirano sporočilo in ga z zasebnim ključem dešifrira. Kriptosistemi
-delujejo na način, da lahko sporočilo, šifrirano z javnim ključem dešifrira samo ustrezen zasebni ključ.
-Tako zagotovimo varno komunikacijo. 
+Šifriranje potem poteka tako, da pridobimo javni ključ od osebe, s katero želimo komunicirati, ga
+uporabimo za šifriranje in objavimo šifrirano sporočilo. Lastnik ustreznega zasebnega ključa (vsakemu
+javnemu pripada natanko en zasebni) potem pridobi šifrirano sporočilo in ga z zasebnim ključem
+dešifrira. Kriptosistemi delujejo na način, da lahko sporočilo, šifrirano z javnim ključem dešifrira
+samo ustrezen zasebni ključ. Tako zagotovimo varno komunikacijo.
 
 \begin{primer}[RSA]
 \label{primer:rsa}
@@ -448,23 +468,24 @@ Tako zagotovimo varno komunikacijo.
     $$
 \end{primer}
 
-Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega ključa omogočila tudi 
-\textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo transakcijo ali dostopamo do katerekoli 
-spletne strani. Delujejo na podoben način, kot šifriranje z javnim ključem, le da najprej uporabimo 
-zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Velikokrat sta šifrianje 
-in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, za katerega lahko oseba,
-s katero komuniciramo preveri, da je res prišlo od nas.
+Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega ključa omogočila tudi
+\textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo transakcijo ali dostopamo do katerekoli
+spletne strani. Delujejo na podoben način, kot šifriranje z javnim ključem, le da najprej uporabimo
+zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Velikokrat sta šifrianje
+in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, ki ga lahko prebere le oseba,
+kateri je namenjeno, hkrati pa lahko preveri, da je res prišlo od nas.
 
 \subsection{Digitalni podpisi}
-Ideja \textit{kriptografskih} ali \textit{digitalnih podpisov} (angl.\ \textit{digital signatures}) je, 
-da služijo kot izboljšava človeškega ročnega podpisa. Za razliko od ročnega podpisa, lahko z digitalnim 
-dosežemo pravo identifikacijo posameznika, ki temelji na njegovem zasebnem ključu. Tako smo lahko 
+Ideja \textit{kriptografskih} ali \textit{digitalnih podpisov} (angl.\ \textit{digital signatures}) je,
+da služijo kot izboljšava človeškega ročnega podpisa. Za razliko od ročnega podpisa, lahko z digitalnim
+dosežemo pravo identifikacijo posameznika, ki temelji na njegovem zasebnem ključu. Tako smo lahko
 za digitalno podpisan dokument prepričani, da ga je res podpisal lastnik točno določenega zasebnega ključa
-(če predpostavimo, da podpisnik ključa ni posredoval nikomur). 
+(če predpostavimo, da podpisnik ključa ni posredoval nikomur).
 
-Podpis dokumenta poteka nekoliko drugače, kot pri ročnih podpisih. Pri ročnem podpisu ta postane del 
-dokumenta, digitalni podpis pa je od njega ločen, vseeno pa nastane s pomočjo zgostitve podpisanega 
-dokumenta, zato bo podpis za dva različna dokumenta vedno drugačen.
+Podpis dokumenta poteka nekoliko drugače, kot pri ročnih podpisih. Pri ročnem podpisu ta postane del
+dokumenta, digitalni podpis pa je od njega ločen, vseeno pa nastane s pomočjo zgostitve podpisanega
+dokumenta, zato bo podpis za dva različna dokumenta vedno drugačen (dokler uporabimo varno zgoščevalno
+funkcijo).
 
 Ostane še vprašanje preverjanja avtentičnosti podpisa. Pri ročnem podpisu to lahko storimo prek 
 primerjave z znanim, preverjeno avtentičnim podpisom. Ta postopek je zamuden in nenatančen, veliko 
@@ -472,7 +493,7 @@ večino ročnih podpisov je moč ponarediti z nekaj prakse. Preverjanje digitaln
 na kriptografiji javnega ključa. Ker je podpis nastal s pomočjo podpisnikovega zasebnega ključa,
 lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 
-Da se lažje pogovarjamo o kriptografskih sistemih, je smotrno definirati kaj točno so deležniki,
+Da se lažje pogovarjamo o kriptografskih sistemih, je smotrno definirati, kaj točno so deležniki,
 kot so podpisnik, preverjevalec in napadalec. V kriptografskih besedilih so pogosto definirani kot
 verjetnostni Turingovi stroji, mi pa se bomo izognili tej formalizaciji in se pogovarjali enostavno
 o \textit{naključnostnih algoritmih}. To so navadni, deterministični algoritmi, ki imajo dostop do
@@ -526,7 +547,7 @@ naslednjem klicu prebrati sosednji bit.
 Poglavitna lastnost vsakega kriptosistema je njegova \textit{varnost}. Ker je namen digitalnih podpisov
 zagotoviti sogovorniku, da je sporočilo res poslal lastnik zasebnega ključa, je največja varnostna
 skrb, da bi \textit{napadalec} lahko ponaredil pošiljateljev podpis in si s tem prisvojil njegovo 
-identiteto. To napadalcu lahko uspe na več nivojih, od najmanj do najbolj škodljivega:
+identiteto. To napadalcu lahko uspe na več nivojih, ki so od najmanj do najbolj škodljivega:
 
 \begin{itemize}
     \item \textbf{Eksistencialno ponarejanje} (angl.\ \textit{existential forgery}) pomeni, da obstaja
@@ -543,10 +564,8 @@ identiteto. To napadalcu lahko uspe na več nivojih, od najmanj do najbolj škod
 \end{itemize}
 
 Poleg zgoraj definiranih \textit{ciljev napadalca}, lahko za vsak kriptosistem definiramo tudi
-\textit{model napada}, in pa \textit{tip varnosti}, ki ga zagotavlja shema. Varnost večine shem za 
-digitalne podpise temelji na (domnevni) težavnosti določenih matematičnih problemov.
-
-Stinson~\cite{stinson2023crypto} definira naslednje modele napada:
+\textit{model napada}, ki ga zagotavlja shema. Stinson~\cite{stinson2023crypto} definira naslednje
+modele:
 \begin{itemize}
     \item \textbf{Napad samo s ključem} je napad, kjer napadalec pozna javni ključ žrtve $\text{pk}$. 
         Predpostavimo tudi, da napadalec vedno pozna delovanje sheme za podpisovanje $\mathcal{S}$
@@ -561,13 +580,14 @@ Stinson~\cite{stinson2023crypto} definira naslednje modele napada:
         podpisati še ne podpisano sporočilo.
 \end{itemize}
 
-Ostane nam še pregled varnosti, ki jo lahko pričakujemo oz.\ zahtevamo od sheme za podpisovanje. 
-Takšna shema ne more biti \textit{brezpogojno varna}, kar bi pomenilo, da je tudi z neomejenimi 
-računskimi zmožnostmi nemogoče ponarediti podpis. To je zato, ker lahko napadalec sistematično 
-preveri vse podpise za neko sporočilo s pomočjo algoritma $\mathcal{V}$, dokler ne najde pravega. 
-Pričakujemo pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti ponaredka 
-v doglednem času, če ima omejene računske sposobnosti, in/ali pa \textit{dokazljivo varnost}, kar 
-pomeni, da lahko varnost prevedemo na težavnost nekega matematičnega problema.
+Ostane nam še pregled \textit{tipov varnosti}, ki jo lahko pričakujemo oz.\ zahtevamo od sheme za
+podpisovanje. Takšna shema ne more biti \textit{brezpogojno varna}, kar bi pomenilo, da je tudi z
+neomejenimi računskimi zmožnostmi nemogoče ponarediti podpis. To je zato, ker lahko napadalec
+sistematično preveri vse podpise za neko sporočilo s pomočjo algoritma $\mathcal{V}$, dokler ne najde
+pravega. Pričakujemo pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti
+ponaredka v doglednem času, če ima omejene računske sposobnosti, in/ali pa \textit{dokazljivo varnost},
+kar pomeni, da lahko varnost prevedemo na težavnost nekega matematičnega problema. Varnost večine
+shem za digitalne podpise temelji prav na (domnevni) težavnosti določenih matematičnih problemov. 
 
 \subsubsection{Temelji varnosti}
 V primeru~\ref{primer:rsa} smo omenili, da je varnost algoritma RSA odvisna od težavnosti problema
@@ -585,16 +605,17 @@ s = \log_g(I).
 $$
 Taki izračuni v (nekaterih) cikličnih grupah žal (ali pa na srečo) niso tako enostavni, prišli smo do
 koncepta \textit{diskretnega logaritma}. V diskretnih cikličih grupah, kot je npr.\ $\Z_p^*$, ni koncepta
-urejenosti, kar smo videli tudi v primeru~\ref{primer:Z11}, zato nam ">približki"< logaritma ne pomagajo
-čisto nič. Za izračun takih logaritmov se moramo zanesti na drugačne metode, kot za izračun navadnih.
+urejenosti, kar smo videli tudi v primeru~\ref{primer:Z11} z grupo $\Z_{11}^*$, zato nam ">približki"<
+logaritma ne pomagajo čisto nič. Za izračun takih logaritmov se moramo zanesti na drugačne metode,
+kot za izračun logaritmov v množici realnih števil.
 
 \begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
 \label{def:dl}
     Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
     grupe $G$. Naj velja $g^x = h$. Eksponent $x$ Potem imenujemo \textbf{Diskretni logaritem (DL)}.
 
-    Zamislimo si igro, kjer izzivalec in nasprotnik kot vhod prejmeta opis grupe $G$ (torej $q$ in 
-    $g \in G$). Izzivalec potem izbere naključen element $\alpha \in G$ in izračuna $h = g^{\alpha}$.
+    Zamislimo si igro, kjer izzivalec in nasprotnik kot vhod prejmeta opis grupe $G$ (torej $q \in \N$
+    in $g \in G$). Izzivalec potem izbere naključen element $\alpha \in G$ in izračuna $h = g^{\alpha}$.
     $h$ pošlje nasprotniku, ta pa mora odgovoriti nazaj z elementom $\alpha$. To igro imenujemo 
     \textbf{problem diskretnega logaritma (PDL)} (angl.\ \textit{discrete logarithm problem}).
 
@@ -606,7 +627,8 @@ urejenosti, kar smo videli tudi v primeru~\ref{primer:Z11}, zato nam ">približk
 
 Če naš kriptosistem torej živi v ciklični grupi, v kateri je problem diskretnega logaritma težek,
 nam to zagotavlja, da iz javnega ključa ni računsko izvedljivo pridobiti zasebnega. To je osnova
-za varnost mnogih kriptografskih sistemov, kot sta npr.\ ElGamal in Schnorrov podpis.
+za varnost mnogih kriptografskih sistemov, kot sta npr.\ ElGamalov sistem~\cite{elgamal1985elgamal}
+in Schnorrov podpis~\cite{schnorr1989sig}.
 
 Preden nadaljujemo, natančneje definirajmo, kaj pomeni, da je verjetnost zanemarljiva.
 
@@ -619,8 +641,8 @@ Preden nadaljujemo, natančneje definirajmo, kaj pomeni, da je verjetnost zanema
 \end{definicija}
 
 To so torej funkcije, ki padajo proti nič hitreje, kot inverz kateregakoli polinoma. V kontekstu
-diskretnega logaritma je verjetnost izračuna pravilnega odgovora nasprotnika zanemarljiva v
-odvisnosti od velikosti grupe.
+diskretnega logaritma želimo, da je verjetnost izračuna pravilnega odgovora nasprotnika zanemarljiva
+v odvisnosti od velikosti grupe.
 
 V besedilu bomo večkrat govorili o ">zanemarljivih verjetnostih"<, kar pomeni, da se bodo
 verjetnosti v odvisnosti od določene spremenljivke vedle kot zanemarljive funkcije.
@@ -645,30 +667,30 @@ vključno z napadalcem.
 
 Varnostni dokazi, ki temeljijo na uporabi takih slučajnih orakljev, vseeno pričajo o varnosti shem,
 ki namesto orakljev uporabljajo zgoščevalne funkcije, vsaj dokler je uporabljena zgoščevalna funkcija
-varna (npr.\ zanjo nihče še ni našel trčenja).
+varna (npr.\ zanjo nihče še ni našel trka).
 
 \subsubsection{Simulatorji}
 Pogosto je cilj varnostnih dokazov pokazati, da je varnost neke sheme enakovredna težavnosti nekega
 problema, za katerega domnevamo, da je težek. V takih primerih je govorimo o metodi
 \textit{dokazovanja z redukcijo} (angl.\ \textit{reduction proof}). Ta metoda temelji na
 predpostavki, da če bi napadalec lahko učinkovito napadel shemo, bi lahko tudi učinkovito rešil težaven
-problem. Simulatorji so način, kako lahko izpeljemo redukcijo iz napada na reševanje težavnega problema.
+problem.
 
-V takih dokazih se ponavadi uporabljajo \textit{simulatorji}. To so algoritmi, ki posnemajo delovanje
-iskrenih podpisnikov ali pa kar celotne kriptografske sheme. Ideja je, da simulator ne pozna zasebnih
-ključev, vendar pa za napadalca lahko posnema celotno delovanje sheme. Cilj dokazov varnosti je
-pokazati, da če lahko napadalec uspešno izvede napad na shemo (npr.\ ponaredi podpis ali pa pridobi
-zasebni ključ), potem lahko simulator uporabi informacije iz napadalčevega napada, da reši domnevno
-težek problem (npr.\ problem diskretnega logaritma). Ker domnevamo, da se tega problema ne da rešiti
-učinkovito, lahko zaključimo, da je shema varna. Za večino shem so koristni le simulatorji, ki
-delujejo v polinomskem času.
+\textit{Simulatorji} so način, kako lahko izpeljemo redukcijo iz napada na reševanje težavnega problema.
+To so algoritmi, ki posnemajo delovanje iskrenih podpisnikov ali pa kar celotne kriptografske sheme.
+Ideja je, da simulator ne pozna zasebnih ključev, vendar pa za napadalca lahko posnema celotno
+delovanje sheme. Cilj dokazov varnosti je pokazati, da če lahko napadalec uspešno izvede napad na
+shemo (npr.\ ponaredi podpis ali pa pridobi zasebni ključ), potem lahko simulator uporabi informacije
+iz napadalčevega napada, da učinkovito reši domnevno težek problem (npr.\ problem diskretnega logaritma).
+Ker domnevamo, da se tega problema ne da rešiti učinkovito, lahko zaključimo, da je shema varna.
+Za večino shem so koristni torej le simulatorji, ki delujejo v polinomskem času.
 
 Da je simulator uporaben za dokaz varnosti, mora zadoščati naslednjim lastnostim:
 \begin{itemize}
     \item \textbf{Nerazločljivost}: Napadalec ne ve, ali komunicira s pravim podpisnikom ali s
         simulatorjem. Če bi lahko napadalec razlikoval, potem bi lahko zaključili, da shema napadalcu
-        razkrije neko skrivnost (ker je prisotnost skrivnosti edina razlika med pravim podpisnikom in
-        simulatorjem).
+        razkrije neko skrivnost, saj je prisotnost skrivnosti edina razlika med pravim podpisnikom in
+        simulatorjem.
     \item \textbf{Brez skrivnosti}: Simulator ne pozna zasebnih ključev. Ta lastnost je ključna, saj
         nam pove, da napadalec prek interakcije z dejanskim podpisnikom ne izve nobene dodatne informacije.
         Če je napadalec uspešen pri interakciji s simulatorjem ali pa podpisnikom, ki ima zasebni
@@ -686,7 +708,8 @@ V tem razdelku bomo govorili o \textit{interaktivnih protokolih} (angl.\ \textit
 To so protokoli, kjer si dva sogovornika izmenjujeta sporočila, dokler ne prideta do skupnega zaključka.
 Pogosto se uporabljajo za namene avtentikacije, kjer ena stran dokazuje svojo identiteto drugi.
 Zaradi te uporabe, bomo sogovornika poimenovali \textit{dokazovalec} (angl.\ \textit{prover}) in
-\textit{preverjevalec} (angl.\ \textit{verifier}).
+\textit{preverjevalec} (angl.\ \textit{verifier}). Taki protokoli so sorodni digitalnim podpisom,
+pogosto pa so uporabljeni pri konstrukciji bolj zahtevnih kriptografskih shem.
 
 Avtentikacijo lahko vidimo kot poseben primer dokazovanja. Dokazovalec želi dokazati preverjevalcu, da
 je res tisti, za katerega se izdaja. Protokoli, kjer je cilj dokazati neko trditev, sodijo v skupino
@@ -2357,6 +2380,7 @@ nezanemarljivo verjetnostjo vrne odgovor na problem diskretnega algoritma. Ker p
 tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
 
 \section{Primerjava navadnega in večstranskega Schnorrovega podpisa}
+\label{sec:primerjava}
 Naravno vprašanje, ki se pojavi ob omembi večstranskega Schnorrovega podpisa podskupin z odgovornostjo,
 je, kakšne prednosti ponuja pred uporabo večih navadnih Schnorrovih podpisov. Najočitnejša prednost
 je, da skupinski podpis vrne en sam podpis, ki je primerljivo dolg s Schnorrovim, medtem ko uporaba
@@ -2514,6 +2538,7 @@ med zaporednimi podpisi.
 
 
 \section{Razprava}
+\label{sec:razprava}
 
 \subsection{Varnost večstranskih podpisov v splošnem}
 \label{sec:varnost}
