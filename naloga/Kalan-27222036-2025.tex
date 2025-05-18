@@ -1527,59 +1527,56 @@ $$
 g^{\tilde{y}'} \stackrel{?}{\equiv} \tilde{X}' \cdot \left(\prod_{P_i \in S} I_i \right)^{e'} \pmod p.
 $$
 
-\subsubsection{Generiranje parametrov: Predpostavka DL}
-Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo. 
-Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa $p, q$ in $g$. Ker si podpisniki 
-delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za parametre uporabiti 
-$H$ na vnaprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih 
-parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo, 
-da to ne predstavlja nevarnosti, in generiranje parametrov dodamo k predpostavki diskretnega 
-logaritma za večstranske podpise. 
+\subsubsection{Generiranje parametrov in Predpostavka DL}
+Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo.
+Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa $p, q$ in $g$. Ker si podpisniki
+delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za parametre uporabiti
+$H$ na vnaprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih
+parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo,
+da to ne predstavlja nevarnosti. Za generiranje lahko uporabimo standarden algoritem za pridobivanje
+praštevil~\ref{alg:gen}.
+\begin{algorithm}
+    \caption{Algoritem $GenPrimes(k)$ za generiranje praštevil.}
+    \label{alg:gen}
+    \begin{algorithmic}
+        \State $q \gets \text{naključno izbrano $k$-bitno število}$
+        \State $p \gets 2q + 1$
+        \While{$q$ ni praštevilo in $p$ ni praštevilo}
+            \State $q \gets \text{naključno izbrano $k$-bitno število}$
+            \State $p \gets 2q + 1$
+        \EndWhile
+        \State \Return{$p, q$}
+    \end{algorithmic}
+\end{algorithm}
+
+Ker pa je pri uporabi kripgografije standardno, da se uporabi znane, vnaprej definirane grupe, se
+s problemom generiranja parametrov ne bomo ukvarjali. Enostavno predpostavimo, da imajo podpisniki
+dostop do skupnih, varnih parametrov.
+
+Ker podpis temelji na Schnorrovem, varnost temelji na težavnosti diskretnega logaritma. Predpostavka
+o varnosti je standardna predpostavka diskretnega logaritma, prilagojena za multiplikativne grupe
+$\Z_p^*$.
 
 \begin{definicija}[Predpostavka diskretnega logaritma pri ASM]
 \label{def:asm_dlp}
-    Predpostavka o varnosti je poleg standardnega PDL tu razširjena še z algoritmom za pridobivanje 
-    deljenih parametrov in jo lahko zapišemo:
+    Naj bo $A$ poljuben naključnostni algoritem, ki teče v polinomskem času in svoje parametre sprejme 
     \begin{itemize}
-        \item \textit{Parametri}: Naključnostni algoritem $GenPrimes(k)$~\ref{alg:gen} teče v pričakovanem 
-            polinomskem času: 
-            \begin{algorithm}
-                \caption{Algoritem $GenPrimes(k)$ za generiranje praštevil.}
-                \label{alg:gen}
-                \begin{algorithmic}
-                    \State $q \gets \text{naključno izbrano $k$-bitno število}$
-                    \State $p \gets 2q + 1$
-                    \While{$q$ ni praštevilo in $p$ ni praštevilo}
-                        \State $q \gets \text{naključno izbrano $k$-bitno število}$
-                        \State $p \gets 2q + 1$
-                    \EndWhile
-                    \State \Return{$p, q$}
-                \end{algorithmic}
-            \end{algorithm}
-        \item \textit{Težavnost DL}: Naj bo $A$ poljuben naključnostni algoritem, ki teče v polinomskem
-            času in svoje parametre sprejme 
-            \begin{itemize}
-                \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
-                \item naključni element $g \in \Z_p^*$ reda $q$,
-                \item naključni element $I$ iz podgrupe $\Z_p^*$, ki jo generira $g$.
-            \end{itemize}
-            Naj $p_k^A$ označuje verjetnost, da $A$ vrne $s \in [0, q - 1]$, tako da velja
-            $$
-            I \equiv g^s \pmod p.
-            $$
-            Potem za vsako konstanto $c > 0$ in za vsak dovolj velik $k$ velja, da je verjetnost $p_k^A$
-            zanemarljiva, oz.\
-            $$ 
-            p_k^A < k^{-c}.
-            $$
+        \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
+        \item naključni element $g \in \Z_p^*$ reda $q$,
+        \item naključni element $I$ iz podgrupe $\Z_p^*$, ki jo generira $g$.
     \end{itemize}
+    Naj $p_k^A$ označuje verjetnost, da $A$ vrne $s \in [0, q - 1]$, tako da velja
+    $$
+    I \equiv g^s \pmod p.
+    $$
+    Potem za vsako konstanto $c > 0$ in za vsak dovolj velik $k$ velja, da je verjetnost $p_k^A$
+    zanemarljiva, oz.\
+    $$ 
+    p_k^A < k^{-c}.
+    $$
 \end{definicija}
 
-% Če torej predpostavimo~\ref{def:asm_dlp} (kar mora veljati za varnost), nas prvi problem ne skrbi vec. 
-Pri obravanavi večstranskega Schnorrovega podpisa bomo torej predpostavili, da držita obe točki iz
-definicije~\ref{def:asm_dlp}. Predpostavka o težavnosti diskretnega logaritma je za sheme, ki temeljijo
-na njem standardna, prva predpostavka pa nam zagotavlja učuinkovit in standarden način za generiranje
-skupnih parametrov, ki napadalcu ne izda dodatnih informacij.
+Pri obravnavi večstranskega Schnorrovega podpisa bomo torej predpostavili, da drži definicija~\ref{def:asm_dlp}.
 
 \subsubsection{Napad na generiranje ključev}
 Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso komunikacijo, 
