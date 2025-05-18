@@ -1345,55 +1345,54 @@ da sporočila niso nujno vsa enaka~\cite{boneh2011aggregate}.
 
 \section{Večstranski Schnorrov podpis}
 \label{sec:multischnorr}
-Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali 
-formalni dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si večstranski podpis, ki temelji 
-na Schnorrovem in ga poimenovali \textbf{večstranski podpis podskupine z odvoronostjo} (angl.\ 
-\textit{Accountable-Subgroup Multisignature (ASM)}). V tem razdelku predstavimo njihov model, podpis 
-in argument varnosti.
+Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali
+formalni dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si formalni model za večstranske
+podpise, in ga poimenovali \textbf{večstranski podpis podskupine z odgovornostjo} (angl.\
+\textit{Accountable-Subgroup Multisignature (ASM)}). V tem razdelku predstavimo njihov model, primer
+večstranskega podpisa, ki temelji na Schnorrovem podpisu, in argumentiramo varnost podpisa oz.\
+modela na sploh.
 
 \subsection{Večstranski podpis podskupine z odgovornostjo}
-Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le bolj formalno definira idejo 
-večstranskega podpisa, predstavljeno v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega 
-podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $P$, brez potrebe po 
-\textbf{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. 
-Generiranje ključev je torej popolnoma v domeni skupine $P$. Podpis, ki ga ustvari $S$ predstavlja 
-splošno preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine stoji za (torej podpisuje) 
-sporočilom $m$.
+Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le predstavlja formalni model za
+večstranske pospise, predstavljene v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega
+podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $P$, brez potrebe po
+\textbf{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. Generiranje
+ključev je torej popolnoma v domeni skupine $P$. Podpis, ki ga ustvari $S$ predstavlja splošno
+preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine stoji za (torej podpisuje) sporočilom
+$m$. V tem razdelku predstavimo osnovno idejo ASM.
 
-\begin{definicija}[Večstranski podpis (podskupine z odgovornostjo)] 
+\begin{definicija}[Večstranski podpis podskupine z odgovornostjo]
+\label{def:asm}
     Skupina $P$ je sestavljena iz $L$ podpisnikov, torej
-    $$ 
+    $$
     P = P_1, P_2, \dots, P_L.
     $$
     Podpisnik predstavlja naključnostni polinomski algoritem. Vsak podpisnik pozna svojo 
-    identifikacijsko številko (eno od števil $1, \dots, L$) in pa \textit{varnostni parameter} $k$, 
+    identifikacijsko številko (eno od števil $1, \dots, L$) in pa \textit{varnostni parameter} $k$,
     ki je enak za vse podpisnike.
 
-    Kot vsi digitalni podpisi~\ref{def:digisig}, ima tudi ta štiri glavne komponente: 
+    Kot vsi digitalni podpisi iz definicije~\ref{def:digisig}, ima tudi ta štiri glavne komponente:
     \begin{itemize}
-        \item $\mathcal{P}$ je algoritem za ustvarjanje parametrov. Pognan je samo enkrat, na začetku 
-            sodelovanja. Vrne par parametrov $(G, q, g)$, kjer je $G$ grupa reda $q$, ki jo generira 
-            $g$. Velikost parametrov je odvisna od varnostnega parametra $k$.
-        \item $\mathcal{G}$ je algoritem za ustvarjanje ključev. Za neko skupino podpisnikov $P$ je pognan samo 
-            enkrat, na začetku sodelovanja. Vsak podpisnik $P_i$ dobi kot vhod seznam vseh podpisnikov v $P$ 
-            in požene $\mathcal{G}$, ki vrne par ključev $(\text{pk}_i, \text{sk}_i)$. Zapišemo lahko torej 
-            $$ 
+        \item $\mathcal{P}$ je algoritem za ustvarjanje parametrov. Pognan je samo enkrat, na začetku
+            sodelovanja. Vrne parametre $(G, q, g)$, kjer je $G$ grupa reda $q$, ki jo generira
+            $g$. Velikost parametrov je odvisna od varnostnega parametra $k$. Velja torej
+            $$
+            \mathcal{P}(k) = (G, q, g).
+            $$
+        \item $\mathcal{G}$ je algoritem za ustvarjanje ključev. Za neko skupino podpisnikov $P$ je pognan samo
+            enkrat, na začetku sodelovanja. Vsak podpisnik $P_i$ dobi kot vhod seznam vseh podpisnikov v $P$
+            in požene $\mathcal{G}$, ki vrne par ključev $(\text{pk}_i, \text{sk}_i)$. Zapišemo lahko torej
+            $$
             \mathcal{G}_i(L) = (\text{pk}_i, \text{sk}_i),
             $$
-            kjer smo brez škode za splošnost predpostavili, da velikost skupine $L$ enolično opiše 
+            kjer smo brez škode za splošnost predpostavili, da velikost skupine $L$ enolično opiše
             skupino $P$ (npr.\ vsak podpisnik je predstavljen z indeksom v skupini).
-        \item $\mathcal{S}$ je protokol za podpisovanje. Pognan je vsakič, ko neka podskupina $S$ želi 
-            ustvariti podpis. Vsak podpisnik kot vhod prejme seznam vseh podpisnikov $S$, njihove 
-            javne ključe $\text{pk}_j$, kjer $j$ teče po identifikacijskih številkah vseh članov $S$, 
-            sporočilo $m$ in lasten zasebni ključ $\text{sk}_i$. Algoritem $\mathcal{S}$ je porazdeljen 
-            protokol, pri izvedbi morajo sodelovati vsi člani $S$. Po uspešni izvedbi lahko en od članov 
-            objavi podpis $\sigma$.
-            \todo{razmisli, kako bi na pameten način napisal to z enačbo, enako za preverjanje}
-            % $$ 
-            % \mathcal{S}((id_1, \dots, id_l), (\text{pk}_{id_1}, \dots, \text{pk}_{id_l}), m, \text{sk}_i) = \sigma,
-            % $$
-            % kjer je $l$ velikost podskupine $S$, $(id_1, \dots, id_l)$ pa identifikacijske številke 
-            % članov.
+        \item $\mathcal{S}$ je protokol za podpisovanje. Pognan je vsakič, ko neka podskupina $S$ želi
+            ustvariti podpis. Vsak podpisnik kot vhod prejme seznam vseh podpisnikov $S$, njihove
+            javne ključe $\text{pk}_j$, kjer $j$ teče po identifikacijskih številkah vseh članov $S$,
+            sporočilo $m$ in lasten zasebni ključ $\text{sk}_i$. Algoritem $\mathcal{S}$ je porazdeljen
+            protokol, pri izvedbi morajo sodelovati vsi člani $S$, ki med seboj komunicirajo. Po
+            uspešni izvedbi lahko en od članov objavi podpis $\sigma$.
         \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
             preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $P$. 
             Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
@@ -1409,14 +1408,14 @@ sporočilom $m$.
 \end{definicija}
 
 \subsubsection{Robustnost, varnost in napadalec}
-Definiran večstranski podpis ni robusten. To pomeni, da v primeru izpada enega od podpisnikov $P_i$,
-ki je del podskupine $S$, ta ne more ustvariti večstranskega podpisa. Podpis še vedno lahko ustvari
-$S \setminus \{P_i\}$. To dejstvo nam dovoli definicijo napadalca, ki ima zelo velik vpliv na celoten
-sistem, saj ne iščemo robustnosti.
-
+Večstranski podpis iz definicije~\ref{def:asm} ni \textit{robusten}. To pomeni, da v primeru izpada
+jenega od podpisnikov $P_i$, ki je del podskupine $S$, ta ne more ustvariti večstranskega podpisa.
+Podpis še vedno lahko ustvari $S \setminus \{P_i\}$. Ker pri končni shemi ne iščemo robustnosti,
+lahko definiramo zelo močnega napadalca, ki ima velik vpliv na celoten sistem.
 \begin{definicija}[Napadalec pri ASM]
 \label{def:asm-napadalec}
-    Napadalec v modelu večstranskih podpisov podskupine z odgovornostjo $F$ ima naslednje zmožnosti:
+    Napadalca v modelu večstranskih podpisov podskupine z odgovornostjo bomo označili z $F$. Ima
+    naslednje zmožnosti:
     \begin{itemize}
         \item Ima popoln nadzor nad vsemi komunikacijskimi kanali med člani skupine $P$. Lahko bere,
             spreminja in preprečuje dostavo vseh sporočil. Prav tako lahko v imenu kateregakoli
@@ -1426,8 +1425,8 @@ sistem, saj ne iščemo robustnosti.
         \item Nadzira lahko vhod algoritma za ustvarjanje ključev $\mathcal{G}$ za vse podpisnike.
             Vsakemu lahko poda drugačno skupino $P$.
         \item Od kateregakoli nepokvarjenega podpisnika lahko kadarkoli zahteva podpis nekega sporočila
-            skupaj s podskupino, ki jo določi napadalec. To je \textit{napad z izbranim sporočilom
-            in podskupino}.
+            skupaj s podskupino, ki jo določi napadalec. To sposobnost imenujemo
+            \textit{napad z izbranim sporočilom in podskupino}.
     \end{itemize}
 \end{definicija}
 
@@ -1456,13 +1455,14 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
 
 Kot je standardno pri varnostni obravnavi digitalnih podpisov, tudi tu predpostavimo, da preverjevalec
 kljub močnemu napadalcu lahko vedno pridobi prave javne ključe podpisnikov iz $S$. To pomeni, da
-pozna prave identitete podpisnikov, tudi če napadalec lahko doseže, da podpisnik $P_1$ ne ve, kdo
-je zares podpisnik $P_2$ v času podpisovanja.
+v času preverjanja pozna prave identitete podpisnikov, tudi če napadalec lahko doseže, da podpisniki
+v času podpisovanja ne vedo zares, s kom podpisujejo (ne morejo zaupati, da res sodelujejo s člani
+podskupine $S$, saj napadalec nadzira komunikacijo).
 
 \subsubsection{Slučajni orakelj pri ASM}
-Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega 
-oraklja. Zato predpostavimo, da je $k_2$ še en varnostni parameter. Vsi člani skupine $P$ in 
-napadalec imajo dostop do slučajnega oraklja $H: \{0, 1\}^* \rightarrow \{0, 1\}^{k_2}$, ki je 
+Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega
+oraklja. Zato predpostavimo, da je $k_2$ še en varnostni parameter. Vsi člani skupine $P$ in
+napadalec imajo dostop do slučajnega oraklja $H: \{0, 1\}^* \rightarrow \{0, 1\}^{k_2}$, ki je
 naključno izbrana funkcija med vsemi funkcijami, ki slikajo med $\{0, 1\}^*$ in $\{0, 1\}^{k_2}$.
 
 \subsection{Konstrukcija večstranskega Schnorrovega podpisa}
