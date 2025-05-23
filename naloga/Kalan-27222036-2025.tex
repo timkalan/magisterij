@@ -848,6 +848,7 @@ uporabno vrednost. Tovrstne dokaze imenujemo \textit{identifikacijski protokoli}
 \end{primer}
 
 \subsubsection{Fiat-Shamirjeva hevristika}
+\label{sec:fiat-shamir}
 Dokazi znanja brez razkritja znanja so torej odlično splošno orodje, s katerim se lahko prepričamo
 o identiteti sogovornika, brez da bi ta rabil razkriti skrivni ključ. V praksi pa je težava, da so
 taki protokoli interaktivni, kar pomeni, da zahtevajo neposredno komunikacijo med dokazovalcem in
@@ -1523,9 +1524,10 @@ $$
 e' = H(\tilde{X}' || m || S)
 $$ 
 in preverimo, če velja 
-$$
+\begin{equation}
+\label{eq:naive-ver}
 g^{\tilde{y}'} \stackrel{?}{\equiv} \tilde{X}' \cdot \left(\prod_{P_i \in S} I_i \right)^{e'} \pmod p.
-$$
+\end{equation}
 
 \subsubsection{Generiranje parametrov in Predpostavka DL}
 Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo.
@@ -1549,7 +1551,7 @@ praštevil~\ref{alg:gen}.
     \end{algorithmic}
 \end{algorithm}
 
-Ker pa je pri uporabi kripgografije standardno, da se uporabi znane, vnaprej definirane grupe, se
+Ker pa je pri uporabi kriptografije standardno, da se uporabi znane, vnaprej definirane grupe, se
 s problemom generiranja parametrov ne bomo ukvarjali. Enostavno predpostavimo, da imajo podpisniki
 dostop do skupnih, varnih parametrov.
 
@@ -1579,58 +1581,60 @@ $\Z_p^*$.
 Pri obravnavi večstranskega Schnorrovega podpisa bomo torej predpostavili, da drži definicija~\ref{def:asm_dlp}.
 
 \subsubsection{Napad na generiranje ključev}
-Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso komunikacijo, 
-si lahko privošči vstopiti v podpisovanje kot zadnji izmed podpisnikov $P_L$, in lahko zadnji generira svoj
-par ključev. Če si torej izbere naključen $s \in [0, q- 1]$, lahko izračuna svoj javni ključ kot 
-$$ 
+Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso
+komunikacijo, lahko v tej fazi enostavno počaka, da vsi podpisniki ustvarijo svoje ključe. Na tej
+točki napadalec stopi v vlogo zadnjega podpisnika $P_L$ in generira nov par ključev.
+Če si torej izbere naključen $s \in [0, q- 1]$, lahko izračuna svoj javni ključ kot
+$$
 I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \pmod p.
 $$
-To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj bo pri množenju v enačbi za preverjanje
-tako izničil vse ostale javne ključe.
+To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj se bodo pri množenju v
+enačbi~\ref{eq:naive-ver} za preverjanje tako izničil vsi ostali javni ključi.
 
 Za rešitev tega problema se lahko zanesemo na dokaze o znanju brez razkritja znanja.
-Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg 
-svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ 
-glede na javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $I_i$ modulo $g$. 
-Ta dokaz je neinteraktiven, saj obravnavmo model slučajnega oraklja in lahko uporabimo Fiat-Shamirjevo 
-hevristiko.
+Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg
+svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ
+glede na javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $I_i$ modulo $g$.
+Ta dokaz je neinteraktiven, saj obravnavmo model slučajnega oraklja in lahko uporabimo Fiat-Shamirjevo
+hevristiko~\ref{sec:fiat-shamir}.
 
-Ker tovrstni dokazi brez preverjevalca nimajo smisla, se na tej točki vredno vprašati, kdo bo preverjal 
-veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe. 
-Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka 
+Ker tovrstni dokazi brez preverjevalca nimajo smisla, se na tej točki vredno vprašati, kdo bo preverjal
+veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe.
+Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka
 sprememba podaljša javne ključe in privede do izgube učinkovitosti. Preverjanje veljavnosti podpisa 
-bo sedaj poleg dveh modularnih potenciranj potrebovalo še dodatnih $2|S|$, saj je potrebno preveriti 
-vse dokaze javnih ključev. Posamezni preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat 
-za vsako skupino, če natančno beleži rezultate preverjanja dokazov.
+bo sedaj poleg dveh modularnih potenciranj, ki sta v enačbi~\ref{eq:schnorr-ver} potrebni za
+preverjanje standarnega Schnorrovega podpisa, potrebovalo še dodatnih $2|S|$, saj je potrebno
+preveriti vse dokaze javnih ključev, kar ustreza preverjanju $|S|$ Schnorrovih podpisov. Posamezni
+preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat za vsako skupino, če natančno beleži
+rezultate preverjanja dokazov.
 
 \subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
 Kot bomo videli, je za dokaz varnosti potrebno, da lahko simulator (torej algoritem, ki bo simuliral
 proces podpisovanja napadalcu), v polinomskem času za vsakega pokvarjenega podpisnika $P_j$ pridobi
 diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, da če
-je $P_j$ dokaz izračuna s $q$ klici slučajnega oraklja, potem simulator uspešno pridobi diskretni
-logaritem z verjetnostjo največ $1/q$. Še več, če je $k$ pokvarjenih podpisnikov, bo simulator
-uspešen z verjetnostjo največ $1/q^k$. Z drugimi besedami, če želimo polinomski simulator, je
-podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$.
+bo $P_j$ dokaz izračunal s $q$ klici slučajnega oraklja, potem bo simulator uspešno pridobil diskretni
+logaritem z verjetnostjo največ $1/q$. Še več, če je $b$ pokvarjenih podpisnikov, bo simulator
+uspešen z verjetnostjo največ $1/q^b$. Z drugimi besedami, če želimo polinomski simulator, je
+podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$, ker pa je teh klicev
+lahko največ polinomsko mnogo v varnostnem parametru $k$, je torej število podpisnikov lahko
+največ logaritemsko v $k$.
 
-\todo{kaj pomeni logaritemsko mnogo - je to prav?}
-
-Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$ 
-in tudi zavezo $X_i$. Potem si vsi izmenjajo $I_i$ in $X_i$. Vsak podpisnik lahko sedaj izračuna 
-\textit{skupni izziv} 
-$$ 
+Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$
+in na podlagi naključno izbrane vrednosti $r_i$ tudi zavezo $X_i = g^{r_i} \pmod p$, ki bi jo uporabil
+pri dokazu znanja brez razkritja znanja. Potem si vsi podpisniki izmenjajo javne ključe $I_i$ in
+zaveze $X_i$. Vsak podpisnik lahko sedaj izračuna \textit{skupni izziv}
+$$
 e = H(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L).
 $$
-Podpisniki za dokaz znanja sedaj uporabijo Schnorrov podpis $e$ s svojim parom ključev. 
+Podpisniki nato dokončajo svoj dokaz na podlagi zgostitve $e$ in svojega para ključev.
 
-\todo{a to pravilno razumem?}
-
-Kot bomo videli, bo to pomenilo, da za generiranje dokazov $k$ pokvarjenih podpisnikov sedaj rabi le
-$kq$ klicev oraklja, torej je polinomski simulator uspešen z verjetnostjo $1/kq$. To omogoča, da je
+Kot bomo videli, bo to pomenilo, da za generiranje dokazov $b$ pokvarjenih podpisnikov sedaj rabi le
+$bq$ klicev oraklja, torej je polinomski simulator uspešen z verjetnostjo $1/bq$. To omogoča, da je
 podpisnikov več kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo, saj mora
 sedaj vsak podpisnik v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa tudi vse
 javne ključe sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja (Schnorrov podpis)
 ni preverljiv. To pomeni, da je za katerokoli podskupino $S$ velikost ključa proporcionalna velikosti
-celotne skupine $P$. Poleg tega mora sedaj preverjevalec preveriti, da se vsi vektorji javnih ključev
+celotne skupine $P$. Poleg tega mora sedaj preverjevalec preveriti, da se vsi seznami javnih ključev
 ujemajo. V primerjavi z osnovno naivno idejo, kjer je preverjevalec potreboval le $|S|$ navadnih
 Schnorrovih javnih ključev, je v tej izvedbi velikost javnega ključa nedopustno velika.
 
@@ -1671,23 +1675,23 @@ struktura je prikazana na sliki~\ref{fig:merkle}.
   \label{fig:merkle}
 \end{figure}
 
-Pomembno je opaziti, da če zgoščevalna funkcija ustvarja zgostitve, dolge $k$ bitov, bodo toliko 
-dolgi vsi podatki, ki jih hranijo vsa vozlišča drevesa. Za Merklova drevesa je ključno, da je v primeru 
-varne zgoščevalne funkcije računsko zelo težko spremeniti katerokoli vrednost v drevesu, brez da bi se 
-spremenila vrednost v korenu. Enako velja za spremembe vhodnih podatkov. Merklova drevesa nam torej 
-omogočajo, da se zavežemo $L$ vrednostim $x_1, x_2, \dots, x_L$ tako, da enostavno vrnemo en sam 
-$k$-bitni niz. To storimo tako, da shranimo zgostitve vrednosti $x_1, x_2, \dots, x_L$ v liste drevesa 
-in izračunamo koren. Vrednostim se zavežemo tako, da preverjevalcu damo vrednost korena. Ko mu kasneje 
-želimo razkriti vrednosti, mu jih enostavno povemo, on pa lahko z izračunom drevesa preveri, da so 
+Pomembno je opaziti, da če zgoščevalna funkcija ustvarja zgostitve, dolge $k$ bitov, bodo toliko
+dolgi vsi podatki, ki jih hranijo vsa vozlišča drevesa. Za Merklova drevesa je ključno, da je v primeru
+varne zgoščevalne funkcije računsko zelo težko spremeniti katerokoli vrednost v drevesu, brez da bi se
+spremenila vrednost v korenu. Enako velja za spremembe vhodnih podatkov. Merklova drevesa nam torej
+omogočajo, da se zavežemo $L$ vrednostim $x_1, x_2, \dots, x_L$ tako, da enostavno vrnemo en sam
+$k$-bitni niz. To storimo tako, da shranimo zgostitve vrednosti $x_1, x_2, \dots, x_L$ v liste drevesa
+in izračunamo koren. Vrednostim se zavežemo tako, da preverjevalcu damo vrednost korena. Ko mu kasneje
+želimo razkriti vrednosti, mu jih enostavno povemo, on pa lahko z izračunom drevesa preveri, da so
 vrednosti prave. Povzeto po~\cite{micali2000csproofs}.
 
 \begin{trditev}[Overjevalna pot~\cite{micali2000csproofs}]
 \label{trd:overjevalna_pot}
-    Naj bo $A$ zavezovalec, ki se želi zavezati vrednostim $x_1, x_2, \dots, x_L$ preverjevalcu $B$. Če 
-    se $A$ zaveže tako, da $B$ pove vrednost korena Merklovega drevesa, izračunanega na podlagi 
+    Naj bo $A$ zavezovalec, ki se želi zavezati vrednostim $x_1, x_2, \dots, x_L$ preverjevalcu $B$. Če
+    se $A$ zaveže tako, da $B$ pove vrednost korena Merklovega drevesa, izračunanega na podlagi
     vrednosti $x_1, x_2, \dots, x_L$, potem lahko dokaže zavezo eni vrednosti $x_i$ ($1 \le i \le L$)
-    tako, da preverjevalcu $B$ pove $1 + \lceil \log L \rceil$ vrednosti: $x_i$ in pa \textbf{overjevalno 
-    pot}, torej vrednosti, shranjene v sestrskih vozliščih vseh vozlišč na poti med vključno $x_i$ in 
+    tako, da preverjevalcu $B$ pove $1 + \lceil \log L \rceil$ vrednosti: $x_i$ in pa \textbf{overjevalno
+    pot}, torej vrednosti, shranjene v sestrskih vozliščih vseh vozlišč na poti med vključno $x_i$ in
     korenom (brez korena, ki ga $B$ že pozna).
 \end{trditev}
 
@@ -1695,28 +1699,28 @@ vrednosti prave. Povzeto po~\cite{micali2000csproofs}.
     Trditev lahko dokažemo z indukcijo na globino Merklovega drevesa $d$. Naj bo $x$ vrednost, za katero
     želimo dokazati zavezo in $w_1, w_2, \dots, w_d$ overjevalna pot.
     \begin{itemize}
-        \item $d = 2$: Če je globina drevesa $2$, želimo pokazati, da moramo poleg $x$ povemo samo eno  
+        \item $d = 2$: Če je globina drevesa $2$, želimo pokazati, da moramo poleg $x$ povemo samo eno
             dodatno vrednost. Ta vrednost je torej zgostitev $x$-ove sosednje vrednosti $y$. Ko $B$ izračuna
             $H(x || y)$, je to že koren, in lahko vrednost primerja z zabeleženo.
-        \item $n \rightarrow n + 1$: Predpostavimo torej, da za globino drevesa $n$ lahko preverimo zavezo s 
-            podanimi $1 + d$ vrednostmi. To nam omogoča izračuna vrednosti v enem od korenovih otrok v 
-            drevesu globine $n + 1$, po indukcijski predpostavki. Če poznamo še vrednost drugega otroka, je 
+        \item $n \rightarrow n + 1$: Predpostavimo torej, da za globino drevesa $n$ lahko preverimo zavezo s
+            podanimi $1 + d$ vrednostmi. To nam omogoča izračuna vrednosti v enem od korenovih otrok v
+            drevesu globine $n + 1$, po indukcijski predpostavki. Če poznamo še vrednost drugega otroka, je
             možen izračun korena.
     \end{itemize}
 \end{dokaz}
 
 Merklova drevesa lahko sedaj uporabimo, da naredimo večstranski podpis bolj učinkovit. Podpisniki
-še vedno predložijo dokaze znanja prek Schnorrovega podpisa, po izmenjavi dokazov pa vsak izračuna 
-Merklovo drevo z listi $I_1, I_2, \dots, I_L$. To drevo bo torej globine $\log L$. Za svoj javni 
-ključ potem vsak podpisnik $P_i$ nastavi $I_i$ in overjevalno pot za $I_i$. Ker je ponavadi $I_i$ 
-veliko daljši od dolžine zgostitev, in ker je v overjevalni poti le $\log L$ zgostitev, se ključ 
-ne podaljša veliko (npr.\, če je $I_i$ dolg $2000$ bitov in so zgostitve $200$-bitne, bo $1000$ 
+še vedno predložijo dokaze znanja prek Schnorrovega podpisa, po izmenjavi dokazov pa vsak izračuna
+Merklovo drevo z listi $I_1, I_2, \dots, I_L$. To drevo bo torej globine $\log L$. Za svoj javni
+ključ potem vsak podpisnik $P_i$ nastavi $I_i$ in overjevalno pot za $I_i$. Ker je ponavadi $I_i$
+veliko daljši od dolžine zgostitev, in ker je v overjevalni poti le $\log L$ zgostitev, se ključ
+ne podaljša veliko (npr.\, če je $I_i$ dolg $2000$ bitov in so zgostitve $200$-bitne, bo $1000$
 podpisnikov ustvarilo ključe, dolge manj od $4000$ bitov, torej manj kot dvakrat daljše).
 
-Ko sedaj preverjevalec preverja podpis sporočila $m$ s strani $S$, lahko za vsakega podpisnika 
+Ko sedaj preverjevalec preverja podpis sporočila $m$ s strani $S$, lahko za vsakega podpisnika
 izračuna vrednost korena Merklovega drevesa in preveri, da se vse ujemajo. Obstoj enega nepokvarjenega
-podpisnika tako prisili vse pokvarjene, da uporabljajo prave ključe (ali pa najdejo trk v 
-zgoščevalni funkciji, kar je izjemno težko). S to spremembo smo tako uspešno ohranili podpise 
+podpisnika tako prisili vse pokvarjene, da uporabljajo prave ključe (ali pa najdejo trk v
+zgoščevalni funkciji, kar je izjemno težko). S to spremembo smo tako uspešno ohranili podpise
 varne in časovno učinkovite.
 
 \subsection{Definicija večstranskega Schnorrovega podpisa}
