@@ -850,7 +850,7 @@ uporabno vrednost. Tovrstne dokaze imenujemo \textit{identifikacijski protokoli}
 \subsubsection{Fiat-Shamirjeva hevristika}
 \label{sec:fiat-shamir}
 Dokazi znanja brez razkritja znanja so torej odlično splošno orodje, s katerim se lahko prepričamo
-o identiteti sogovornika, brez da bi ta rabil razkriti skrivni ključ. V praksi pa je težava, da so
+o identiteti sogovornika, ne da bi ta moral razkriti skrivni ključ. V praksi pa je težava, da so
 taki protokoli interaktivni, kar pomeni, da zahtevajo neposredno komunikacijo med dokazovalcem in
 preverjevalcem. Ta komunikacija je zamudna in draga.
 
@@ -1725,7 +1725,7 @@ varne in časovno učinkovite.
 
 \subsection{Definicija večstranskega Schnorrovega podpisa}
 \label{sec:def_multi_schnorr}
-Sedaj smo pripravili vse potrebno, da podamo natančno definicijo končne sheme. 
+Sedaj smo pripravili vse potrebno, da podamo natančno definicijo končne sheme.
 
 \subsubsection{Skupni parametri}
 Vsi podpisniki se strinjajo o skupnem varnostnem parametru $k$ in sekundarnem varnostnem parametru
@@ -1741,27 +1741,29 @@ oraklja $H$. Na dogovorjen način ga uporabijo, da ustvarijo pet neodvisnih orak
 \end{align*}
 Prav tako predpostavimo, da imajo vsi podpisniki dostop do algoritma $GenPrimes$.
 
-Za lažjo obravnavo si izberemo še enega izmed podpisnikov, in ga označimo z $D$. Ta podpisnik bo 
-vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. $D$ lahko tudi predstavlja vse podpisnike, 
+Za lažjo obravnavo si izberemo še enega izmed podpisnikov, in ga označimo z $D$. Ta podpisnik bo
+vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. $D$ lahko tudi predstavlja vse podpisnike,
 a je opis sheme malce lažji, če si izberemo enega -- v tem primeru je on prejemnik vseh sporočil
 ostalih podpisnikov, svoje odgovore pa potem oddaja (angl.\ \textit{broadcast}) ostalim podpisnikom.
 Če si ne izberemo podpisnika $D$, si podpisniki sporočila pošiljajo v krogu (vsak pošlje svoje sporočilo
 desnemu sosedu, ko prejme sporočilo levega, spet pošlje desnemu. Vsak torej pošlje $L$ sporočil, na
 koncu imajo vsi vse potrebne podatke za izračune).
 
-\subsubsection{Generiranje ključev}
-Vsi podpisniki morajo sami generirati parametre $p, q$ in $g$. Za prva dva uporabijo algoritem 
-$GenPrimes(k)$~\ref{alg:gen}. Za izvor naključnosti uporabijo zaporedje $H_1(2^k), H_1(2^k + 1), \dots$.
-Za generiranje elementa $g$ reda $q$ uporabijo izvor naključnosti $H_2(2^k), H_2(2^k + 1), \dots$.
+Kot že omenjeno, v praksi podpisniki uporabijo dobro poznano grupo in zato ne rabijo generirati
+parametrov, kar se pa tiče teoretične obravnave, pa morajo sami generirati parametre $p, q$ in $g$.
+Za prva dva uporabijo algoritem $GenPrimes(k)$. Za izvor naključnosti uporabijo zaporedje $H_1(2^k),
+H_1(2^k + 1), \dots$, Za generiranje elementa $g$ reda $q$ uporabijo izvor naključnosti
+$H_2(2^k), H_2(2^k + 1), \dots$
 
+\subsubsection{Generiranje ključev}
 Ko ima vsak podpisnik $P_i$ ($1 \le i \le L$) na voljo skupne parametre, si enakomerno naključno
 izbere svoj zasebni ključ $s_i \in [0, q - 1]$ in izračuna
 $$ 
 I_i = g^{s_i} \bmod p.
 $$
-Do tu je postopek enak, kot pri naivni verziji. Da preprečimo napad na generiranje ključev, mora 
+Do tu je postopek enak, kot pri naivni verziji. Da preprečimo napad na generiranje ključev, mora
 vsak podpisnik na tem mestu izbrati naključen $r_i \in [0, q- 1]$ in izračunati zavezo
-$$ 
+$$
 X_i = g^{r_i} \bmod p.
 $$
 Potem si podpisniki med seboj izmenjajo vrednosti $(X_i, I_i)$. Vsak na tem mestu lahko izračuna
@@ -1777,22 +1779,22 @@ ključa $s_j$ glede na javni ključ $I_j$. Ker je izziv $e$ izračunan iz podatk
 onemogoča naknadne spremembe ključev. 
 
 Vsak podpisnik $P_i$ mora preveriti veljavnost vseh podpisov $(X_j, y_j)$ vseh ostalih podpisnikov
-$P_j$ ($1 \le j \le L$). To stori s standardnim izračunom za preverjanje Schnorrovega 
-podpisa~\eqref{eq:schnorr-ver}: 
+$P_j$ ($1 \le j \le L$). To stori s standardnim izračunom za preverjanje Schnorrovega
+podpisa~\eqref{eq:schnorr-ver}:
 $$
 g^{y_j} \stackrel{?}{\equiv} X_j \cdot I_j^{e} \pmod p.
 $$
 
-Ko podpisnik $P_i$ ugotovi, da so vsi podpisi veljavni, lahko izračuna Merklovo drevo, ki ima v 
+Ko podpisnik $P_i$ ugotovi, da so vsi podpisi veljavni, lahko izračuna Merklovo drevo, ki ima v
 listih po vrsti razporejene $I_1, I_2, \dots, I_L$ in za svojo zgoščevalno funkcijo uporablja $H_4$.
-Ko je drevo izračunano, $P_i$ prebere overjevalno pot $\text{pot}_i$ svojega ključa $I_i$ in vrne 
+Ko je drevo izračunano, $P_i$ prebere overjevalno pot $\text{pot}_i$ svojega ključa $I_i$ in vrne
 javni ključ
 $$ 
 \text{pk}_i = (p, q, g, I_i, \text{pot}_i).
 $$
 
 \subsubsection{Podpisovanje}
-Naj bo $S = \{P_{id_1}, P_{id_2}, \dots, P_{id_l}\}$ podskupina velikosti $l$ skupine $P$, ki želi 
+Naj bo $S = \{P_{id_1}, P_{id_2}, \dots, P_{id_l}\}$ podskupina velikosti $l$ skupine $P$, ki želi
 večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikacije:
 \begin{enumerate}
     \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ si izbere naključno število $r_j \in [0, q - 1]$ 
@@ -1813,7 +1815,7 @@ večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikaci
         \end{align*}
         in pošlje $y_j$ podpisniku $D$.
 \end{enumerate}
-Na tem mestu ima $D$ vse kar rabi, da dokonča podpis. Najprej izračuna
+Na tem mestu ima $D$ vse, kar potrebuje, da dokonča podpis. Najprej izračuna
 $$
 \tilde{y} = (y_1 + y_2 + \cdots + y_l) \bmod q
 $$
@@ -1823,7 +1825,7 @@ $$
 $$
 
 \subsubsection{Preverjanje}
-Preverjanje je podobno naivni verziji, le da je potrebno dodatno preveriti ustreznost Merklovih
+Preverjanje je podobno naivni verziji, le da je treba dodatno preveriti ustreznost Merklovih
 korenov. Če torej preverjevalec želi preveriti veljavnost podpisa $\sigma = (\tilde{X}, \tilde{y})$
 sporočila $m$, moramo predpostaviti, da lahko dostopa do vseh javnih ključev $\{\text{pk}_{id_1},
 \text{pk}_{id_2}, \dots, \text{pk}_{id_l}\}$ vseh podpisnikov $S = \{P_{id_1}, P_{id_2}, \dots, 
@@ -1878,12 +1880,12 @@ Schnorrovega podpisa.
 
 \subsection{Varnost večstranskega Schnorrovega podpisa}
 \label{sec:proof_multi_schnorr}
-Dokazati si želimo, da je shema, definirana v zgornjem razdelku~\ref{sec:def_multi_schnorr} \textit{varna},
+Dokazati si želimo, da je shema, definirana v zgornjem razdelku~\ref{sec:def_multi_schnorr}, \textit{varna},
 torej ustreza pogojem definicije varnosti~\ref{def:asm-varnost}, kjer ima napadalec $F$ sposobnosti,
 definirane v~\ref{def:asm-napadalec}. Varnost torej pomeni, da je preprečeno eksistencialno ponarejanje,
 zaradi napadalčevega nadzora nad komunikacijskim omrežjem pa si lahko privošči napad z izbranimi sporočili.
 Še več, ker se ukvarjamo z večstranskimi podpisi, si napadalec lahko izbere še podskupino, ki bo 
-sporočilo podpisovala. Napadalec lahko torej na katerikoli točki od katerekoli podskpupine zahteva
+sporočilo podpisovala. Napadalec lahko torej na katerikoli točki od katerekoli podskupine zahteva
 podpis kateregakoli izbranega sporočila.
 
 Zaradi kompleksnosti napadalca, dokaz varnosti poteka tako, da najprej dokažemo ekvivalentnost med
@@ -1891,7 +1893,7 @@ Zaradi kompleksnosti napadalca, dokaz varnosti poteka tako, da najprej dokažemo
 napadalca $F'$.
 
 \subsubsection{Šibek napadalec in šibka varnost}
-Za enostavnejšo analizo definiramo \textbf{šibkega napadalca} (ali nasprotnika) (angl.\ 
+Za enostavnejšo analizo definiramo \textbf{šibkega napadalca} (ali nasprotnika) (angl.\
 \textit{weak adversary}) $F'$. Njegov cilj je enak izvornemu napadalcu $F$. Želi si torej ponarediti podpis
 s pomočjo napada z izbranim sporočilom in podskupino. Izbere si lahko podpisnika, in od njega
 zahteva podpis izbranega sporočila skupaj z izbrano podskupino $S$. Napadalca se razlikujeta v tem,
@@ -1900,14 +1902,15 @@ podpisniki.
 
 \begin{definicija}[Šibek napadalec pri ASM]
 \label{def:asm-sibek-napadalec}
-    Šibek napadalec $F'$ v modelu večstranskega Schnorrovega podpisa ima naslednje zmožnosti:
+    Šibek napadalec $F'$ ima v modelu večstranskega podpisa podskupine z odgovornostjo naslednje
+    zmožnosti:
     \begin{itemize}
         \item Preden skupina $P$ generira svoje ključe, izbere podpisnika $P_i$, ki ga bo napadel.
         \item Ko je podpisnik $P_i$ napaden, mora $F'$ zanj priskrbeti vse vhode za algoritme in
             vse vhodna sporočila, ki jih prejme. Prav tako lahko vidi vsa poslana sporočila
             podpisnika. Efektivno pri podpisovanju sodelujeta le $F'$ in $P_i$.
         \item Po generiranju ključev, lahko šibek napadalec $F'$ od podpisnika $P_i$ zahteva podpis
-            izbranega sporočila skupaj z izbrano podskupino $S$ (napad z izbranim sporočilom in
+            izbranega sporočila skupaj z izbrano podskupino $S$ (izvede napad z izbranim sporočilom in
             podskupino).
     \end{itemize}
 \end{definicija}
@@ -1915,9 +1918,9 @@ podpisniki.
 Ker mora šibek napadalec za izbranega podpisnika predložiti vse vhode in komunikacijo, lahko vidimo
 delovanje šibkega napadalca $F'$ kot delovanje napadalca $F$, ki pokvari vse podpisnike, razen
 podpisnika $P_i$. V obeh primerih bo podpisnik $P_i$ v podpisu sodeloval le z napadalcem, ki zanj
-nadzoruje celoten potek podpisovanja. Ta povezava tipov napadalcev je formalno opisana v
-izreku~\ref{izr:šibka-varnost}. Pred dokazom izreka pa moramo, tako kot za napadalca $F$, tudi tu
-definirati, kaj pomeni varnost sheme.
+nadzoruje celoten potek podpisovanja. To povezavo tipov napadalcev formalno opišemo v
+izreku~\ref{izr:šibka-varnost}. Pred dokazom izreka pa moramo, tako kot za napadalca $F$, tudi za
+šibkega napadalca definirati, kaj pomeni varnost sheme.
 
 \begin{definicija}[Šibka varnost pri ASM]
     Naj bo $k$ varnostni parameter (ki si ga delijo vsi podpisniki). Naj bo $c > 0$ poljubna konstanta. 
@@ -1930,7 +1933,7 @@ definirati, kaj pomeni varnost sheme.
             podpisa sporočila $m$ s strani skupine $S$.
     \end{itemize}
     Shemi za večstranske podpise podskupine z odgovornostjo bomo rekli, da je \textbf{šibko varna},
-    če je verjetnost $p$ zanemarljiva, oz.\ velja 
+    če je verjetnost $p$ zanemarljiva, oz.\ velja
     $$ 
     p < k^{-c}.
     $$
@@ -1978,7 +1981,6 @@ ekvivalentnost šibkega napadalca in napadalca.
         \item Če napadalec $F$ izbere podpisnika $P_i$ za tarčo napada z izbranim sporočilom in podskupino,
             šibek napadalec $F'$ prejme zahtevek za napad od $F$ in ga posreduje podpisniku $P_i$.
             Ta podpisnik normalno pošlje svoj odgovor napadalcu $F$.
-
     \end{itemize}
 
     Ko $F$ konča svoj napad, vrne trojico $(\sigma, m, S)$. Če je to veljaven ponaredek, jo vrne tudi
@@ -2020,12 +2022,11 @@ napadalca, shema pa je potem tudi varna po izreku~\ref{izr:šibka-varnost}.
     Schnorrov podpis, definiran v razdelku~\ref{sec:def_multi_schnorr}, varen.
 \end{izrek}
 
-Želimo torej pokazati, da če obstaja šibek napadalec, ki je omejen s polinomskim časom v parametru
-$k$, potem obstaja nek algoritem $A$, ki prav tako teče v polinomskem času, s katerim lahko prekršimo
-predpostavko o diskretnem logaritmu pri ASM. Bolj specifično, prekršimo lahko predpostavko o
-težavnosti DL.
+Želimo torej pokazati, da če obstaja šibek napadalec, ki je omejen s polinomskim časom v varnostnem
+parametru $k$, potem obstaja nek algoritem $A$, imenovan simulator, ki prav tako teče v polinomskem
+času, s katerim lahko prekršimo predpostavko o diskretnem logaritmu pri ASM.
 
-Želimo torej konstruirati algoritem $A$, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
+Konstruirali bomo algoritem $A$, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
 da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira proces podpisovanja, ki ga napada šibek
 napadalec $F'$. Cilj algoritma $A$ je, da iz vrnjenega ponarejenega podpisa, pridobljenega ob
 uspešnem napadu, razbere diskretni logaritem, ki ga išče. Za doseganje tega cilja mora algoritem $A$
@@ -2107,7 +2108,7 @@ $e = H_5(\tilde{X} || m || S)$, ki ga $P_i$ uporabi za izračun $y_i$.
 
 Ko algoritem $A$ simulira podpisni proces za poenostavljenega napadalca $\mathcal{F}$, mora torej
 $A$ izračunati zavezo $X_i$ in jo poslati v prvem krogu poizvedbe (namesto podpisnika $P_i$). Problem
-je, da na tej točki še ni znan izziv $e$. Za uspešno simulacijo mora algoritem $A$ uganiti, kater
+je, da na tej točki še ni znan izziv $e$. Za uspešno simulacijo mora algoritem $A$ uganiti, kateri
 odgovor oraklja $H_5$ bo ustrezal vhodu. Ker je možnih odgovorov oraklja $q_H$ in je vsaka enako
 verjetna, je verjetnost, da algoritem $A$ izbere pravilen odgovor, $1/q_H$. Pričakovano število
 potrebnih previjanj je torej $q_H$.
