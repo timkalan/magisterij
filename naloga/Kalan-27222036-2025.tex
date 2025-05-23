@@ -207,7 +207,7 @@ predstavimo Schnorrov podpis, ki je osnova za ostale sheme, ki jih obravnavamo. 
 poglavju~\ref{sec:skpine} predstavimo nekaj možnih pristopov za podpisovanje skupin. Poglavje~\ref{sec:multischnorr}
 predstavi večstranski Schnorrov podpis, tam tudi dokažemo njegovo varnost v modelu slučajnega oraklja.
 V poglavju~\ref{sec:primerjava} primerjamo učinkovitost navadnega in večstranskega Schnorrovega podpisa.
-Na koncu pa v poglavju~\ref{sec:razprava} omenimo še kako se je področje razvijalo v zadnjem času.
+Na koncu pa v poglavju~\ref{sec:sodobno} omenimo še kako se je področje razvijalo v zadnjem času.
 
 \section{Kriptografske osnove}
 \label{sec:osnove}
@@ -2215,7 +2215,7 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
 
 \begin{dokaz}[Dokaz leme o razcepu~\ref{izr:forking}]
     Naj bo $F$ napadalec (naključnostni algoritem, ki teče v polinomskem času), ki nima na voljo
-    nobenega sporočila. Z $\omega$ označimo vir naključnih bitov, prek katerih deluje $F$. Denimo,
+    nobenega sporočila. Z $\omega$ označimo vir naključnih bitov, do katerega ima $F$ dostop. Denimo,
     da med svojim napadom napadalec $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb
     v varnostnem parametru $k$. Označimo  poizvedbe, ki jih $F$ stori z $\mathcal{Q}_1, \mathcal{Q}_2,
     \dots, \mathcal{Q}_Q$ (brez škode za splošnost lahko predpostavimo, da so poizvedbe med seboj
@@ -2229,7 +2229,7 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
 
     Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila ena izmed
     poizvedb oraklju prav tista, ki je vsebovala sporočilo $m$ in delni podpis $\sigma_1$,
-    nezanemarljiva. Sicer bi moral napadalec $F$ uganiti odgovor na to poizvedbo. To je zato, da bi
+    nezanemarljiva. Sicer bi moral napadalec $F$ uganiti odgovor na to poizvedbo, da bi
     lahko ustvaril drugi del podpisa $\sigma_2$ (uganiti bi torej moral naključno vrednost, kar lahko
     stori z največ zanemarljivo verjetnostjo). Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta
     = (m, \sigma_1)$ ($1 < \beta < Q$). Ker je poizvedb polinomsko mnogo v varnostnem parametru $k$
@@ -2286,7 +2286,7 @@ tekom svojega delovanja poganja poenostavljenega napadalca $\mathcal{F}$.
 
 Denimo, da $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}_0, \tilde{y}_0)$ sporočila $m_0$ s strani
 podskupine $S_0$. Še več, ponaredek je nastal na podlagi $j_0$-te poizvedbe oraklju $H_5$ z vhodom
-$(\tilde{X}_0, m_0, S_0)$ in odgovorom $e_{j_0}$. Ker $A$ pozna celotno interno stanje poenostavljenega
+$(\tilde{X}_0, m_0, S_0)$ in odgovorom $e_{j_0}$. Ker $A$ pozna celotno notranje stanje poenostavljenega
 napadalca $\mathcal{F}$ in si je shranjeval njegova interna stanja, lahko simulator $A$ previje
 poenostavljenega napadalca $\mathcal{F}$ nazaj na začetek podpisovnja z enakim virom naključnih bitov
 $\omega$. Na njegove poizvedbe odgovarja enako kot prej, le na $j_0$-to poizvedbo odgovori z novo
@@ -2312,7 +2312,7 @@ pri prvem pogonu.
 
 \begin{opomba}
     V dejstvo, da nobena od prvih $r - 1$ podpisovalnih poizvedb v drugem pogonu ni temeljila na
-    $j_0$-ti zgoščevalni poizvedbi, temelji na predpostavki, da ne dovoljujemo hkranih podpisovalnih
+    $j_0$-ti zgoščevalni poizvedbi, temelji na predpostavki, da ne dovoljujemo hkratnih podpisovalnih
     poizvedb, ki je standardna pri dokazih z lemo o razcepu.
 \end{opomba}
 
@@ -2363,8 +2363,8 @@ Ker so dokazi znanja brez razkritja znanja o diskretnih logaritmih samo Schnorro
 uporabimo lemo o razcepu~\ref{izr:forking}, prek katere algoritem $A$ lahko previje napadalca
 $\mathcal{F}$ in prejme diskretni logaritem $s_{i_j}$, katerega znanje dokazuje $\mathcal{F}$.
 Ker vsi podpisniki za dokaz uporabijo enak izziv $H_3(X_1, I_1, \dots, X_L, I_L)$, se
-mora zgoditi samo en razcep, da algoritem $A$ alternativen izziv, na podlagi katerega lahko
-izračuna vse diskretne logaritme $s_{i_j}$.
+mora zgoditi samo en razcep, na podlagi katerega lahko algoritem $A$ izračuna vse diskretne
+logaritme $s_{i_j}$.
 
 Vprašanje, ki ostane, je časovna zahtevnost algoritma $A$. Standardne operacije podpisovanja
 so polinomske v varnostnem parametru $k$, zato so polinomske tudi za $A$. Prav tako so učinkoviti
@@ -2382,24 +2382,25 @@ tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
 
 \section{Primerjava navadnega in večstranskega Schnorrovega podpisa}
 \label{sec:primerjava}
-Naravno vprašanje, ki se pojavi ob omembi večstranskega Schnorrovega podpisa podskupin z odgovornostjo,
+Naravno vprašanje, ki se pojavi ob omembi večstranskega Schnorrovega podpisa podskupine z odgovornostjo,
 je, kakšne prednosti ponuja pred uporabo večih navadnih Schnorrovih podpisov. Najočitnejša prednost
 je, da skupinski podpis vrne en sam podpis, ki je primerljivo dolg s Schnorrovim, medtem ko uporaba
 individualnih podpisov pomeni, da mora preverjevalec preveriti toliko podpisov, kot je velika
-skupina. To je posebej uporabno v primerih, ko je preverjevalčev čas zelo omejen ali drag. Odličen
-primer je pri vseh aplikacijah, ki temeljijo na veriženju blokov, kjer preverjanje podpisov poteka
-">na verigi"<, torej je za vsako operacijo potrebno plačati.
+skupina. To prednost večstranskega podpisa je posebej pomembna v primerih, ko je preverjevalčev čas
+zelo omejen ali drag. Odličen primer je pri vseh aplikacijah, ki temeljijo na veriženju blokov, kjer
+preverjanje podpisov poteka ">na verigi"<, torej je za vsako operacijo potrebno plačati.
 
 Seveda pa je potrebno omeniti tudi slabosti večstranskega podpisa v primerjavi z navadnim. Najbolj
 očitna je, da morajo podpisniki med seboj komunicirati, kar lahko pomeni velike izgube časa. Uporabna
 vrednost večstranskih podpisov torej sloni na primerih, kjer je komunikacija enostavna, čas in
-računska moč preverjevalca pa izjemno dragocena.
+računska moč preverjevalca pa izjemno dragocena (ponovno so odličen primer aplikacije, ki slonijo
+na veriženju blokov).
 
 \subsection{Empirična analiza}
 Za empirično potrditev zgornjih trditev smo naredili program, ki implementira oba podpisa v nekoliko
 poenostavljenem okolju. Zanemarili smo čas komunikacije pri obeh verzijah podpisov, saj je to nezanesljiv
-podatek, ki je odvisen od okolja. Cilj primerjave je videti, kako se razlikuje čas podpisovanja
-pri različnem številu podpisnikov.
+podatek, ki je odvisen od okolja. Cilj primerjave je videti, kako se razlikuje čas izvedbe posameznih
+komponent podpisov pri različnem številu podpisnikov.
 
 Podpisa smo implementirali v programskem jeziku Go, vsa izvorna koda je na voljo na
 \href{https://github.com/timkalan/magisterij}{https://github.com/timkalan/magisterij}. Poskusi so
@@ -2410,7 +2411,7 @@ standardnim odklonom.
 
 Poskusi so bili narejeni z $1, 2, 5, 10, 20, 30, \dots, 200$ podpisniki. Velikost parametra $q$, ki
 določa grupo iz katere je generator, je bila $256$ bitov. Za zgoščevalno funkcijo smo uporabili
-\texttt{SHA-256}, ki je bila izbrana zaradi široke razširjenosti.
+\texttt{SHA-256}, ki je bila izbrana zaradi velike razširjenosti.
 
 \subsubsection{Generiranje ključev}
 Generiranje ključev se pri obeh podpisih začne enako. Vsi podpisniki morajo izbrati naključne zasebne
@@ -2424,7 +2425,7 @@ tudi potrebno samo enkrat generirati par ključev pri navadnem Schnorrovem podpi
   \centering
   \includegraphics[width=0.8\textwidth]{images/benchmark_KeyGeneration.pdf}
   \caption[Generiranje ključev.]{Primerjava časov generiranja ključev pri navadnem in večstranskem
-    Schnorrovem podpisu.}
+    Schnorrovem podpisu. Prikazan je skupen čas generiranja ključev za vse podpisnike.}
   \label{fig:generiranje}
 \end{figure}
 
@@ -2432,9 +2433,10 @@ Kot je razvidno iz slike~\ref{fig:generiranje}, je čas generiranja ključev pri
 mnogo daljši, ne glede na količino podpisnikov. Rast zahtevnosti v obeh primerih je linearna
 s številom podpisnikov, a je vseeno hitrejša pri večstranskem podpisu. V praksi je za večstranski
 podpis potrebno še več časa, saj smo tu zanemarili čas komunikacije, ki je v tem primeru linearen
-s številom podpisnikov. Ker pa se mora ta komunikacija zgoditi samo enkrat, jo tu zanemarimo. Za
-predstavo razlike, pri $100$ podpisnikih se za generiranje ključev pri navadnem podpisu porabita
-približno $2$ milisekundi, pri večstranskem pa $8$ milisekund, torej štirikrat več.
+s številom podpisnikov. Ker pa se mora ta komunikacija zgoditi samo enkrat, jo tu zanemarimo (ključe
+skupina ustvari le ob začetku sodelovanja). Za predstavo razlike, pri $100$ podpisnikih se za
+generiranje ključev pri navadnem podpisu porabita približno $2$ milisekundi, pri večstranskem pa
+$8$ milisekund, torej štirikrat več.
 
 Generiranje ključev predstavlja veliko prednost za uporabo navadnega Schnorrovega podpisa, vendar
 si moramo zapomniti, da je to postopek, ki ga mora skupina opraviti le enkrat, hkrati pa ne obremenjuje
@@ -2459,7 +2461,7 @@ iz naše analize na sliki~\ref{fig:podpisovanje} (kjer smo zanemarili čas komun
   \centering
   \includegraphics[width=0.8\textwidth]{images/benchmark_Signing.pdf}
   \caption[Podpisovanje.]{Primerjava časov podpisovanja pri navadnem in večstranskem
-    Schnorrovem podpisu.}
+    Schnorrovem podpisu. Prikazan je skupen čas podpisovanja za vse podpisnike.}
   \label{fig:podpisovanje}
 \end{figure}
 
@@ -2473,21 +2475,21 @@ Ena največjih prednosti večstranskega Schnorrovega podpisa je, da podpis vedno
 navaden podpis – ne glede na število podpisnikov. Edina dodatna naloga preverjevalca je preverjanje
 ustreznosti Merklovih korenov, kar pa je hitro in učinkovito.
 
-Tu se pojavi glavna prednost večstranskega Schnorrovega podpisa. Navaden podpis zahteva preverjanje
-vsakega podpisa posebej, kar pomeni, da efektivno dolžina podpisa raste linearno s številom podpisnikov.
-To pomeni, da tako raste tudi čas preverjanja. Prednost večstranskega podpisa lahko vidimo na
-sliki~\ref{fig:preverjanje}. Zahtevnost preverjanja navadnega podpisa narašča mnogo hitreje, kot
-zahtevnost večstranskega. Kljub veliki prednosti večstranskega Schnorrovega podpisa, vidimo, da
-zahtevnost vseeno ni linearna, temveč tudi linearno narašča. To je zato, ker implementacija podpisa
-vsakič, ko se podpis preveri, ponovno konstruira Merklovo drevo. V praksi to za zaporedne podpise
-enakih skupin ne bi bilo potrebno, saj bi preverjevalec enostavno lahko shranil Merklovo drevo,
-kar pomeni, da bi bilo preverjanje še toliko bolj učinkovito.
+Navaden Schnorrov podpis zahteva preverjanje vsakega podpisa posebej, kar pomeni, da efektivno
+dolžina podpisa raste linearno s številom podpisnikov. To pomeni, da tako raste tudi čas preverjanja.
+Prednost večstranskega podpisa lahko vidimo na sliki~\ref{fig:preverjanje}. Zahtevnost preverjanja
+navadnega podpisa narašča mnogo hitreje, kot zahtevnost večstranskega. Kljub veliki prednosti
+večstranskega Schnorrovega podpisa, vidimo, da zahtevnost vseeno ni konstantna, temveč tudi
+linearno narašča. To je zato, ker implementacija podpisa vsakič, ko se podpis preveri, ponovno
+konstruira Merklovo drevo. V praksi to za zaporedne podpise enakih skupin ne bi bilo potrebno,
+saj bi preverjevalec enostavno lahko shranil Merklovo drevo, kar pomeni, da bi bilo preverjanje še
+toliko bolj učinkovito.
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.8\textwidth]{images/benchmark_Verification.pdf}
   \caption[Preverjanje.]{Primerjava časov preverjanja veljavnosti podpisov pri navadnem in večstranskem
-    Schnorrovem podpisu.}
+    Schnorrovem podpisu. Prikazan je skupen čas preverjanja za vse podpisnike.}
   \label{fig:preverjanje}
 \end{figure}
 
@@ -2503,7 +2505,8 @@ na ta čas vplivajo posamezne operacije podpisa.
   \centering
   \includegraphics[width=0.8\textwidth]{images/benchmark_All.pdf}
   \caption[Celotni podpis.]{Primerjava časov celotnega postopka izvedbe podpisne sheme pri navadnem
-      in večstranskem Schnorrovem podpisu.}
+      in večstranskem Schnorrovem podpisu. Prikazan je skupen čas celotnega postopka za vse
+      podpisnike.}
   \label{fig:celotni}
 \end{figure}
 
@@ -2515,7 +2518,8 @@ podpisa v tem primeru.
   \centering
   \includegraphics[width=0.8\textwidth]{images/benchmark_SigningVerification.pdf}
   \caption[Podpisovanje in preverjanje.]{Primerjava časov podpisovanja in preverjanja veljavnosti
-    podpisov pri navadnem in večstranskem Schnorrovem podpisu.}
+    podpisov pri navadnem in večstranskem Schnorrovem podpisu. Prikazan je skupen čas podpisovanja
+    in preverjanja za vse podpisnike.}
   \label{fig:podpis-preverjanje}
 \end{figure}
 
@@ -2527,19 +2531,19 @@ linearno s številom podpisnikov za vse operacije.
 
 Kljub učinkovitosti pri preverjanju, ima večstranski Schnorrov podpis tudi nekatere pomanjkljivosti.
 Prva je kompleksnost generiranja ključev, ki zahteva interaktivno izmenjavo dokazov znanja in
-preverjanje Merklovega drevesa, kar je zamudno in težko razširljivo za zelo velike skupine.
-Druga težava je potreba po usklajeni komunikaciji pri podpisovanju — za vsak podpis so potrebni trije
-komunikacijski krogi, kar je lahko velik strošek v omrežjih z visoko zakasnitvijo ali nizko zanesljivostjo.
+preverjanje Merklovega drevesa, kar je zamudno in težko optimizirati za zelo velike skupine.
+Druga težava je potreba po usklajeni komunikaciji pri podpisovanju. Ker so za vsak podpis potrebni trije
+komunikacijski krogi, je to lahko velik strošek v omrežjih z visoko zakasnitvijo ali nizko zanesljivostjo.
 
 Izboljšali bi lahko tudi našo implementacijo: trenutno ne upoštevamo časa, ki se porabi za
 komunikacijo med podpisniki, kar je seveda lahko velik faktor. Tako smo se odločili, ker je glavna
 prednost večstranskih podpisov preverjanje, ki pa ne zahteva komunikacije. Prav tako bi lahko
 natančneje analizirali majhne spremembe pri posotpku, kot je na primer shranjevanje Merklovega drevesa
-med zaporednimi podpisi.
+med zaporednimi podpisi. Ta izboljšava bi jasno pokazala konstantnost časa preverjanja.
 
 
-\section{Razprava}
-\label{sec:razprava}
+\section{Sodobni pristopi k večstranskim podpisom}
+\label{sec:sodobno}
 
 \subsection{Varnost večstranskih podpisov v splošnem}
 \label{sec:varnost}
