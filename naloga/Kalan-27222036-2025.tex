@@ -195,10 +195,11 @@ vendar takrat še niso videi veliko uporabe. Velik napredek je bil dosežen, ko 
 $1989$ zamislil Schnorrov podpis~\cite{schnorr1989sig}, ki se je izkazal za posebno primernega za
 večstranske podpise. Še vedno pa so bili takšni podpisi zanimivi bolj iz teoretičnega vidika. Leta
 $2001$ se je pojavil prvi formalni model in dokaz varnosti za večstranske podpise, zahvaljujoč
-Micaliju, Ohti in Reyzinu~\cite{micali2001asm}. Prvi primer široke uporabe se je pojavil z Bitcoinom.
-Njegova popularnost je tudi popularizirala raziskovanje večstranskih podpisov, leta $2020$ je izšel
-podpis MuSig2~\cite{jonas2020musig2}, ki je bil prvi večstranski podpis, ki je bil primerno učinkovit
-za uporabo v Bitcoin omrežju. Široko je uporabljen še danes.
+Micaliju, Ohti in Reyzinu~\cite{micali2001asm}. Prvi primer široke uporabe se je pojavil z
+Bitcoinom~\cite{nakamoto2009bitcoin}. Njegova popularnost je tudi popularizirala raziskovanje
+večstranskih podpisov, leta $2020$ je izšel podpis MuSig2~\cite{jonas2020musig2}, ki je bil prvi
+večstranski podpis, ki je bil primerno učinkovit za uporabo v Bitcoin omrežju. Široko je uporabljen
+še danes.
 
 V poglavju~\ref{sec:osnove} najprej predstavimo kriptografske osnove, ki so potrebne za razumevanje besedila.
 To zajema modularno aritmetiko in grupe, zgoščevalne funkcije, kriptografijo javnega ključa, nekaj
@@ -1589,7 +1590,7 @@ $$
 I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \pmod p.
 $$
 To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj se bodo pri množenju v
-enačbi~\ref{eq:naive-ver} za preverjanje tako izničil vsi ostali javni ključi.
+enačbi~\eqref{eq:naive-ver} za preverjanje tako izničil vsi ostali javni ključi.
 
 Za rešitev tega problema se lahko zanesemo na dokaze o znanju brez razkritja znanja.
 Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg
@@ -1602,7 +1603,7 @@ Ker tovrstni dokazi brez preverjevalca nimajo smisla, se na tej točki vredno vp
 veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe.
 Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka
 sprememba podaljša javne ključe in privede do izgube učinkovitosti. Preverjanje veljavnosti podpisa 
-bo sedaj poleg dveh modularnih potenciranj, ki sta v enačbi~\ref{eq:schnorr-ver} potrebni za
+bo sedaj poleg dveh modularnih potenciranj, ki sta v enačbi~\eqref{eq:schnorr-ver} potrebni za
 preverjanje standarnega Schnorrovega podpisa, potrebovalo še dodatnih $2|S|$, saj je potrebno
 preveriti vse dokaze javnih ključev, kar ustreza preverjanju $|S|$ Schnorrovih podpisov. Posamezni
 preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat za vsako skupino, če natančno beleži
@@ -2541,33 +2542,76 @@ prednost večstranskih podpisov preverjanje, ki pa ne zahteva komunikacije. Prav
 natančneje analizirali majhne spremembe pri posotpku, kot je na primer shranjevanje Merklovega drevesa
 med zaporednimi podpisi. Ta izboljšava bi jasno pokazala konstantnost časa preverjanja.
 
-
 \section{Sodobni pristopi k večstranskim podpisom}
 \label{sec:sodobno}
+Razvoj večstranskih podpisov se je začel v osemdesetih letih prejšnjega stoletja, ko sta Nakamura
+in Itakura~\cite{itakura1983multi} predstavila prvi večstranski podpis. Do leta $2001$ nihče ni
+uspel dokazati varnosti večstranskega podpisa, niti ni nihče predstavil formalnega modela za
+tovrstne podpise. Takrat so Micali, Ohta in Reyzin~\cite{micali2001asm} predstavili večstranske
+podpise podskupine z odgovornostjo in pokazali njihovo varnost v modelu slučajnega oraklja.
+
+Glavna pomanjkljivost njihovega modela je bila, da so podpisi zahtevali tri kroge komunikacije, kar
+se je za praktično uporabo izkazalo za nedopustno. Glavna težnja razvoja večstranskih podpisov je
+tako postala zmanjšanje števila potrebnih krogov komunikacije. V zadnjih letih se je pojavilo več
+shem, ki so obljubljale prav to~\cite{drijvers2019security, jonas2020musig2}.
+
+Cena zmanjšanja količine potrebne komunikacije pa je očitno bila opustitev lastnosti \textit{odgovornosti}
+in \textit{prilagodljivosti}. Novejši večstranski podpisi še vedno predstavljajo dokaz, da je neka
+skupina skupno podpisala sporočilo, vendar ne razkrivajo, kdo je bil član skupine. V zameno za to
+pa so sposobni vrniti kratke podpise, ki so v nekaterih primerih celo popolnoma enaki navadnim
+Schnorrovim podpisom~\cite{jonas2020musig2}.
+
+V nadaljevanju poglavja se najprej pogovorimo o varnostnih problemih večstranskih podpisov z dvema
+krogoma komunikacije, nato pa predstavimo MuSig2, moderno, varno in učinkovito shemo, ki je v
+uporabi danes.
 
 \subsection{Varnost večstranskih podpisov v splošnem}
 \label{sec:varnost}
-Potreba po učinkovitosti je pripeljala avtorje do podpisov, ki potrebujejo le dva kroga. Potem je 
-Drijvers pokazal, da so vse take sheme nevarne.
+Tekom let je bilo predstavljenih več shem večstranskih podpisov, ki so za podpisovanje potrebovale
+le dva kroga komunikacije med podpisniki in so temeljilena Schnorrovem podpisu. Večina je vsebovala
+tudi dokaze varnosti, katerih podlaga je prav formalni model, ki smo ga predstavili v
+poglavju~\ref{sec:multischnorr}, dejanski dokazi pa so bili mnogo kompleksnejši in daljši od 
+predstavljenega.
+
+Glavni cilj modernih večstranskih Schnorrovih podpisov je eliminirati prvi krog komunikacije
+pri podpisovanju, torej izračuna in izmenjave zavez $X_i$. Pristopov k temu je bilo več, prav vsi
+pa so se izkazali za problematične, vsaj dokler ostajamo pri Schnorrovih podpisih in modelu
+slučajnega oraklja.
+
+Uporabo katerekoli novejše sheme v praksi pa so preprečili Drijvers et al.~\cite{drijvers2019security},
+ko so pokazali, da so imeli prav vsi večstranski podpisi z dvema krogoma komunikacije varnostno
+luknjo. Dokazali niso samo, da so bili dokazi varnosti pomanjkljivi, temveč tudi, da predstavljene
+sheme niso varne (vsaj ne z uporabo poznanih metod dokazovanja). Še več, predstavili so tudi napad
+na te sheme, ki ima polinomsko časovno zahtevnost. Temeljni problem so predstavljali hkratni podpisi,
+ki jih prejšnji dokazi niso dopuščali. Specifično, napad temelji na tem, da napadalec napade več
+podpisovanj hkrati.
+
+Seveda pa je dokaz nevarnosti zajel samo do tedaj poznane metode. Kasneje je raziskovalcem uspelo
+ustvariti podpis, ki zaobide težave prejšnjih shem in je (zaenkrat) dokazano varen. Podpis MuSig2
+je predstavljal velik preboj, saj vrača podpise, ki so popolnoma enaki Schnorrovim. Med drugim to
+pomeni, da lahko njihovo veljavnost preverimo z uporabo Schnorrovee enačbe za preverjanje
+podpisov~\eqref{eq:schnorr-ver}.
 
 \subsection{MuSig2}
 \label{sec:musig2}
-Zaradi nedavne popularizacije Schnorrovega podpisa se je zelo veliko dela vložilo v razvoj večstranskega
-podpisa, ki vrača popolnoma enake podpise, kot navaden Schnorrov podpis in je hkrati preverljiv
-z navadno Schnorrovo enačbo za preverjanje podpisov~\eqref{eq:schnorr-ver}. 
+Zaradi popularnosti in enostavnosti Schnorrovih podpisov, se je pojavila težnja po razvoju večstranskega
+podpisa, ki je učinkovit, varen in vrača Schnorrove podpise. Obstoj takega podpisa pomeni takojšnjo
+priložnost za uporabo v vseh aplikacijah, ki temeljijo na Schnorrovih podpisih (recimo Bitcoin po
+nadgradnji Taproot). Prvi podpis, ki je izpolnjeval vse te pogoje, je bil MuSig2, ki so ga leta $2020$
+predstavili Jonas, Ruffing in Seurin~\cite{jonas2020musig2}.
 
-Prva izboljšava v primerjav z zgoraj definiranim podpisom je bila odstranitev enega izmed krogov
-podpisovanja. To predstavlja bistveno izboljšavo pri hitrosti podpisovanja, saj je komunikacija
-med podpisniki daleč najdražja operacija. Prvih nekaj poskusov se je izkazalo za dokazljivo nevarne
-(vsaj z uporabo standardnih metod)~\cite{drijvers2019security}. Z uporabo vpogledov iz dokaza pa je 
-Jonasu, Ruffingu in Seurinu~\cite{jonas2020musig2} uspelo narediti podpis, ki lahko enostavno zamenja
-Schnorrovega, je ućinkovit in dokazano varen v modelu slučajnega oraklja.
+Pred pojavom MuSig2 so obstajali drugi večstranski podpisi, ki so vračali Schnorrove podpise, vendar
+so zahtevali tri kroge komunikacije, ali pa so vsaj preprečevali hkratne podpise. V tem razdelku
+predstavimo glavne komponente in ideje MuSig2. Podpis je dokazano varen v modelu slučajnega oraklja,
+vendar bomo dokaz varnosti izpustili, saj je zelo kompleksen. Osredotočili se bomo na razlike med
+predstavljenim večstranskim Schnorrovim podpisom in MuSig2.
 
-\subsection{Konstrukcija}
-Podpis MuSig2 temelji na enaki naivni shemi, kot večstranski Schnorrov podpis. Večstranski Schnorrov
-podpis je glavno težavo naivne konstrukcije, torej napad na generiranje ključev, reševal z zahtevo
-po priložitvi dokaza znanja brez razkritja znanja o privatnih ključih posameznikov. To je pomenilo
-velike izgube, kar se tiče učinkovitosti podpisovanja in velikosti ključev.
+% \subsection{Konstrukcija}
+% Podpis MuSig2 temelji na enaki naivni shemi, kot večstranski Schnorrov podpis. Večstranski Schnorrov
+% podpis je glavno težavo naivne konstrukcije, torej napad na generiranje ključev, reševal z zahtevo
+% po priložitvi dokaza znanja brez razkritja znanja o privatnih ključih posameznikov. To je pomenilo
+% velike izgube, kar se tiče učinkovitosti podpisovanja in velikosti ključev.
+
 
 % \section{Tehnični napotki za pisanje}
 %
