@@ -2723,8 +2723,8 @@ sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo o
         ($1 \le i \le L$) izračuna
         \begin{align*}
             b &= H_{non}(\tilde{I} || X_1 || X_2 || \dots || X_\nu || m), \\
-            X &= \prod_{j=1}^\nu X_j^{b^{j-1}}, \\
-            a &= H_{sig}(\tilde{I} || X || m), \\
+            \tilde{X} &= \prod_{j=1}^\nu X_j^{b^{j-1}}, \\
+            a &= H_{sig}(\tilde{I} || \tilde{X} || m), \\
             y_i &= a s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j} \bmod p.
         \end{align*}
         Krajše zapišemo
@@ -2733,14 +2733,14 @@ sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo o
         $$
         Vrednosti $y_i$ so poslane podpisniku $D$, ki izračuna vsoto
         $$
-        y = \sum_{i=1}^L y_i \bmod p = \mathcal{S}\mathcal{A}_2(y_i | 1 \le i \le L).
+        \tilde{y} = \sum_{i=1}^L y_i \bmod p = \mathcal{S}\mathcal{A}_2(y_i | 1 \le i \le L).
         $$
 
     \item \textbf{Končni korak}:
         Če je podpisnik $D$, tisti, ki bo vrnil podpis, ima na tem mestu vse potrebne podatke.
         Enostavno vrne podpis
         $$
-        \sigma = (X, y) = \mathcal{S}_3(X, y).
+        \sigma = (\tilde{X}, \tilde{y}) = \mathcal{S}_3(X, y).
         $$
         sporočila $m$.
 \end{itemize}
