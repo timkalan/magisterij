@@ -2645,13 +2645,6 @@ Krajše lahko zapišemo
 $$
 ((G, p, g), H_{agg}, H_{non}, H_{sig}) = \mathcal{P}(k).
 $$
-% Za lažjo obravnavo si izberemo še enega izmed podpisnikov, in ga označimo z $D$. Ta podpisnik bo
-% vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. $D$ lahko tudi predstavlja vse podpisnike,
-% a je opis sheme malce lažji, če si izberemo enega -- v tem primeru je on prejemnik vseh sporočil
-% ostalih podpisnikov, svoje odgovore pa potem oddaja (angl.\ \textit{broadcast}) ostalim podpisnikom.
-% Če si ne izberemo podpisnika $D$, si podpisniki sporočila pošiljajo v krogu (vsak pošlje svoje sporočilo
-% desnemu sosedu, ko prejme sporočilo levega, spet pošlje desnemu. Vsak torej pošlje $L$ sporočil, na
-% koncu imajo vsi vse potrebne podatke za izračune).
 
 \subsubsection{Generiranje ključev}
 Na tem mestu se pojavi prva velika prednost MuSig2. Večstranski Schnorrov podpis je preprečil napad
@@ -2671,37 +2664,86 @@ $$
 (I_i, s_i) = \mathcal{G}(G, p, g).
 $$
 
+Da je MuSig2 dejansko lahko uporabljen kot navaden Schnorrov podpis, je potrebna še \textit{agregacija}
+javnih ključev. Naj $\{I_1, I_2, \dots, I_L\}$ označuje množico vseh javnih ključev vseh podpisnikov v
+skupini $P$. Za agregacijo ključev najprej vsak podpisnik $P_i$ z javnim ključem $I_i$ ($1 \le i \le L$)
+izračuna \textit{koeficient agregacije} $c_i$:
+$$
+c_i = H_{agg}(\{I_1, I_2, \dots, I_L\} || I_i).
+$$
+\textit{Agregirani javni ključ} skupine $P$ je nato
+$$
+\tilde{I} = \prod_{i=1}^L I_i^{c_i}.
+$$
+
+Agregacijo lahko izvede torej kdorkoli, ki pozna vse javne ključe podpisnikov. Če to delajo podpisniki
+sami, je tu potreben en krog komunikacije. Funkcijo agregacije označimo z $\mathcal{A}$, torej
+lahko zapišemo
+$$
+\tilde{I} = \mathcal{A}(I_1, I_2, \dots, I_L) = \prod_{i=1}^L I_i^{c_i}.
+$$
+
 \subsubsection{Podpisovanje}
 Ker vsa varnost MuSig2 sloni na podpisovanju, je ta del malo kompleksnejši, a vseeno zelo učinkovit.
-% Naj bo $S = \{P_{id_1}, P_{id_2}, \dots, P_{id_l}\}$ podskupina velikosti $l$ skupine $P$, ki želi
-% večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikacije:
-% \begin{enumerate}
-%     \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ si izbere naključno število $r_j \in [0, q - 1]$ 
-%         in izračuna zavezo
-%         $$ 
-%         X_j = g^{r_j} \bmod p.
-%         $$
-%         Zavezo $X_j$ nato pošlje podpisniku $D$.
-%     \item $D$ izračuna skupno zavezo
-%         $$ 
-%         \tilde{X} = (X_1 \cdot X_2 \cdot \cdots \cdot X_l) \bmod p
-%         $$
-%         in jo pošlje vsem podpisnikom $P_{id_j} (1 \le j \le l)$.
-%     \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ izračuna
-%         \begin{align*}
-%             e &= H_5(\tilde{X} || m || S), \\
-%             y_j &= e s_j + r_j
-%         \end{align*}
-%         in pošlje $y_j$ podpisniku $D$.
-% \end{enumerate}
-% Na tem mestu ima $D$ vse, kar potrebuje, da dokonča podpis. Najprej izračuna
-% $$
-% \tilde{y} = (y_1 + y_2 + \cdots + y_l) \bmod q
-% $$
-% in nato vrne končni podpis
-% $$
-% \sigma = (\tilde{X}, \tilde{y}).
-% $$
+Kot omenjeno, podpisovanje poteka v dveh krogih. Vsak krog je sestavljen iz korakov podpisovanja
+in agregaicje, ki ju označimo z $\mathcal{S}_i$ in $\mathcal{S}\mathcal{A}_i$ (za $i = 1, 2$). Po
+komunikaciji je potreben še zadnji korak podpisovanja, ki ga označimo z $\mathcal{S}_3$.
+
+Velika varnostna pomanjkljivost preteklih večstranskih podpisov z dvema krogoma komunikacije je bila
+izbira ene same naključne vrednosti tekom podpisovanja. MuSig2 uporablja več takšnih vrednosti, pri
+sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo označili z $\nu \geq 2$.
+\begin{itemize}
+    \item \textbf{Prvi krog}:
+        Vsak podpisnik $P_i$ ($1 \le i \le L$) si izbere $\nu$ naključnih
+        vrednosti $r_{1, i, j} \in \Z_p$ ($1 \le j \le \nu$) in izračuna zaveze
+        $$
+        X_{1, i, j} = g^{r_{1, i, j}},
+        $$
+        ki jih pošlje podpisniku $D$. Ta torej od vsakega podpisnika $P_i$ prejme množico zavez
+        $\{X_{1, i, j} | 1 \le j \le \nu\}$, iz katerih za vsak $j$ $(1 \le j \le \nu)$ izračuna
+        $$
+        X_j = \prod_{i=1}^L X_{1, i, j}.
+        $$
+        Končni rezultat prvega kroga so zaveze $\{X_j | 1 \le j \le \nu\}$.
+
+        Zapišemo lahko torej
+        \begin{align*}
+            (X_{1, i, 1}, X_{1, i, 2}, \dots, X_{1, i, \nu}) &= \mathcal{S}_1(P_i), \\
+            (X_1, X_2, \dots, X_\nu) &= \mathcal{S}\mathcal{A}_1(X_{1, i, j} | 1 \le i \le L, 1 \le j \le \nu).
+        \end{align*}
+        Lepa lastnost tega koraka je, da lahko podpisniki izračunajo zaveze $X_{1, i, j}$, preden je
+        sploh znano s kom bodo podpisovali in preden se izbere sporočilo $m$. Ko je enkrat skupina
+        ustvarjena, lahko izvedejo še korak $\mathcal{S}\mathcal{A}_1$, ponovno brez vednosti o
+        sporočilu $m$.
+
+    \item \textbf{Drugi krog}:
+        Vsak podpisnik na te mestu potrebuje agregirani javni ključ $\tilde{I}$, ki ga lahko izračuna
+        z algoritmom $\mathcal{A}$ in svoj koeficient agregacije $c_i$. Prav tako potrebujejo rezulat
+        prvega kroga, torej zaveze $\{X_j | 1 \le j \le \nu\}$ in sporočilo $m$. Vsak podpisnik $P_i$
+        ($1 \le i \le L$) izračuna
+        \begin{align*}
+            b &= H_{non}(\tilde{I} || X_1 || X_2 || \dots || X_\nu || m), \\
+            X &= \prod_{j=1}^\nu X_j^{b^{j-1}}, \\
+            a &= H_{sig}(\tilde{I} || X || m), \\
+            y_i &= a s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j} \bmod p.
+        \end{align*}
+        Krajše zapišemo
+        $$
+        y_i = \mathcal{S}_2(P_i, \tilde{I}, X_1, X_2, \dots, X_\nu, m).
+        $$
+        Vrednosti $y_i$ so poslane podpisniku $D$, ki izračuna vsoto
+        $$
+        y = \sum_{i=1}^L y_i \bmod p = \mathcal{S}\mathcal{A}_2(y_i | 1 \le i \le L).
+        $$
+
+    \item \textbf{Končni korak}:
+        Če je podpisnik $D$, tisti, ki bo vrnil podpis, ima na tem mestu vse potrebne podatke.
+        Enostavno vrne podpis
+        $$
+        \sigma = (X, y) = \mathcal{S}_3(X, y).
+        $$
+        sporočila $m$.
+\end{itemize}
 
 \subsubsection{Preverjanje}
 Z uporabo agregacije javnih ključev, postane preverjanje podpisa MuSig2 zelo enostavno, saj je
@@ -2717,61 +2759,17 @@ $$
 da preveri veljavnost podpisa. Enačba res preveri veljavnost podpisa, po enakem argumentu kot pri
 navadnem Schnorrovem podpisu.
 
-% \subsection{Konstrukcija}
-% Podpis MuSig2 temelji na enaki naivni shemi, kot večstranski Schnorrov podpis. Večstranski Schnorrov
-% podpis je glavno težavo naivne konstrukcije, torej napad na generiranje ključev, reševal z zahtevo
-% po priložitvi dokaza znanja brez razkritja znanja o privatnih ključih posameznikov. To je pomenilo
-% velike izgube, kar se tiče učinkovitosti podpisovanja in velikosti ključev.
+\subsection{Sklepne misli}
+Podpis MuSig2 predstavlja pomemben korak v razvoju večstranskih podpisov. V primerih, ko želimo, da
+se celotna skupina dokazljivo strinja s sporočilom, a ne želimo razkriti članov, je MuSig2 odlična
+izbira. Poleg učinkovitosti in varnosti, je za praktično uporabo pomembno tudi, da vrača Schnorrove
+podpise.
 
+Če pa želimo podpisno shemo, ki omogoča popolno prilagodljivost in odgovornost, pa je (vsaj zaenkrat)
+potrebno uporabiti tri kroge komunikacije in podpis kot je recimo večstranski Schnorrov podpis. Čeprav
+ni najbolj učinkovit, je predstavljal prvi korak k razvoju MuSig2, saj so njegovi avtorji prvi, ki so
+predstavili formalni model in dokazali varnost večstranskih podpisov.
 
-% \section{Tehnični napotki za pisanje}
-%
-% \subsection{Sklicevanje in citiranje}
-% Za sklice uporabljamo \verb|\ref|, za sklice na enačbe \verb|\eqref|, za citate \verb|\cite|. Pri
-% sklicevanju in citiranju sklicano številko povežemo s prejšnjo besedo z nedeljivim presledkom
-% $\sim$, kot npr.\ \verb|iz trditve~\ref{trd:obstoj-omega} vidimo|.
-%
-% \begin{primer}
-%   Zaporedje~\eqref{eq:zero-kompleks} iz dokaza trditve~\ref{trd:obstoj-omega} na
-%   strani~\pageref{trd:obstoj-omega} lahko najdemo tudi v Spletni enciklopediji zaporedij~\cite{oeis}.
-%   Citiramo lahko tudi bolj natančno~\cite[trditev 2.1, str.\ 23]{lebedev2009introduction}.
-% \end{primer}
-%
-% \subsection{Okrajšave}
-% Pri uporabi okrajšav \LaTeX{} za piko vstavi predolg presledek, kot npr. tukaj. Zato se za vsako
-% piko, ki ni konec stavka doda presledek običajne širine z ukazom \verb*|\ |, kot npr.\ tukaj.
-% Primerjaj z okrajšavo zgoraj za razliko.
-%
-% \subsection{Vstavljanje slik}
-% Sliko vstavimo v plavajočem okolju \texttt{figure}. Plavajoča okolja \emph{plavajo} po tekstu, in
-% jih lahko postavimo na vrh strani z opcijskim parametrom `\texttt{t}', na lokacijo, kjer je v kodi s
-% `\texttt{h}', in če to ne deluje, potem pa lahko rečete \LaTeX u, da ga \emph{res} želite tukaj,
-% kjer ste napisali, s `\texttt{h!}'. Lepo je da so vstavljene slike vektorske (recimo \texttt{.pdf}
-% ali \texttt{.eps} ali \texttt{.svg}) ali pa \texttt{.png} visoke resolucije (več kot
-% \unit[300]{dpi}).  Pod vsako sliko je napis in na vsako sliko se skličemo v besedilu. Primer
-% vektorske slike je na sliki~\ref{fig:sample}. Vektorsko sliko prepoznate tako, da močno
-% zoomate v sliko, in še vedno ostane gladka. Več informacij je na voljo na
-% \url{https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions}. Če so slike bitne, kot na
-% primer slika~\ref{fig:image}, poskrbite, da so v dovolj visoki resoluciji.
-%
-% \begin{figure}[h]
-%   \centering
-%   \includegraphics[width=0.6\textwidth]{images/sample.pdf}
-% % \caption[caption za v kazalo]{Dolg caption pod sliko}
-%   \caption[Primer vektorske slike.]{Primer vektorske slike z oznakami v enaki pisavi, kot jo
-%      uporablja \LaTeX{}.  Narejena je s programom Inkscape, \LaTeX{} oznake so importane v
-%      Inkscape iz pomožnega PDF.}
-%   \label{fig:sample}
-% \end{figure}
-%
-% \begin{figure}[h]
-%   \centering
-%   \includegraphics[width=0.8\textwidth]{images/image.png}
-%   \caption[Primer bitne slike.]{Primer bitne slike, izvožene iz Matlaba. Poskrbite, da so slike v
-%   dovolj visoki resoluciji in da ne vsebujejo prosojnih elementov (to zahteva PDF/A-1b format).}
-%   \label{fig:image}
-% \end{figure}
-%
 % \subsection{Kako narediti stvarno kazalo}
 % Dodate ukaze \verb|\index{polje}| na besede, kjer je pojavijo, kot tukaj\index{tukaj}.
 % Več o stvarnih kazalih je na voljo na \url{https://en.wikibooks.org/wiki/LaTeX/Indexing}.
