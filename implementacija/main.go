@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"multisig/asm"
 	"multisig/config"
+	"multisig/musig2"
 	"multisig/schnorr"
 )
 
@@ -14,9 +15,12 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Schnorr Signature Example")
+	fmt.Println("\nSchnorr Signature Example")
 	schnorr.SchnorrDemo(bitLength, hash)
 
-	fmt.Println("ASM Signature Example")
+	fmt.Println("\nASM Signature Example")
 	asm.ASMDemo(bitLength, hash, nSigners)
+
+	fmt.Println("\nMuSig2 Signature Example")
+	musig2.MuSig2Demo(bitLength, hash, nSigners)
 }
