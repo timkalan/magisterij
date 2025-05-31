@@ -87,7 +87,7 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 	for i := range nSigners {
 		y := new(big.Int).Mul(e, keys[i].privateKey)
 		y.Add(y, rs[i])
-		// y.Mod(y, params.Q)
+		y.Mod(y, params.Q)
 
 		ys[i] = y
 	}
@@ -101,7 +101,7 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 		rhs.Mod(rhs, params.P)
 
 		if lhs.Cmp(rhs) != 0 {
-			return nil, fmt.Errorf("The ZKPoK is not valid: %d", j)
+			return nil, fmt.Errorf("the ZKPoK is not valid: %d", j)
 		}
 	}
 
@@ -114,13 +114,13 @@ func generateKeys(params *config.Params, nSigners uint) ([]*keyPair, error) {
 
 	merkleTree, err := utils.NewMerkleTree(params, publicKeys)
 	if err != nil {
-		return nil, fmt.Errorf("Failed generating Merkle tree: %v", err)
+		return nil, fmt.Errorf("failed generating Merkle tree: %v", err)
 	}
 
 	for i := range nSigners {
 		path, err := merkleTree.GetAuthenticationPath(params, int(i))
 		if err != nil {
-			return nil, fmt.Errorf("Failed getting authentication path: %v", err)
+			return nil, fmt.Errorf("failed getting authentication path: %v", err)
 		}
 		keys[i].merkleTreePath = path
 	}
@@ -176,7 +176,7 @@ func sign(
 	for i := range nSigners {
 		y := new(big.Int).Mul(e, keys[i].privateKey)
 		y.Add(y, rs[i])
-		// y.Mod(y, params.Q)
+		y.Mod(y, params.Q)
 
 		ys[i] = y
 	}
@@ -200,7 +200,7 @@ func verify(params *config.Params, keys []*keyPair, message []byte, sig *signatu
 
 	merkleTree, err := utils.NewMerkleTree(params, publicKeys)
 	if err != nil {
-		return false, fmt.Errorf("Failed generating Merkle tree: %v", err)
+		return false, fmt.Errorf("failed generating Merkle tree: %v", err)
 	}
 
 	for i := range nSigners {

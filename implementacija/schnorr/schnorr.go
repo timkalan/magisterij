@@ -46,7 +46,7 @@ func sign(params *config.Params, privateKey *big.Int, message []byte) (*signatur
 
 	// Calculate challenge e = H(X || message)
 	e := utils.HashData(params, [][]byte{X.Bytes(), message})
-	// e.Mod(e, params.q)
+	e.Mod(e, params.Q)
 
 	// Calculate y = es + r mod q
 	y := new(big.Int).Mul(e, privateKey)
@@ -59,6 +59,7 @@ func sign(params *config.Params, privateKey *big.Int, message []byte) (*signatur
 func verify(params *config.Params, publicKey *big.Int, message []byte, sig *signature) bool {
 	// Calculate e' = H(X' || message)
 	e := utils.HashData(params, [][]byte{sig.X.Bytes(), message})
+	e.Mod(e, params.Q)
 
 	// check whether g^y' =?= X' I^e'
 	lhs := new(big.Int).Exp(params.G, sig.y, params.P)
