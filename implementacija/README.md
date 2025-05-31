@@ -1,7 +1,11 @@
 # Primerjava podpisov
 
-V tej mapi se nahajajo implementacije navadnega Schnorrovega podpisa, večstranskega ASM podpisa
-in večstranskega MuSig2 podpisa. Poleg tega se nahaja tudi primerjava njihove hitrosti, s ciljem
+V tej mapi se nahajajo implementacije
+- navadnega Schnorrovega podpisa,
+- večstranskega ASM podpisa,
+- večstranskega MuSig2 podpisa. 
+
+Poleg tega se nahaja tudi primerjava njihove hitrosti, s ciljem
 videti koliko ljudi mora sodelovati pri skupinskem podpisu, da je potrebnega manj dela, kot če bi
 se enostavno vsak član skupine individualno podpisal.
 
@@ -30,7 +34,12 @@ Da poženemo celovito primerjavo med implementiranimi podpisi lahko poženemo sk
 run_benchmarks.sh BENCHMARK PONOVITVE
 ```
 
+## Vizualizacija
+
+Implementirali smo tudi orodje za vizualizacijo rezultatov
+
 ## Potencialna vprašanja
+
 - Koliko časa traja ustvarjanje/preverjanje $n$ individualnih podpisov v primerjavi z večstranskim
 podpisom skupine velikosti $n$?
 - Koliko podpisov je lahko ustvarjenih/preverjenih na sekundo?
@@ -42,4 +51,5 @@ podpisom)?
 - Odpornost na napake.
 
 ## Opombe
+
 - Rezultate preizkusov lahko primerjamo z `benchstat`.
