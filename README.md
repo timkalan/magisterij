@@ -1,4 +1,4 @@
-# Magistrsko delo: Večstranski podpisi
+# Večstranski Schnorrovi podpisi
 
 Repozitorij za magistrsko delo na drugi stopnji IŠRM.
 
