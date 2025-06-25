@@ -321,7 +321,7 @@ V grobem so (kriptografske) \textit{zgoščevalne funkcije} take funkcije, ki pr
 niz (ki lahko predstavlja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima
 vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. Namen zgoščevalnih funkcij je
 za dokument ustvariti kratek niz, ki unikatno identificira dokument. Želimo si, da je v praksi
-nemogoče najti dva različna niza z enako zgostitvijo. Natančno pa zgoščevalne funkcij  definiramo:
+nemogoče najti dva različna niza z enako zgostitvijo. Natančno zgoščevalne funkcije definiramo:
 
 \begin{definicija}
 \label{def:hash}
@@ -330,7 +330,8 @@ nemogoče najti dva različna niza z enako zgostitvijo. Natančno pa zgoščeval
     vnaprej določene dolžine $n$. Zadoščati mora naslednjim lastnostim:
     \begin{itemize}
         \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
-            zgostitve. Zapišemo lahko $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
+            zgostitve, tj.\ $H$ je funkcija in ne naključni algoritem. Zapišemo lahko
+            $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
         \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
             času. Izračun zgostitve mora biti računsko učinkovit. Običajno tu zahtevamo, da je časovna
             zahtevnost funkcije $H$ polinomska v dolžini vhodnega niza.
@@ -340,12 +341,11 @@ nemogoče najti dva različna niza z enako zgostitvijo. Natančno pa zgoščeval
         \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
             zelo težko najdemo drug niz z enako zgostitvijo. Če torej poznamo niz $m_1$ z zgostitvijo
             $h_1$, je računsko neizvedljivo najti zgostitev $m_2$, da velja $H(m_2) = h_1$.
-        \item \textbf{Skoraj brez trčenj} oz.\ \textbf{odpornost na trčenja} pomeni, da je verjetnost,
-            da imata dva izraza enako zgostitev, majhna. Želimo, da je računsko neizvedljivo
-            najti dva niza  $m_1$ in $m_2$, ki imata enako zgostitev, oz.,\ da velja $H(m_1) = H(m_2)$.
-        \item \textbf{Učinek plazu} pomeni, da vsaka sprememba v vhodnem nizu povzroči veliko spremembo 
-            v zgostitvi. Ob katerikoli spremembi se vsak bit zgostitve se spremeni z verjetnostjo 
-            vsaj $1/2$.
+        \item \textbf{Odpornost na trčenja} pomeni, da je računsko neizvedljivo najti dva niza $m_1$
+            in $m_2$, ki imata enako zgostitev, oz.,\ da velja $H(m_1) = H(m_2)$.
+        \item \textbf{Učinek plazu} pomeni, da vsaka sprememba v vhodnem nizu povzroči veliko in
+            nepredvidljivo spremembo v zgostitvi. Če spremenimo en bit v vhodnem nizu, v povprečju
+            pričakujemo, da se spremeni polovica bitov v zgostitvi.
     \end{itemize}
 \end{definicija}
 
@@ -437,13 +437,13 @@ samo ustrezen zasebni ključ. Tako zagotovimo varno komunikacijo.
 
     Ko prejmemo šifrirano sporočilo $c$, ga dešifriramo tako, da izračunamo
     $$
-    m = c^d \bmod{n} = 218^{235} \bmod{391} = 10.   
+    m = c^d \bmod{n} = 218^{235} \bmod{391} = 10.
     $$
 \end{primer}
 
 Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega ključa omogočila tudi
 \textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo transakcijo ali dostopamo do katerekoli
-spletne strani. Delujejo na podoben način, kot šifriranje z javnim ključem, le da najprej uporabimo
+spletne strani. Delujejo na podoben način kot šifriranje z javnim ključem, le da najprej uporabimo
 zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Velikokrat sta šifrianje
 in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, ki ga lahko prebere le oseba,
 kateri je namenjeno, hkrati pa lahko preveri, da je res prišlo od nas.
@@ -457,7 +457,7 @@ za digitalno podpisan dokument prepričani, da ga je res podpisal lastnik točno
 
 Podpis dokumenta poteka nekoliko drugače, kot pri ročnih podpisih. Pri ročnem podpisu ta postane del
 dokumenta, digitalni podpis pa je od njega ločen, vseeno pa nastane s pomočjo zgostitve podpisanega
-dokumenta, zato bo podpis za dva različna dokumenta vedno drugačen (dokler uporabimo varno zgoščevalno
+dokumenta. Zato bo podpis za dva različna dokumenta vedno drugačen (dokler uporabimo varno zgoščevalno
 funkcijo).
 
 Ostane še vprašanje preverjanja avtentičnosti podpisa. Pri ročnem podpisu to lahko storimo prek 
@@ -469,11 +469,11 @@ lahko s pomočjo ujemajočega javnega ključa preverimo avtentičnost.
 Da se lažje pogovarjamo o kriptografskih sistemih, je smotrno definirati, kaj točno so deležniki,
 kot so podpisnik, preverjevalec in napadalec. V kriptografskih besedilih so pogosto definirani kot
 verjetnostni Turingovi stroji, mi pa se bomo izognili tej formalizaciji in se pogovarjali enostavno
-o \textit{naključnostnih algoritmih}. To so navadni, deterministični algoritmi, ki imajo dostop do
-dodatnega parametra, \textit{vira naključnih bitov} $\omega$. Ta vir si lahko predstavljamo kot zelo
-dolg seznam naključnih bitov, ki ga algoritem lahko bere, ko ga potrebuje (npr.\ za generiranje
-naključnih števil). Branje je ponavadi enkratno dejanje; ko algoritem prebere bit, mora pri
-naslednjem klicu prebrati sosednji bit.
+o \textit{naključnostnih algoritmih}. Te lahko definiramo kot navadne, deterministične algoritme,
+ki imajo dostop do dodatnega parametra, \textit{vira naključnih bitov} $\omega$. Ta vir si lahko
+predstavljamo kot zelo dolg seznam naključnih bitov, ki ga algoritem lahko bere, ko ga potrebuje
+(npr.\ za generiranje naključnih števil). Branje je ponavadi enkratno dejanje; ko algoritem prebere
+bit, mora pri naslednjem klicu prebrati naslednji bit.
 
 \begin{definicija}
 \label{def:digisig}
@@ -483,55 +483,68 @@ naslednjem klicu prebrati sosednji bit.
     preverjanje podpisa. Definirana je nad končno množico možnih  sporočil $\mathcal{M}$, vrnjeni
     podpis pa leži v končni množici podpisov $\Sigma$.
     \begin{itemize}
-        \item $\mathcal{P}$ je algoritem za ustvarjanje javnih parametrov podpisa. Definira grupo $G$,
-            ki bo uporabljena pri podpisu. V praksi je ta korak izpuščen, sodelujoči pri podpisu
-            uporabijo dobro poznane varne grupe. Formalno pa je to algoritem, ki prejme varnostni
-            parameter $k$ in vrne parametre grupe $G$, oz.\
+        \item $\mathcal{P}$ je algoritem za ustvarjanje javnih parametrov podpisa. Definira množico
+            parametrov $\text{Par}$, ki so na voljo vsem deležnikom pri podpisu. V praksi je ta korak izpuščen,
+            sodelujoči pri podpisu si izberejo shemo in uporabijo dobro poznane varne parametre.
+            Formalno pa je to algoritem, ki prejme varnostni parameter $k$ in vrne parametre
+            $\text{Par}$, oz.\
             $$
-            G = \mathcal{P}(k).
+            \text{Par} = \mathcal{P}(k).
             $$
         \item $\mathcal{G}$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
-            ki za svoj vhod prejme parametre grupe $G$ (javno dostopni ali pa ustvarjeni prek $\mathcal{P}$).
+            ki za svoj vhod prejme parametre $\text{Par}$ (javno dostopni ali pa ustvarjeni prek $\mathcal{P}$).
             Z javnim ključem $\text{pk}$ lahko preverjevalec preveri avtentičnost podpisa, z zasebnim
             ključem $\text{sk}$ pa podpisnik podpisuje. Formalno velja
             $$
-            (\text{pk}, \text{sk}) = \mathcal{G}(G).
+            (\text{pk}, \text{sk}) = \mathcal{G}(\text{Par}).
             $$
-        \item $\mathcal{S}$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$ 
+        \item $\mathcal{S}$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$
             in sporočilo $m$, vrne pa podpis $\sigma$ sporočila $m$ z zasebnim ključem $\text{sk}$
-            oz.\ 
-            $$ 
+            oz.\
+            $$
             \sigma = \mathcal{S}(\text{sk}, m).
             $$
         \item $\mathcal{V}$ je determinističen algoritem, ki preverja veljavnost podpisov. Za svoje argumente
             prejme javni ključ $\text{pk}$, sporočilo $m$ in podpis $\sigma$, vrne $veljaven$, če je podpis 
-            veljaven in $neveljaven$, sicer. Velja torej
+            veljaven, in $neveljaven$, sicer. Velja torej
             $$ 
-            \mathcal{V}(\text{pk}, m, \sigma) = 
+            \mathcal{V}(\text{pk}, m, \sigma) =
             \begin{cases}
-                veljaven, & \sigma = \mathcal{S}(\text{sk}, m), \\
-                neveljaven, & \sigma \neq \mathcal{S}(\text{sk}, m).
+                veljaven, \\
+                neveljaven.
             \end{cases}
             $$
+            Podpis $\sigma$ sporočila $m$ je veljaven, če je bil ustvarjen z uporabo algoritma
+            $\mathcal{S}$ in zasebnim ključem $\text{sk}$, ki ustreza javnemu ključu $\text{pk}$.
     \end{itemize}
 \end{definicija}
+
+\begin{primer}
+    Digitalni podpisi, obravnavni v tem besedilu, temeljijo na grupah. Algoritem $\mathcal{P}$ iz
+    definicije~\ref{def:digisig} v tem primeru izbere parametre, ki določajo grupo $G$. Za varnostni
+    parameter $k$ lahko zapišemo 
+    $$
+    G = \mathcal{P}(k).
+    $$
+\end{primer}
 
 \subsection{Varnost}
 Poglavitna lastnost vsakega kriptosistema je njegova \textit{varnost}. Ker je namen digitalnih podpisov
 zagotoviti sogovorniku, da je sporočilo res poslal lastnik zasebnega ključa, je največja varnostna
-skrb, da bi \textit{napadalec} lahko ponaredil pošiljateljev podpis in si s tem prisvojil njegovo 
-identiteto. To napadalcu lahko uspe na več nivojih, ki so od najmanj do najbolj škodljivega:
+skrb, da bi \textit{napadalec} lahko ponaredil pošiljateljev podpis in si s tem prisvojil njegovo
+identiteto. To napadalcu lahko uspe na več nivojih, ki jih lahko razvrstimo od najmanj do najbolj
+škodljivega:
 
 \begin{itemize}
     \item \textbf{Eksistencialno ponarejanje} (angl.\ \textit{existential forgery}) pomeni, da obstaja
         sporočilo, za katerega napadalec lahko ustvari ponarejen podpis (torej podpis, pri katerem
         ni bil uporabljen zasebni ključ). To pomeni, da lahko najde vsaj en par sporočila in podpisa
         $(m, \sigma)$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
-    \item \textbf{Selektivno ponarejanje} (angl.\ \textit{selective forgery}) pomeni, da lahko napadalec 
-        z nezanemarljivo verjetnostjo podpiše sporočilo, ki mu ga da nekdo drug in ga lastnik zasebnega
-        ključa še ni podpisal. Torej, če napadalcu nekdo predloži sporočilo $m$, lahko z nezanemarljivo 
+    \item \textbf{Selektivno ponarejanje} (angl.\ \textit{selective forgery}) pomeni, da lahko napadalec
+        z nezanemarljivo verjetnostjo podpiše poljubno izbrano sporočilo, ki ga lastnik zasebnega
+        ključa še ni podpisal. Torej, če napadalcu nekdo predloži sporočilo $m$, lahko z nezanemarljivo
         verjetnostjo najde podpis $\sigma$, da velja $\mathcal{V}(\text{pk}, m, \sigma) = veljaven$.
-    \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da napadalec pridobi 
+    \item \textbf{Popoln zlom} (angl.\ \textit{total break}) pomeni, da napadalec pridobi
         zasebni ključ napadenega in s tem pridobi vse potrebne podatke za podpisovanje poljubnih
         sporočil v njegovem imenu.
 \end{itemize}
@@ -558,9 +571,9 @@ podpisovanje. Takšna shema ne more biti \textit{brezpogojno varna}, kar bi pome
 neomejenimi računskimi zmožnostmi nemogoče ponarediti podpis. To je zato, ker lahko napadalec
 sistematično preveri vse podpise za neko sporočilo s pomočjo algoritma $\mathcal{V}$, dokler ne najde
 pravega. Pričakujemo pa lahko \textit{računsko varnost}, kar pomeni, da napadalec ne more najti
-ponaredka v doglednem času, če ima omejene računske sposobnosti, in/ali pa \textit{dokazljivo varnost},
+ponaredka v doglednem času, če ima omejene računske sposobnosti, oziroma \textit{dokazljivo varnost},
 kar pomeni, da lahko varnost prevedemo na težavnost nekega matematičnega problema. Varnost večine
-shem za digitalne podpise temelji prav na (domnevni) težavnosti določenih matematičnih problemov. 
+shem za digitalne podpise temelji prav na (domnevni) težavnosti določenih matematičnih problemov.
 
 \subsubsection{Temelji varnosti}
 V primeru~\ref{primer:rsa} smo omenili, da je varnost algoritma RSA odvisna od težavnosti problema
@@ -577,25 +590,28 @@ $$
 s = \log_g(I).
 $$
 Taki izračuni v (nekaterih) cikličnih grupah žal (ali pa na srečo) niso tako enostavni, prišli smo do
-koncepta \textit{diskretnega logaritma}. V diskretnih cikličih grupah, kot je npr.\ $\Z_p^*$, ni koncepta
-urejenosti, kar smo videli tudi v primeru~\ref{primer:Z11} z grupo $\Z_{11}^*$, zato nam ">približki"<
-logaritma ne pomagajo čisto nič. Za izračun takih logaritmov se moramo zanesti na drugačne metode,
-kot za izračun logaritmov v množici realnih števil.
+koncepta \textit{diskretnega logaritma}. Pri izračunu logaritmov v množici realnih števil ključno
+vlogo igra koncept urejenosti. Ker je eksponentna funkcija strogo naraščajoča, realna števila pa urejena,
+lahko učinkovito izračunamo logaritme do poljubne natančosti (npr.\ z uporabo bisekcije). V diskretnih
+cikličih grupah, kot je npr.\ $\Z_p^*$, ni koncepta urejenosti, kar smo videli tudi v
+primeru~\ref{primer:Z11} z grupo $\Z_{11}^*$. Odnos med $g^s_1$ in $g^s_2$ nam ne pove ničesar o
+odnosu med $s_1$ in $s_2$, zato nam ">približki"< logaritma ne pomagajo čisto nič. Za izračun takih
+logaritmov se moramo zanesti na drugačne metode, kot za izračun logaritmov v množici realnih števil.
 
 \begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
 \label{def:dl}
     Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
-    grupe $G$. Naj velja $g^x = h$. Eksponent $x$ Potem imenujemo \textbf{Diskretni logaritem (DL)}.
+    grupe $G$. Naj velja $g^x = h$. Eksponent $x$ imenujemo \textbf{Diskretni logaritem (DL)}.
 
     Zamislimo si igro, kjer izzivalec in nasprotnik kot vhod prejmeta opis grupe $G$ (torej $q \in \N$
     in $g \in G$). Izzivalec potem izbere naključen element $\alpha \in G$ in izračuna $h = g^{\alpha}$.
     $h$ pošlje nasprotniku, ta pa mora odgovoriti nazaj z elementom $\alpha$. To igro imenujemo 
     \textbf{problem diskretnega logaritma (PDL)} (angl.\ \textit{discrete logarithm problem}).
 
-    Pri tej igri nas zanima verjetnost pravilnega odgovora nasprotnika, ki je računsko omejen. S tem 
-    mislimo, da ima na voljo polinomsko mnogo časa (glede na velikost grupe). Če je grupa $G$ takšna, 
-    da je verjetnost zanemarljiva, pravimo, da za grupo $G$ drži \textit{predpostavka diskretnega 
-    logaritma}.
+    Pri tej igri nas zanima verjetnost pravilnega odgovora nasprotnika, ki je računsko omejen. S tem
+    mislimo, da ima na voljo polinomsko mnogo časa (glede na število bitov $q$). Če je grupa $G$ takšna,
+    da je verjetnost zanemarljiva, pravimo, da za grupo $G$ drži \textit{predpostavka o težavnosti
+    diskretnega logaritma}.
 \end{definicija}
 
 Če naš kriptosistem torej živi v ciklični grupi, v kateri je problem diskretnega logaritma težek,
@@ -606,29 +622,29 @@ in Schnorrov podpis~\cite{schnorr1989sig}.
 Preden nadaljujemo, natančneje definirajmo, kaj pomeni, da je verjetnost zanemarljiva.
 
 \begin{definicija}[Zanemarljiva funkcija~\cite{boneh2023appcry}]
-    Zanemarljiva funkcija je taka funkcija $\mu : \N \rightarrow \R$, da za vsako število
+    Zanemarljiva funkcija je taka funkcija $\varepsilon : \N \rightarrow \R$, da za vsako število
     $c > 0$ obstaja naravno število $n_0 \in \N$, da za vsak $n > n_0$ velja
     $$
-    |\mu(n)| < \frac{1}{n^c}.
+    |\varepsilon(n)| < \frac{1}{n^c}.
     $$
+    V nadaljevanju bomo v $\varepsilon$ označevali poljubno zanemaljivo funkcijo.
 \end{definicija}
 
 To so torej funkcije, ki padajo proti nič hitreje, kot inverz kateregakoli polinoma. V kontekstu
-diskretnega logaritma želimo, da je verjetnost izračuna pravilnega odgovora nasprotnika zanemarljiva
-v odvisnosti od velikosti grupe.
+diskretnega logaritma želimo, da je verjetnost izračuna pravilnega odgovora nasprotnika zanemarljiva.
 
 V besedilu bomo večkrat govorili o ">zanemarljivih verjetnostih"<, kar pomeni, da se bodo
 verjetnosti v odvisnosti od določene spremenljivke vedle kot zanemarljive funkcije.
 
 \subsubsection{Model slučajnega oraklja}
-Ko obravnavamo varnost kriptosistemov, se ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije. 
-Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu 
-je na voljo (tu je običajno predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo 
-v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. V tem primeru govorimo o 
+Ko obravnavamo varnost kriptosistemov, se ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije.
+Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu
+je na voljo (tu je običajno predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo
+v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. V tem primeru govorimo o
 alternativnih modelih kriptografije. 
 
-Ko imamo opravka z zgoščevalnimi funkcijami, je pogosto potrebno sprejeti dodatne predpostavke, da lahko 
-pokažemo varnost. Specifično, ko imamo opravka z zgoščevalno funkcijo $H: A \rightarrow B$ predpostavimo, 
+Ko imamo opravka z zgoščevalnimi funkcijami, je pogosto potrebno sprejeti dodatne predpostavke, da lahko
+pokažemo varnost. Specifično, ko imamo opravka z zgoščevalno funkcijo $H: A \rightarrow B$, predpostavimo,
 da je bila ta funkcija izbrana naključno med vsemi funkcijami, ki slikajo $A$ v $B$. To idealizirano 
 verzijo zgoščevalne funkcije imenujemo \textbf{slučajni orakelj} (angl.\ \textit{random oracle}).
 Za poljuben vhod torej vedno vrne enak odgovor, vendar je bil ta odgovor popolnoma naključno izbran.
@@ -1529,10 +1545,11 @@ s problemom generiranja parametrov ne bomo ukvarjali. Enostavno predpostavimo, d
 dostop do skupnih, varnih parametrov.
 
 Ker podpis temelji na Schnorrovem, varnost temelji na težavnosti diskretnega logaritma. Predpostavka
-o varnosti je standardna predpostavka diskretnega logaritma, prilagojena za multiplikativne grupe
+o varnosti je standardna predpostavka o težavnosti diskretnega logaritma, prilagojena za
+multiplikativne grupe
 $\Z_p^*$.
 
-\begin{definicija}[Predpostavka diskretnega logaritma pri ASM]
+\begin{definicija}[Predpostavka o težavnosti diskretnega logaritma pri ASM]
 \label{def:asm_dlp}
     Naj bo $A$ poljuben naključnostni algoritem, ki teče v polinomskem času in svoje parametre sprejme 
     \begin{itemize}
