@@ -658,37 +658,54 @@ Varnostni dokazi, ki temeljijo na uporabi takih slučajnih orakljev, vseeno pri�
 ki namesto orakljev uporabljajo zgoščevalne funkcije, vsaj dokler je uporabljena zgoščevalna funkcija
 varna (npr.\ zanjo nihče še ni našel trka).
 
-\subsubsection{Simulatorji}
+\begin{opomba}
+    V praksi imamo pogosto opravka z elementi grup in zgoščevalnimi funkcijami, ki slikajo en niz bitov
+    v drugega. Zato je potrebno definirati funkcijo $\text{enc}: G \rightarrow \{0, 1\}^*$, ki slika
+    elemente grupe $G$ v nize bitov. Prek te funkcije lahko pridobimo zgostitve poljubnih elementov grup.
+\end{opomba}
+
+\subsubsection{Dokazovanje varnosti}
 Pogosto je cilj varnostnih dokazov pokazati, da je varnost neke sheme enakovredna težavnosti nekega
-problema, za katerega domnevamo, da je težek. V takih primerih je govorimo o metodi
-\textit{dokazovanja z redukcijo} (angl.\ \textit{reduction proof}). Ta metoda temelji na
-predpostavki, da če bi napadalec lahko učinkovito napadel shemo, bi lahko tudi učinkovito rešil težaven
-problem.
+problema, za katerega domnevamo, da je težek. V takih primerih govorimo o metodi
+\textit{dokazovanja z redukcijo} (angl.\ \textit{reduction proof}). Ta metoda temelji na predpostavki,
+da če bi napadalec lahko učinkovito napadel shemo, bi lahko tudi učinkovito rešil težaven problem.
 
-\textit{Simulatorji} so način, kako lahko izpeljemo redukcijo iz napada na reševanje težavnega problema.
-To so algoritmi, ki posnemajo delovanje iskrenih podpisnikov ali pa kar celotne kriptografske sheme.
-Ideja je, da simulator ne pozna zasebnih ključev, vendar pa za napadalca lahko posnema celotno
-delovanje sheme. Cilj dokazov varnosti je pokazati, da če lahko napadalec uspešno izvede napad na
-shemo (npr.\ ponaredi podpis ali pa pridobi zasebni ključ), potem lahko simulator uporabi informacije
-iz napadalčevega napada, da učinkovito reši domnevno težek problem (npr.\ problem diskretnega logaritma).
-Ker domnevamo, da se tega problema ne da rešiti učinkovito, lahko zaključimo, da je shema varna.
-Za večino shem so koristni torej le simulatorji, ki delujejo v polinomskem času.
-
-Da je simulator uporaben za dokaz varnosti, mora zadoščati naslednjim lastnostim:
+En način, kako to storimo, je z uporabo \textit{iger}. Potek dokaza varnosti v tem primeru je sledeč:
 \begin{itemize}
-    \item \textbf{Nerazločljivost}: Napadalec ne ve, ali komunicira s pravim podpisnikom ali s
-        simulatorjem. Če bi lahko napadalec razlikoval, potem bi lahko zaključili, da shema napadalcu
-        razkrije neko skrivnost, saj je prisotnost skrivnosti edina razlika med pravim podpisnikom in
-        simulatorjem.
-    \item \textbf{Brez skrivnosti}: Simulator ne pozna zasebnih ključev. Ta lastnost je ključna, saj
-        nam pove, da napadalec prek interakcije z dejanskim podpisnikom ne izve nobene dodatne informacije.
-        Če je napadalec uspešen pri interakciji s simulatorjem ali pa podpisnikom, ki ima zasebni
-        ključ, potem smo lahko prepričani, da prisotnost zasebnega ključa ne pomaga pri napadu.
-    \item \textbf{Prilagodljivost}: Simulator in napadalec med seboj komunicirata. Pogosto je potrebno,
-        da simulator prilagodi svoje odločitve na podlagi napadalčevih odločitev.
+    \item Naj bo $\mathcal{S}$ podpisna shema, za katero želimo pokazati varnost (npr.\ da je verjetnost
+        ponarejanja zanemarljiva). To shemo napada napadalec $\mathcal{F}$, ki je omejen s
+        polinomskim časom. Napadalčevi interakciji s podpisno shemo rečemo \textit{igra}, zanima
+        pa nas verjetnost ">zmage"< napadalca, torej uspešnega ponarejenja podpisa.
+    \item Definiramo še en algoritem $\mathcal{A}$. Cilj tega algoritma je izvesti redukcijo
+        iz napada na reševanje težavnega problema. Algoritem $\mathcal{A}$ mora v polinomskem času
+        prevesti uspešen napad napadalca $\mathcal{F}$ na shemo $\mathcal{S}$ v rešitev težavnega
+        problema. Ponavadi to pomeni, da algoritem $\mathcal{A}$ sodeluje pri izvajanju podpisne sheme.
+        Za dokaz analiziramo verjetnost uspeha algoritma $\mathcal{A}$, ki je seveda odvisna
+        od verjetnosti uspeha napadalca $\mathcal{F}$.
 
-        V modelu slučajnega oraklja prilagodljivost dobi dodatno dimenzijo. Simulator poleg
-        celotnega protokola simulira tudi delovanje oraklja. To mu omogoča, da napadalca ">previje"<
+        Navadno v dokazu predpostavimo, da je napadalec $\mathcal{F}$ uspešen z nezanemarljivo
+        verjetnostjo, kar se prevede v nezanemarljivo verjetnost uspeha algoritma $\mathcal{A}$.
+        Ker bi to pomenilo uspešno rešitev težavnega problema v polinomskem času, zaključimo, da je
+        shema varna.
+\end{itemize}
+
+Za algoritem $\mathcal{A}$ predpostavimo naslednje lastnosti:
+\begin{itemize}
+    \item \textbf{Nerazločljivost}: Napadalec $\mathcal{F}$ ne ve, ali komunicira s pravim podpisnikom
+        ali z algoritmom $\mathcal{A}$. Če bi lahko napadalec razlikoval, potem bi lahko zaključili,
+        da shema napadalcu razkrije neko skrivnost, saj je prisotnost skrivnosti edina razlika med
+        pravim podpisnikom in algoritmom $\mathcal{A}$.
+    \item \textbf{Brez skrivnosti}: Algoritem $\mathcal{A}$ ne pozna zasebnih ključev. Ta lastnost
+        je ključna, saj nam pove, da napadalec prek interakcije z dejanskim podpisnikom ne izve
+        nobene dodatne informacije. Če je napadalec uspešen pri interakciji z algoritmom $\mathcal{A}$
+        ali pa podpisnikom, ki ima zasebni ključ, potem smo lahko prepričani, da prisotnost zasebnega
+        ključa ne pomaga pri napadu.
+    \item \textbf{Prilagodljivost}: Algoritem $\mathcal{A}$ in napadalec med seboj komunicirata.
+        Pogosto je potrebno, da algoritem $\mathcal{A}$ prilagodi svoje odločitve na podlagi
+        napadalčevih odločitev.
+
+        V modelu slučajnega oraklja prilagodljivost dobi dodatno dimenzijo. Algoritem $\mathcal{A}$
+        poleg celotnega protokola simulira tudi delovanje oraklja. To mu omogoča, da napadalca ">previje"<
         na prejšnje stanje, prilagodi odgovor oraklja in ponovno izvede korak sheme.
 \end{itemize}
 
@@ -705,7 +722,7 @@ je res tisti, za katerega se izdaja. Protokoli, kjer je cilj dokazati neko trdit
 \textit{interaktivnih sistemov dokazovanja} (angl.\ \textit{interactive proof systems}). Formalno
 morajo taki protokoli zadoščati dvema lastnostma:
 \begin{itemize}
-    \item \textbf{Kompletnost} (angl.\ \textit{completeness}): Če trditev, ki se dokazuje,
+    \item \textbf{Celovitost} (angl.\ \textit{completeness}): Če trditev, ki se dokazuje,
         drži, potem bo preverjevalec sprejel dokaz dokazovalca (če noben od njiju ne bo goljufal).
     \item \textbf{Zadostnost} (angl.\ \textit{soundness}): Če trditev, ki se dokazuje, ne
         drži, potem noben dokazovalec (tudi tak, ki goljufa) ne more predložiti dokaza, ki bi 
@@ -739,7 +756,7 @@ računsko moč, vendar ni iskren, preverjevalec pa je omejen na polinomsko raču
 
 \subsubsection{Dokazi brez razkritja znanja}
 \textit{Dokazi brez razkritja znanja} (angl.\ \textit{zero-knowledge proofs}) so posebna vrsta interaktivnih
-sistemov dokazovanja, ki poleg kompletnosti in zadostnosti zadoščajo še tretji lastnosti:
+sistemov dokazovanja, ki poleg celovitosti in zadostnosti zadoščajo še tretji lastnosti:
 \begin{itemize}
     \item \textbf{Brez razkritja znanja} (angl.\ \textit{zero-knowledge}): Če trditev, ki se dokazuje, 
         drži, potem noben preverjevalec (tudi tak, ki goljufa) ne bo iz dokaza izvedel ničesar več, 
@@ -803,17 +820,17 @@ uporabno vrednost. Tovrstne dokaze imenujemo \textit{identifikacijski protokoli}
     $$
     I = g^s \in G.
     $$
-    Cilj dokazovalca je, da preverjevalca prepriča, da pozna vrednost $s \in [0, q-1]$, ne da bi mu
+    Cilj dokazovalca je, da preverjevalca prepriča, da pozna vrednost $s \in \Z_q$, ne da bi mu
     o njej razkril karkoli drugega. Protokol poteka v več korakih:
     \begin{enumerate}
         \item \textbf{Zaveza:}
-            Dokazovalec si enakomerno naključno izbere vrednost $r \in [0, q-1]$ in izračuna
+            Dokazovalec si enakomerno naključno izbere vrednost $r \in \Z_q$ in izračuna
             $$
             X = g^r \in G.
             $$
             To vrednost pošlje preverjevalcu.
         \item \textbf{Izziv:}
-            Preverjevalec si izbere naključno vrednost $e \in [0, q-1]$ in jo pošlje dokazovalcu.
+            Preverjevalec si izbere naključno vrednost $e \in \Z_q$ in jo pošlje dokazovalcu.
         \item \textbf{Odgovor:}
             Dokazovalec izračuna odgovor
             $$
@@ -858,16 +875,16 @@ Hevristika torej deluje samo v modelu slučajnega oraklja.
     oraklja $H$, da pridobi zgostitev iz zaveze $X$ in sporočila $m$, ki ga želi podpisati (ta
     korak tudi veže sporočilo na podpis):
     $$
-    e = H(X || m).
+    e = H(\text{enc}(X) || m),
     $$
-    Na podlagi te zgostitve dokazovalec izračuna odgovor $y = r + es$ in ga pošlje preverjevalcu
-    skupaj z vrednostjo $X$ in $e$.
-
-    Preverjevalec ima sedaj dovolj podatkov, da tudi sam izračuna vrednost zgostitve in preveri
-    enakost.
+    kjer ">$||$"< označuje stikanje nizov. Na podlagi te zgostitve dokazovalec izračuna odgovor
+    $y = r + es$ in ga pošlje preverjevalcu skupaj z vrednostjo $X$ in $e$. Preverjevalec ima sedaj
+    dovolj podatkov, da tudi sam izračuna vrednost zgostitve in preveri enakost.
 
     Fiat-Shamirjeva hevristika tu ohranja varnost, saj dokazovalec še vedno ne more izračunati
-    prepričljivega odgovora, preden izračuna zavezo (razen, če najde trčenje v $H$). Varnost bomo
+    prepričljivega odgovora, preden izračuna zavezo (razen, če najde trčenje v $H$). Nekaj bitov
+    varnosti se vseeno izgubi, ker napadalcu ni potrebno več čakati na odgovore, pač pa lahko izračuna
+    poljubno mnogo zgostitev. Ob dovolj velikih parametrih to dejstvo ne predstavlja težav. Varnost bomo
     dokazali v razdelku~\ref{sec:schnorr-sec}.
 \end{primer}
 
@@ -878,7 +895,7 @@ Kot vsi podpisi, tudi ta potrebuje štiri algoritme: za ustvarjanje javnih param
 podpisovanje sporočil in preverjanje podpisa.
 
 Čeprav je Schnorr originalno~\cite{schnorr1989sig} opisal podpis v multiplikativnih grupah naravnih
-števil modulo $p$, pri njem ni nič, kar bi specifično delalo samo v teh grupah. Zares
+števil modulo $p$, v shemi ni nič, kar bi preprečilo delovanje v poljubnih grupah. Zares
 je Schnorrov podpis mogoče posplošiti na katerekoli končne grupe, kjer obstaja učinkovit algoritem
 za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
 \begin{itemize}
@@ -889,37 +906,37 @@ za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
     se običajno privzame, da je $G$ kar grupa reda $q$, ki jo generira $g$.
 
     Poleg grupe $G$ si morata podpisnik in preverjevalec izbrati še varno kriptografsko zgoščevalno
-    funkcijo $H : \{0, 1\}^* \rightarrow \Z_q$. Za varno funkcijo smatramo vsako, 
-    ki zadošča lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije definira velikost 
-    končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg $2 \log_2 q$ bitov~\cite{
-    stinson2023crypto}.
+    funkcijo $H : \{0, 1\}^* \rightarrow \Z_q$. Funkcijo v dokazu varnosti modeliramo kot naključno,
+    v praksi mora zadoščati vsaj lastnostim iz definicije~\ref{def:hash}. Velikost kodomene te funkcije
+    definira velikost končnega podpisa. Iz zgostitve, dolge $\log_2 q$ bitov, dobimo podpis, dolg
+    $2 \log_2 q$ bitov~\cite{stinson2023crypto}.
     \item \textbf{Ključ}:
-    Za ustvarjanje ključa si izberemo naključno število $s \in [0, q - 1]$ in izračunamo
+    Za ustvarjanje ključa si izberemo naključno število $s \in \Z_q$ in izračunamo
     $$
     I = g^s
     $$
     z uporabo učinkovitega algoritma za množenje. Javni ključ $I$ je torej element grupe $G$, zasebni ključ
-    $s$ pa je element $\Z_q$. Ker smo predpostavili, da je v grupi $G$ težek problem diskretnega logaritma,
-    iz javnega ključa $I$ ni mogoče pridobiti zasebnega ključa $s$.
+    $s$ pa je element $\Z_q$. Ker smo predpostavili, da je v grupi $G$ problem diskretnega logaritma
+    težek, iz javnega ključa $I$ ni mogoče pridobiti zasebnega ključa $s$.
 
     \item \textbf{Podpis}:
-    Za podpis sporočila $m$ si najprej izberemo naključno število $r \in [0, q - 1]$ in izračunamo
+    Za podpis sporočila $m \in \{0, 1\}^*$ si najprej izberemo naključno število $r \in \Z_q$ in izračunamo
     \textit{zavezo} (angl.\ \textit{commitment})
     $$
     X = g^r.
     $$
-    Ta korak je popolnoma enak, kot pri ustvarjanju ključa, vendar ima pomembno razliko. Zasebni
+    Ta korak je popolnoma enak kot pri ustvarjanju ključa, vendar ima pomembno razliko. Zasebni
     ključ se ne spreminja, pri izbiri $r$ pa je potrebno paziti, da je ta res naključna, in da se
     $r$ ne ponovi (glej opombo~\ref{opomba:nonce}).
 
     Potem z uporabo zgoščevalne funkcije $H : \{0, 1\}^* \rightarrow \Z_q$ izračunamo \textit{izziv}
     (angl.\ \textit{challenge})
     $$
-    e = H(X || m),
+    e = H(\text{enc}(X) || m).
     $$
-    kjer ">$||$"< označuje stikanje nizov. Za konec je potrebno izračunati še 
+    Za konec je potrebno izračunati še 
     $$ 
-    y = es + r, 
+    y = es + r,
     $$
     podpis sporočila $m$ pa je potem par $(X, y)$ oz.\ 
     $$ 
@@ -929,7 +946,7 @@ za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
     \item \textbf{Preverjanje}:
     Za preverjanje veljavnosti podpisa $(X', y')$ sporočila $m$ je potrebno najprej izračunati
     $$
-    e' = H(X' || m)
+    e' = H(\text{enc}(X') || m)
     $$
     in nato preveriti, če velja
     $$
@@ -970,70 +987,96 @@ diskretnega logaritma. Varnost Schnorrovega podpisa je zato odvisna od varnosti 
 Cilj tega razdelka je pokazati, da je Schnorrov podpis varen, če je problem diskretnega logaritma
 težek.
 
-\begin{definicija}[Varnost Schnorrovega podpisa]
-    Za Schnorrov podpis v grupi $G$ pravimo, da je varen, če:
-    \begin{itemize}
-        \item Je problem diskretnega logaritma v grupi $G$ težek.
-        \item Obstaja slučajni orakelj $H$, do katerega imajo dostop vsi deležniki. Z drugimi besedami,
-            smo v modelu slučajnega oraklja.
-        \item Obstaja napadalec, ki lahko pridobi veljaven podpis $(X, y)$ za katerokoli sporočilo $m$,
-            ki ga je podpisnik že podpisal. Vendar pa je verjetnost, da napadalec uspešno ponaredi
-            podpis za novo sporočilo $m'$, ki ga podpisnik še ni podpisal, zanemarljiva.
-    \end{itemize}
+\begin{definicija}[Varnost podpisne sheme]
+    Naj bo $k$ varnostni parameter. Naj bo $F$ napadalec, ki deluje v polinomskem času. Definirajmo
+    \textit{podpisovalni eksperiment} $\text{Sign}_F(k)$:
+    \begin{enumerate}
+        \item Na podlagi varnostnega parametra se definira par ključev $(I, s)$, kjer je $I$
+            javni ključ, $s$ pa zasebni ključ.
+        \item Napadalec $F$ prejme javni ključ $I$. Od nekega podpisnika $P$ lahko zahteva podpise
+            poljubno izbranih sporočil.
+        \item Napadalec $F$ podpisniku $P$ lahko pošlje sporočilo $m$, v odgovor pa dobi podpis $\sigma$.
+            To lahko stori poljubno mnogokrat.
+        \item Napadalec $F$ si izbere sporočilo $m'$ in zanj izračuna podpis $\sigma'$. Eksperiment
+            vrne $1$, če je podpis $\sigma'$ veljaven postup za sporočilo $m'$, sicer vrne $0$.
+    \end{enumerate}
+    Cilj napadalca je torej ponarediti podpis za sporočilo, ki še ni bilo podpisano, brez da bi poznal
+    zasebni ključ podpisnika. Podpisna shema je varna , če je verjetnost, da izvedba eksperimenta
+    $\text{Sign}_F(k)$ vrne $1$, zanemarljiva v varnostnem parametru $k$.
 \end{definicija}
 
-Varnost podpisa je mogoče dokazati tako, da pokažemo varnost Schnorrove identifikacijske sheme,
-opazimo, da nam uporaba Fiat-Shamirjeve hevristike vrne ravno Schnorrov podpis, in pokažemo, da
+Varnost Schnorrovega podpisa je mogoče dokazati tako, da pokažemo varnost Schnorrove identifikacijske
+sheme, opazimo, da nam uporaba Fiat-Shamirjeve hevristike vrne ravno Schnorrov podpis, in pokažemo, da
 je ta transformacija varna. Najprej pa moramo seveda definirati, kaj pomeni, da je identifikacijska
-shema varna. V osnovi bomo rekli, da je shema varna, če napadalec ne more prepričati preverjevalca,
-da je on pravi dokazovalec, brez da bi poznal zasebni ključ. To mora veljati tudi v primeru, da
-napadalec lahko ">posluša"< (torej vidi sporočila) več pogovorov med dokazovalcem in preverjevalcem.
+shema varna in kako povežemo identifikacijsko shemo s sporočilom. V osnovi bomo rekli, da je shema
+varna, če napadalec ne more prepričati preverjevalca, da je on pravi dokazovalec, brez da bi poznal
+zasebni ključ. To mora veljati tudi v primeru, da napadalec lahko ">posluša"< (torej vidi sporočila)
+več pogovorov med dokazovalcem in preverjevalcem.
 
 \begin{definicija}[Varnost identifikacijske sheme]
 \label{def:id-sec}
     Naj bo $k$ varnostni parameter in $T_{sk}$ orakelj, ki ne prejme nobenega vhodnega podatka, ob klicu
-    pa vrne transkript ene izvedbe identifikacijske sheme. Definirajmo \textit{identifikacijski
-    eksperiment} $Id_F(k)$:
+    pa vrne \textit{transkript} ene izvedbe identifikacijske sheme. Transkript predstavlja eno izvedbo
+    identifikacijske sheme z izbranimi javnimi parametri. Formalizira napadalčevo sposobnost
+    ">prisluškovanja"< in mu omogoča, da pridobi vsa izmenjana sporočila med dokazovalcem in
+    preverjevalcem. Naj bo $F$ napadalec, omejen s polinomskim časom. Definirajmo 
+    \textit{identifikacijski eksperiment} $\text{Id}_F(k)$:
     \begin{enumerate}
         \item Na podlagi varnostnega parametra se definira par ključev $(I, s)$, kjer je $I$
             javni ključ, $s$ pa zasebni ključ.
         \item Napadalec $F$ prejme javni ključ $I$ in neomejen dostop do oraklja $T_{sk}$.
         \item Napadalec $F$ na poljubni točki pošlje zavezo $X$, v odgovor pa dobi izziv $e$. Tudi
             na tej točki lahko napadalec kliče oraklja $T_{sk}$.
-        \item Napadalec $F$ izračuna odgovor $y$. Eksperiment vrne $1$, če velja $g^y = X \cdot I^e$,
-            sicer vrne $0$.
+        \item Napadalec $F$ izračuna odgovor $y$. Eksperiment vrne $1$, če odgovor $y$ prepriča
+            preverjevalca, da komunicira s pravim dokazovalcem (torej lastnikom zasebnega ključa),
+            sicer vrne $0$. V primeru Schnorrove identifikacijske sheme to ustreza preverbi, če
+            velja $g^y = X \cdot I^e$.
     \end{enumerate}
-    Identifikacijska shema je varna pred pasivnim napadom (ali samo varna), če je verjetnost, da
-    izvedba eksperimenta $Id_F(k)$ vrne $1$, zanemarljiva v varnostnem parametru $k$.
+    Cilj napadalca je torej pridobiti diskretni logaritem javnega ključa $I$, s čimer se lahko izdaja
+    za dokazovalca. Identifikacijska shema je varna pred pasivnim napadom (ali samo varna), če je
+    verjetnost, da izvedba eksperimenta $\text{Id}_F(k)$ vrne $1$, zanemarljiva v varnostnem
+    parametru $k$.
 \end{definicija}
 
 \begin{izrek}[Varnost Schnorrove identifikacijske sheme~\cite{katz2014introduction}]
+\label{izrek:schnorr-id-sec}
     Naj bo $G$ ciklična grupa, v kateri je problem diskretnega logaritma težek. Potem je Schnorrova
-    identifikacijska shema v grupi $G$ varna (napadalec ne more prepričati dokazovalca, da je
-    on pravi dokazovalec, brez da bi poznal zasebni ključ).
+    identifikacijska shema v grupi $G$ varna.
 \end{izrek}
 
 \begin{dokaz}
     Dokaz poteka z redukcijo uspešnega napada na rešitev problema diskretnega logaritma. Naj bo napadalec
-    $F$ naključnostni algoritem, ki teče v polinomskem času. Napad poteka podobno, kot opisano v
+    $F$ naključnostni algoritem, ki teče v polinomskem času. Cilj napadalca je, da iz javnega ključa
+    dobi zasebnega (izračuna diskretni logaritem javnega ključa). Napad poteka podobno, kot opisano v
     identifikacijskem eksperimentu iz definicije~\ref{def:id-sec}.
-
 
     Na podlagi napadalca $F$ konstruirajmo algoritem $A$, ki iz uspešnega napada napadalca $F$ na
     Schnorrovo identifikacijsko shemo pridobi rešitev problema diskretnega logaritma. Algoritem $A$
-    prejme vse javne parametre sheme $(G, g, q, I)$ kot vhod. Potem algoritem deluje v naslednjih
-    korakih:
+    prejme vse javne parametre sheme $(G, g, q, I)$ kot vhod. $I$ je javni ključ, za katerega želi
+    napadalec izračunati diskretni logaritem. Algoritem deluje v naslednjih korakih:
     \begin{enumerate}
         \item Algoritem $A$ zažene napadalca $F$. Ta med svojim delovanjem kliče oraklja $T_{sk}$,
             ki napadalcu vrača transkripte izvedb identifikacijske sheme. Algoritem $A$ mora te
             odgovore simulirati sam, to pa lahko stori tako, da izvede identifikacijsko shemo v
-            obratnem vrstnem redu (začne z veljavnim odgovorom, nato izračuna izziv in zavezo). To
-            mu uspe, saj mora namesto izračuna diskretnega logarigma izračunati samo inverzno
-            operacijo -- eksponenciranje.
+            obratnem vrstnem redu:
+            \begin{itemize}
+                \item Najprej si izbere naključen odgovor $y \in \Z_q$ in izziv $e \in \Z_q$.
+                \item Preuredi enačbo za preverjanje
+                    $$
+                    g^y = X \cdot I^e
+                    $$
+                    v enačbo za izračun zaveze
+                    $$
+                    X = g^y \cdot I^{-e}.
+                    $$
+                    Tako lahko vrne veljaven transkript $(y, e, X)$ napadalcu $F$.
+            \end{itemize}
+            Ker račuana v obratnem vrstnem redu, se izogne izračunu diskretnega logaritma, opraviti
+            mora le eno eksponenciranje.
         \item Ko napadalec pošlje zavezo $X$, algoritem $A$ izbere enakomerno naključno število $e_1
-            \in [0, q - 1]$, jo pošlje napadalcu $F$, ta pa odgovori z odgovorom $y_1$.
+            \in \Z_q$, jo pošlje napadalcu $F$, ta pa odgovori z odgovorom $y_1$.
         \item Algoritem $A$ ponovno zažene napadalca $F$ z enakimi parametri (torej tudi enakim
-            virom naključnih bitov $\omega$) a z različnim izzivom $e_2 \in [0, q - 1]$. Napadalec
+            virom naključnih bitov $\omega$) a z različnim izzivom $e_2 \in \Z_q$. Napadalec
             $F$ v tem primeru vrne odgovor $y_2$.
         \item Če sta oba odgovora veljavna, torej velja
             \begin{align*}
@@ -1058,7 +1101,7 @@ napadalec lahko ">posluša"< (torej vidi sporočila) več pogovorov med dokazova
     $$
     S to vrednostjo lahko izrazimo verjetnost uspeha identifikacijskega eksperimenta
     $$
-    \text{Pr}(Id_F(k) = 1) = \text{Pr}_{\omega, e}(V(\omega, e) = 1) =
+    \text{Pr}(\text{Id}_F(k) = 1) = \text{Pr}_{\omega, e}(V(\omega, e) = 1) =
         \sum_{\omega} \text{Pr}(\omega) \cdot \delta_{\omega}.
     $$
 
@@ -1070,14 +1113,14 @@ napadalec lahko ">posluša"< (torej vidi sporočila) več pogovorov med dokazova
                                   &\geq \text{Pr}_{\omega, e_1, e_2}(V(\omega, e_1) = 1 \land V(\omega, e_2) = 1) - \text{Pr}(e_1 = e_2) \\
                                   &= \sum_{\omega} \text{Pr}(\omega) \cdot \delta_{\omega}^2 - \frac{1}{q} \\
                                   &\geq (\sum_{\omega} \text{Pr}(\omega) \cdot \delta_{\omega})^2 - \frac{1}{q} \\
-                                  &= \text{Pr}(Id_F(k) = 1)^2 - \frac{1}{q},
+                                  &= \text{Pr}(\text{Id}_F(k) = 1)^2 - \frac{1}{q},
     \end{align*}
     kjer smo pri prehodu na predzadnjo vrstico uporabili Jensenovo neenakost~\cite{jensen}.
     Ker pa je uspeh algoritma $A$ ekvivalenten rešitvi problema diskretnega logaritma v polinomskem
     času, problem pa po predpostavki obravnavamo v grupi, kjer je problem diskretnega logaritma težek,
     lahko zaključimo, da je verjetnost uspeha algoritma $A$ zanemarljiva. Ker je velikost grupe $q$
     odvisna od varnostnega parametra $k$, je tudi člen $1/q$ zanemarljiv. Iz tega lahko zaključimo
-    tudi, da je verjetnost uspeha napadalca $F$ $\text{Pr}(Id_F(k) = 1)$ zanemarljiva, kar pomeni,
+tudi, da je verjetnost uspeha napadalca $F$ $\text{Pr}(\text{Id}_F(k) = 1)$ zanemarljiva, kar pomeni,
     da je Schnorrov identifikacijski protokol varen.
 \end{dokaz}
 
@@ -1086,6 +1129,7 @@ iz Schnorrove identifikacijske sheme pridobimo neinteraktivno verzijo. Če torej
 da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 
 \begin{izrek}[Varnost Fiat-Shamirjeve hevristike~\cite{katz2014introduction}]
+\label{izrek:fiat-shamir-sec}
     Naj bo $\mathcal{S'}$ Schnorrova identifikacijska shema in $\mathcal{S}$ Schnorrova podpisna
     shema, pridobljena iz $\mathcal{S'}$ z uporabo Fiat-Shamirjeve hevristike. Če je identifikacijska
     shema $\mathcal{S'}$ varna, potem je tudi podpisna shema $\mathcal{S}$ varna, če varnost
@@ -1099,21 +1143,21 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 
     Brez škode za splošnost predpostavimo, da bo napadalec $F$ vsak klic slučajnega oraklja na
     nekem vhodu opravil največ enkrat. Predpostavimo tudi, da če napadalec $F$ uspešno ponaredi
-    podpis $(X, y)$ sporočila $m$, potem je sigurno poklical oraklja $H$ s podatki $X || m$.
+    podpis $(X, y)$ sporočila $m$, potem je gotovo poklical oraklja $H$ s podatki $\text{enc}(X) || m$.
 
     Na podlagi napadalca $F$ na podpisno shemo $\mathcal{S}$ želimo konstruirati napadalca $F'$
     na identifikacijsko shemo $\mathcal{S'}$, ki ima dostop do transkripcijskega oraklja $T_{sk}$
     in javnega ključa $I$. Napadalec $F'$ deluje v naslednjih korakih:
     \begin{enumerate}
-        \item Izbere si enakomerno naključno število $j \in [1, q]$.
+        \item Izbere si enakomerno naključno število $j \in \{1, 2, \dots, q\}$.
         \item Požene napadalca $F$ in zanj simulira delovanje podpisne sheme $\mathcal{S}$.
-            Ko napadalec $F$ opravi $i$-ti klic oraklja $H$ z vhodom $X_i || m_i$, napadalec $F'$
-            odgovori na podlagi vrednosti $i$ in $j$:
+            Ko napadalec $F$ opravi $i$-ti klic oraklja $H$ z vhodom $\text{enc}(X_i) || m_i$,
+            napadalec $F'$ odgovori na podlagi vrednosti $i$ in $j$:
             \begin{itemize}
                 \item Če je $i = j$, napadalec $F'$ uporabi $X_i$ kot zavezo v identifikacijski
                     shemi, v odgovor dobi izziv $e_i$ in ga pošlje napadalcu $F$ kot odgovor na
                     klic oraklja $H$.
-                \item V nasprotnem primeru is izbere enakomerno naključno število $e_i \in [0, q-1]$ in ga
+                \item V nasprotnem primeru is izbere enakomerno naključno število $e_i \in \Z_q$ in ga
                     pošlje napadalcu $F$ kot odgovor na klic oraklja $H$.
             \end{itemize}
             Ko napadalec $F$ zahteva podpis sporočila $m$, napadalec $F'$ pokliče transkripcijskega
@@ -1127,9 +1171,10 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
     primeru izbran enakomerno naključno (le iz drugega vira), prav tako je par $(X, y)$ iz
     transkripcijskega oraklja izračunan na enak način kot veljaven podpis. Napadalec $F'$ torej ne
     loči med simulacijo in pravim podpisom. Problem nastane le, če je napadalec $F'$ že definiral
-    orakljev odgovor na s podatkoma $X$ in $m$, ko dobi transkript $(X, e', y)$ od transkripcijskega
-    oraklja $T_{sk}$. Če $e$ ni enak $e'$, simulacija ne uspe. Verjetnost, da se to zgodi, je
-    zanemarljiva.
+    orakljev odgovor s podatkoma $X$ in $m$, ko dobi transkript $(X, e', y)$ od transkripcijskega
+    oraklja $T_{sk}$. Če v tem primeru $e$ ni enak $e'$, simulacija ne uspe. Verjetnost, da se to
+    zgodi, je zanemarljiva, saj je $e$ izbran enakomerno naključno iz $\Z_q$ in je $q$ polinomsko
+    omejen v varnostnem parametru $k$.
 
     Potrdimo še, da je rezultat napada na identifikacijsko shemo smiseln. Če v zadnjem koraku velja
     $(X, m) = (X_j, m_j)$ in napadalec $F$ uspe ponarediti podpis $(X, y)$, potem napadalec $F'$
@@ -1154,8 +1199,17 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
     Schnorrov podpis varen, če je identifikacijska shema varna.
 \end{dokaz}
 
-Ker je varna Schnorrova identifikacijska shema in pretvorba iz identifikacijske sheme v podpisno,
-lahko zaključimo, da je Schnorrov podpis varen.
+\begin{izrek}[Varnost Schnorrovega podpisa]
+    Naj bo $G$ ciklična grupa, v kateri je problem diskretnega logaritma težek. Naj bo $H$ slučajni
+    orakelj, ki je dostopen vsem deležnikom. Potem je Schnorrov podpis v grupi $G$ varen.
+\end{izrek}
+
+\begin{dokaz}
+    Po izreku~\ref{izrek:schnorr-id-sec} je Schnorrov identifikacijski protokol v grupi $G$ varen.
+    Prav tako je po izreku~\ref{izrek:fiat-shamir-sec} varna tudi pretvorba iz Schnorrove identifikacijske
+    sheme v Schnorrov podpis, če upoštevamo model slučajnega oraklja. Zaključimo torej, da je
+    Schnorrov podpis varen.
+\end{dokaz}
 
 \subsection{Primer: Schnorrov podpis v \texorpdfstring{$\Z_p^*$}{Zp∗}}
 Za ilustrativni primer si poglejmo, kako je bil Schnorrov podpis prvotno opisan~\cite{schnorr1989sig}.
@@ -1173,7 +1227,7 @@ saj bo enaka grupa uporabljena tudi pri njegovi večstranski različici v poglav
     kriptografsko zgoščevalno funkcijo $H : \{0, 1\}^* \rightarrow \Z_q$.
 
     \item \textbf{Ključ}:
-    Za ustvarjanje para ključev je potreben izbor naključnega števila $s \in [0, q - 1]$
+    Za ustvarjanje para ključev je potreben izbor naključnega števila $s \in \Z_q$
     in izračun 
     $$ 
     I = g^s \bmod p.
@@ -1185,14 +1239,14 @@ saj bo enaka grupa uporabljena tudi pri njegovi večstranski različici v poglav
     \end{align*}
 
     \item \textbf{Podpis}:
-    Za podpis enega sporočila mora podpisnik generirati naključno število $r \in [0, q-1]$ in izračunati 
+    Za podpis enega sporočila mora podpisnik generirati naključno število $r \in \Z_q$ in izračunati 
     \textit{zavezo} 
     $$ 
     X = g^r \bmod p.
     $$ 
     Potem z uporabo funkcije $H$ izračunamo \textit{izziv} 
     $$
-    e = H(X || m),
+    e = H(\text{enc}(X) || m),
     $$
     Za konec je potrebno izračunati še 
     $$ 
@@ -1208,7 +1262,7 @@ saj bo enaka grupa uporabljena tudi pri njegovi večstranski različici v poglav
     \item \textbf{Preverjanje}:
     Za preverjanje veljavnosti podpisa $(X', y')$ sporočila $m$, je potrebno izračunati 
     $$ 
-    e' = H(X' || m)
+    e' = H(\text{enc}(X') || m)
     $$
     in preveriti, če velja 
     \begin{equation}
@@ -1307,6 +1361,10 @@ na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. Te
 ni mogoče doseči, saj tako dolžina podpisa, kot čas preverjanja podpisa rasteta linearno s številom 
 podpisnikov (vsak doda en podpis seznamu, ki ga je potrebno preveriti). Večstranski podpisi so torej 
 odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito preverjanje.
+
+Še ena pomembna lastnost večstranskih podpisov je, da nekatere sheme vračajo podpise, ki so kar se
+preverjanja tiče, popolnoma zamenljivi z običajnimi digitalnimi podpisi. To omogoča enostavno
+nadgradnjo obstoječih sistemov, ki že uporabljajo digitalne podpise.
 
 \begin{primer}
     Recimo, da imamo nek organ, ki izdaja certifikate avtentičnosti uporabnikov (npr.\ potrjuje 
@@ -1464,7 +1522,7 @@ razdelku~\ref{sec:proof_multi_schnorr}.
 
 \subsubsection{Naivna verzija}
 Vsi podpisniki v skupini $P$ poznajo skupne parametre $p, q$ in $g$. Vsak podpisnik $P_i$ si 
-neodvisno in naključno izbere skrivno število $s_i \in [0, \dots q-1]$ in izračuna 
+neodvisno in naključno izbere skrivno število $s_i \in \Z_q$ in izračuna 
 $$ 
 I_i = g^{s_i} \bmod p.
 $$
@@ -1477,7 +1535,7 @@ Tako vsak podpisnik ustvari svoj par ključev
 Poljubna podskupina $S =\{P_{id_1}, \dots, P_{id_l}\}$ skupine $P$ podpiše sporočilo $m$ s tremi 
 krogi komunikacije:
 \begin{enumerate}
-    \item Vsak podpisnik $P_i$ iz podskupine $S$ si izbere naključen element $r_i \in [0, q-1]$ 
+    \item Vsak podpisnik $P_i$ iz podskupine $S$ si izbere naključen element $r_i \in \Z_q$ 
         in izračuna zavezo 
         $$ 
         X_i = g^{r_i} \bmod p.
@@ -1490,7 +1548,7 @@ krogi komunikacije:
         in jo pošlje vsem podpisnikom.
     \item Vsak podpisnik s pomočjo slučajnega oraklja izračuna izziv 
         $$ 
-        e = H(\tilde{X} || m || S)
+        e = H(\text{enc}(\tilde{X}) || m || S)
         $$
         in svoje \textit{individualne podpise} 
         $$ 
@@ -1510,7 +1568,7 @@ krogi komunikacije:
 Preverjanje veljavnosti podpisa je podobno kot pri navadnemu Schnorrovemu podpisu. Da preverimo 
 podpis $(\tilde{X}', \tilde{y}')$ sporočila $m$ najprej izračunamo 
 $$ 
-e' = H(\tilde{X}' || m || S)
+e' = H(\text{enc}(\tilde{X}') || m || S)
 $$ 
 in preverimo, če velja 
 \begin{equation}
@@ -1557,7 +1615,7 @@ $\Z_p^*$.
         \item naključni element $g \in \Z_p^*$ reda $q$,
         \item naključni element $I$ iz podgrupe $\Z_p^*$, ki jo generira $g$.
     \end{itemize}
-    Naj $p_k^A$ označuje verjetnost, da $A$ vrne $s \in [0, q - 1]$, tako da velja
+    Naj $p_k^A$ označuje verjetnost, da $A$ vrne $s \in \Z_q$, tako da velja
     $$
     I \equiv g^s \pmod p.
     $$
@@ -1574,7 +1632,7 @@ Pri obravnavi večstranskega Schnorrovega podpisa bomo torej predpostavili, da d
 Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso
 komunikacijo, lahko v tej fazi enostavno počaka, da vsi podpisniki ustvarijo svoje ključe. Na tej
 točki napadalec stopi v vlogo zadnjega podpisnika $P_L$ in generira nov par ključev.
-Če si torej izbere naključen $s \in [0, q- 1]$, lahko izračuna svoj javni ključ kot
+Če si torej izbere naključen $s \in \Z_q$, lahko izračuna svoj javni ključ kot
 $$
 I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \pmod p.
 $$
@@ -1614,7 +1672,7 @@ in na podlagi naključno izbrane vrednosti $r_i$ tudi zavezo $X_i = g^{r_i} \pmo
 pri dokazu znanja brez razkritja znanja. Potem si vsi podpisniki izmenjajo javne ključe $I_i$ in
 zaveze $X_i$. Vsak podpisnik lahko sedaj izračuna \textit{skupni izziv}
 $$
-e = H(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L).
+e = H(\text{enc}(X_1) || I_1 || \text{enc}(X_2) || I_2 || \dots || \text{enc}(X_L) || I_L).
 $$
 Podpisniki nato dokončajo svoj dokaz na podlagi zgostitve $e$ in svojega para ključev.
 
@@ -1747,12 +1805,12 @@ $H_2(2^k), H_2(2^k + 1), \dots$
 
 \subsubsection{Generiranje ključev}
 Ko ima vsak podpisnik $P_i$ ($1 \le i \le L$) na voljo skupne parametre, si enakomerno naključno
-izbere svoj zasebni ključ $s_i \in [0, q - 1]$ in izračuna
+izbere svoj zasebni ključ $s_i \in \Z_q$ in izračuna
 $$ 
 I_i = g^{s_i} \bmod p.
 $$
 Do tu je postopek enak, kot pri naivni verziji. Da preprečimo napad na generiranje ključev, mora
-vsak podpisnik na tem mestu izbrati naključen $r_i \in [0, q- 1]$ in izračunati zavezo
+vsak podpisnik na tem mestu izbrati naključen $r_i \in \Z_q$ in izračunati zavezo
 $$
 X_i = g^{r_i} \bmod p.
 $$
@@ -1787,7 +1845,7 @@ $$
 Naj bo $S = \{P_{id_1}, P_{id_2}, \dots, P_{id_l}\}$ podskupina velikosti $l$ skupine $P$, ki želi
 večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikacije:
 \begin{enumerate}
-    \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ si izbere naključno število $r_j \in [0, q - 1]$ 
+    \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ si izbere naključno število $r_j \in \Z_q$
         in izračuna zavezo
         $$ 
         X_j = g^{r_j} \bmod p.
@@ -2016,7 +2074,7 @@ napadalca, shema pa je potem tudi varna po izreku~\ref{izr:šibka-varnost}.
 parametru $k$, potem obstaja nek algoritem $A$, imenovan simulator, ki prav tako teče v polinomskem
 času, s katerim lahko prekršimo predpostavko o diskretnem logaritmu pri ASM.
 
-Konstruirali bomo algoritem $A$, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in [0, q - 1]$,
+Konstruirali bomo algoritem $A$, ki za vhod prejme $p, q, g$ in $I$, in vrne $s \in \Z_q$,
 da velja $g^s \equiv I \pmod q$. Ideja je, da $A$ simulira proces podpisovanja, ki ga napada šibek
 napadalec $F'$. Cilj algoritma $A$ je, da iz vrnjenega ponarejenega podpisa, pridobljenega ob
 uspešnem napadu, razbere diskretni logaritem, ki ga išče. Za doseganje tega cilja mora algoritem $A$
@@ -2067,7 +2125,7 @@ $m$ in $S$ je malce bolj zapleten. Algoritem $A$ stori sledeče:
     \item Shrani konfiguracijo poenostavljenega napadalca $\mathcal{F}$.
     \item \label{rewind} Si izbere naključen odgovor $e_j$ ($1 \le j \le q_H$) oraklja $H_5$, 
         v upanju, da bo to zgostitev, ki bo identificirala to poizvedbo.
-    \item Si izbere naključen $y \in [0, q - 1]$.
+    \item Si izbere naključen $y \in \Z_q$.
     \item Izračuna 
         $$
         X_i = I_i^{-e_j}g^y \bmod p
@@ -2135,7 +2193,7 @@ izlušči odgovor na dani problem diskretnega logaritma.
 \label{izr:forking}
     Naj bo $\mathcal{S}$ podpisna shema, ki vrača dvodelne podpise $\sigma = (\sigma_1, \sigma_2)$,
     kjer $\sigma_2$ temelji na zgostitvi vhodnega sporočila $m$ in $\sigma_1$ (npr.\ pri Schnorrovem 
-    podpisu je ta zgostitev izziv  $e = H(X || m)$). Naj slučajni orakelj $H$ vrača zgostitve
+    podpisu je ta zgostitev izziv  $e = H(\text{enc}(X) || m)$). Naj slučajni orakelj $H$ vrača zgostitve
     dolžine $n$. Varnostni parameter naj bo $k$, tako da velja $n \gg \log(k)$.
 
     Naj bo $F$ naključnostni polinomski algoritem, ki ima na voljo vse javne podatke pri podpisni
