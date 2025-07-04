@@ -510,8 +510,8 @@ bit, mora pri naslednjem klicu prebrati naslednji bit.
             $$ 
             \mathcal{V}(\text{pk}, m, \sigma) =
             \begin{cases}
-                veljaven, \\
-                neveljaven.
+                veljaven, & \text{podpis veljaven}, \\
+                neveljaven, & \text{sicer}.
             \end{cases}
             $$
             Podpis $\sigma$ sporočila $m$ je veljaven, če je bil ustvarjen z uporabo algoritma
@@ -934,11 +934,11 @@ za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
     $$
     e = H(\text{enc}(X) || m).
     $$
-    Za konec je potrebno izračunati še 
+    Za konec je potrebno izračunati še
     $$ 
-    y = es + r,
+    y = es + r \bmod q,
     $$
-    podpis sporočila $m$ pa je potem par $(X, y)$ oz.\ 
+    podpis sporočila $m$ pa je potem par $(X, y)$ oz.\
     $$ 
     \mathcal{S}(s, m) = (X, y).
     $$
@@ -1395,7 +1395,7 @@ da sporočila niso nujno vsa enaka~\cite{boneh2011aggregate}.
 \label{sec:multischnorr}
 Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali
 formalni dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si formalni model za večstranske
-podpise, in ga poimenovali \textbf{večstranski podpis podskupine z odgovornostjo} (angl.\
+podpise in ga poimenovali \textbf{večstranski podpis podskupine z odgovornostjo} (angl.\
 \textit{Accountable-Subgroup Multisignature (ASM)}). V tem razdelku predstavimo njihov model, primer
 večstranskega podpisa, ki temelji na Schnorrovem podpisu, in argumentiramo varnost podpisa oz.\
 modela na sploh.
@@ -1422,25 +1422,27 @@ $m$. V tem razdelku predstavimo osnovno idejo ASM.
     Kot vsi digitalni podpisi iz definicije~\ref{def:digisig}, ima tudi ta štiri glavne komponente:
     \begin{itemize}
         \item $\mathcal{P}$ je algoritem za ustvarjanje parametrov. Pognan je samo enkrat, na začetku
-            sodelovanja. Vrne parametre $(G, q, g)$, kjer je $G$ grupa reda $q$, ki jo generira
-            $g$. Velikost parametrov je odvisna od varnostnega parametra $k$. Velja torej
+            sodelovanja. Vrne javne parametre sheme $\text{Par}$. Velikost parametrov je odvisna od
+            varnostnega parametra $k$. Velja torej
             $$
-            \mathcal{P}(k) = (G, q, g).
+            \mathcal{P}(k) = \text{Par}.
             $$
         \item $\mathcal{G}$ je algoritem za ustvarjanje ključev. Za neko skupino podpisnikov $P$ je pognan samo
             enkrat, na začetku sodelovanja. Vsak podpisnik $P_i$ dobi kot vhod seznam vseh podpisnikov v $P$
-            in požene $\mathcal{G}$, ki vrne par ključev $(\text{pk}_i, \text{sk}_i)$. Zapišemo lahko torej
+            in parametre podpisne sheme $\text{Par}$ ter požene algoritem $\mathcal{G}$, ki vrne par ključev
+            $(\text{pk}_i, \text{sk}_i)$. Zapišemo lahko torej
             $$
-            \mathcal{G}_i(L) = (\text{pk}_i, \text{sk}_i),
+            \mathcal{G}_i(L, \text{Par}) = (\text{pk}_i, \text{sk}_i),
             $$
-            kjer smo brez škode za splošnost predpostavili, da velikost skupine $L$ enolično opiše
-            skupino $P$ (npr.\ vsak podpisnik je predstavljen z indeksom v skupini).
+            kjer smo brez škode za splošnost predpostavili, da je vsak podpisnik enolično predstavljen
+            s svojim indeksom $i \in \{1, 2, \dots, L\}$ v skupini $P$.
         \item $\mathcal{S}$ je protokol za podpisovanje. Pognan je vsakič, ko neka podskupina $S$ želi
-            ustvariti podpis. Vsak podpisnik kot vhod prejme seznam vseh podpisnikov $S$, njihove
-            javne ključe $\text{pk}_j$, kjer $j$ teče po identifikacijskih številkah vseh članov $S$,
-            sporočilo $m$ in lasten zasebni ključ $\text{sk}_i$. Algoritem $\mathcal{S}$ je porazdeljen
-            protokol, pri izvedbi morajo sodelovati vsi člani $S$, ki med seboj komunicirajo. Po
-            uspešni izvedbi lahko en od članov objavi podpis $\sigma$.
+            ustvariti podpis. Vsak podpisnik požene algoritem $\mathcal{S}$ s seznamom vseh podpisnikov
+            $S$, njihovimi javnimi ključi $\text{pk}_j$, kjer $j$ teče po identifikacijskih številkah
+            vseh članov $S$, sporočilom $m$ in lastnim zasebnim ključem $\text{sk}_i$ kot vhodnimi
+            podatki. Algoritem $\mathcal{S}$ je porazdeljen protokol, pri izvedbi morajo sodelovati
+            vsi člani $S$, ki med seboj komunicirajo. Po uspešni izvedbi lahko en od članov objavi
+            podpis $\sigma$.
         \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
             preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $P$. 
             Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
@@ -1457,7 +1459,7 @@ $m$. V tem razdelku predstavimo osnovno idejo ASM.
 
 \subsubsection{Robustnost, varnost in napadalec}
 Večstranski podpis iz definicije~\ref{def:asm} ni \textit{robusten}. To pomeni, da v primeru izpada
-jenega od podpisnikov $P_i$, ki je del podskupine $S$, ta ne more ustvariti večstranskega podpisa.
+enega od podpisnikov $P_i$, ki je del podskupine $S$, ta ne more ustvariti večstranskega podpisa.
 Podpis še vedno lahko ustvari $S \setminus \{P_i\}$. Ker pri končni shemi ne iščemo robustnosti,
 lahko definiramo zelo močnega napadalca, ki ima velik vpliv na celoten sistem.
 \begin{definicija}[Napadalec pri ASM]
@@ -1495,9 +1497,10 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
     \end{itemize}
     Shemi za večstranske 
     podpise podskupine z odgovornostjo bomo rekli, da je \textbf{varna}, če je verjetnost $p$ zanemarljiva,
-    oz.\ velja
+    oz.\ če za vsakega polinomsko omejenega napadalca $F$ obstaja zanemarljiva funkcija $\varepsilon$,
+    da velja
     $$ 
-    p < k^{-c}.
+    p < \varepsilon(k).
     $$
 \end{definicija}
 
@@ -1521,10 +1524,10 @@ privede do formalne definicije v razdelku~\ref{sec:def_multi_schnorr} in dokaza 
 razdelku~\ref{sec:proof_multi_schnorr}.
 
 \subsubsection{Naivna verzija}
-Vsi podpisniki v skupini $P$ poznajo skupne parametre $p, q$ in $g$. Vsak podpisnik $P_i$ si 
-neodvisno in naključno izbere skrivno število $s_i \in \Z_q$ in izračuna 
-$$ 
-I_i = g^{s_i} \bmod p.
+Vsi podpisniki v skupini $P$ se strinjajo o izboru končne grupe $G$ reda $q$, ki jo generira generator
+$g$. Vsak podpisnik $P_i$ si neodvisno in naključno izbere skrivno število $s_i \in \Z_q$ in izračuna 
+$$
+I_i = g^{s_i}.
 $$
 Tako vsak podpisnik ustvari svoj par ključev
 \begin{align*}
@@ -1535,15 +1538,15 @@ Tako vsak podpisnik ustvari svoj par ključev
 Poljubna podskupina $S =\{P_{id_1}, \dots, P_{id_l}\}$ skupine $P$ podpiše sporočilo $m$ s tremi 
 krogi komunikacije:
 \begin{enumerate}
-    \item Vsak podpisnik $P_i$ iz podskupine $S$ si izbere naključen element $r_i \in \Z_q$ 
-        in izračuna zavezo 
-        $$ 
-        X_i = g^{r_i} \bmod p.
+    \item Vsak podpisnik $P_i$ iz podskupine $S$ si izbere naključen element $r_i \in \Z_q$
+        in izračuna zavezo
+        $$
+        X_i = g^{r_i}.
         $$
         Podpisniki potem pošljejo svoje zaveze izbranemu podpisniku $D$. 
     \item $D$ izračuna \textit{skupno zavezo} 
         $$ 
-        \tilde{X} = (X_{id_1} \cdot X_{id_2} \cdot \cdots \cdot X_{id_l}) \bmod p.
+        \tilde{X} = X_{id_1} \cdot X_{id_2} \cdot \cdots \cdot X_{id_l}.
         $$
         in jo pošlje vsem podpisnikom.
     \item Vsak podpisnik s pomočjo slučajnega oraklja izračuna izziv 
@@ -1567,98 +1570,110 @@ krogi komunikacije:
 
 Preverjanje veljavnosti podpisa je podobno kot pri navadnemu Schnorrovemu podpisu. Da preverimo 
 podpis $(\tilde{X}', \tilde{y}')$ sporočila $m$ najprej izračunamo 
-$$ 
+$$
 e' = H(\text{enc}(\tilde{X}') || m || S)
-$$ 
-in preverimo, če velja 
+$$
+in preverimo, če velja
 \begin{equation}
 \label{eq:naive-ver}
-g^{\tilde{y}'} \stackrel{?}{\equiv} \tilde{X}' \cdot \left(\prod_{P_i \in S} I_i \right)^{e'} \pmod p.
+g^{\tilde{y}'} \stackrel{?}{=} \tilde{X}' \cdot \left(\prod_{P_i \in S} I_i \right)^{e'}.
 \end{equation}
 
 \subsubsection{Generiranje parametrov in Predpostavka DL}
 Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo.
-Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa $p, q$ in $g$. Ker si podpisniki
+Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa. Ker si podpisniki
 delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za parametre uporabiti
 $H$ na vnaprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih
 parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo,
-da to ne predstavlja nevarnosti. Za generiranje lahko uporabimo standarden algoritem za pridobivanje
-praštevil~\ref{alg:gen}.
-\begin{algorithm}
-    \caption{Algoritem $GenPrimes(k)$ za generiranje praštevil.}
-    \label{alg:gen}
-    \begin{algorithmic}
-        \State $q \gets \text{naključno izbrano $k$-bitno število}$
-        \State $p \gets 2q + 1$
-        \While{$q$ ni praštevilo in $p$ ni praštevilo}
-            \State $q \gets \text{naključno izbrano $k$-bitno število}$
-            \State $p \gets 2q + 1$
-        \EndWhile
-        \State \Return{$p, q$}
-    \end{algorithmic}
-\end{algorithm}
+da to ne predstavlja nevarnosti.
 
 Ker pa je pri uporabi kriptografije standardno, da se uporabi znane, vnaprej definirane grupe, se
 s problemom generiranja parametrov ne bomo ukvarjali. Enostavno predpostavimo, da imajo podpisniki
 dostop do skupnih, varnih parametrov.
 
 Ker podpis temelji na Schnorrovem, varnost temelji na težavnosti diskretnega logaritma. Predpostavka
-o varnosti je standardna predpostavka o težavnosti diskretnega logaritma, prilagojena za
-multiplikativne grupe
-$\Z_p^*$.
+o varnosti je tako standardna predpostavka o težavnosti diskretnega logaritma, predstavljena v
+definiciji~\ref{def:dl}. Pri obravnavi sheme torej predpostavimo, da je $G$ grupa, v kateri je
+izračun diskretnega logaritma težaven.
 
-\begin{definicija}[Predpostavka o težavnosti diskretnega logaritma pri ASM]
-\label{def:asm_dlp}
-    Naj bo $A$ poljuben naključnostni algoritem, ki teče v polinomskem času in svoje parametre sprejme 
-    \begin{itemize}
-        \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
-        \item naključni element $g \in \Z_p^*$ reda $q$,
-        \item naključni element $I$ iz podgrupe $\Z_p^*$, ki jo generira $g$.
-    \end{itemize}
-    Naj $p_k^A$ označuje verjetnost, da $A$ vrne $s \in \Z_q$, tako da velja
-    $$
-    I \equiv g^s \pmod p.
-    $$
-    Potem za vsako konstanto $c > 0$ in za vsak dovolj velik $k$ velja, da je verjetnost $p_k^A$
-    zanemarljiva, oz.\
-    $$ 
-    p_k^A < k^{-c}.
-    $$
-\end{definicija}
+\begin{primer}[Generianje parametrov v grupi $\Z_p^*$]
+    V najosnovnejši obliki podpisa uporabimo grupo $\Z_p^*$, kjer je $p$ praštevilo. Za delovanje
+    potrebujemo še praštevilo $q$, ki deli $p - 1$. Za generiranje lahko uporabimo standarden algoritem
+    za pridobivanje praštevil~\ref{alg:gen}.
+    \begin{algorithm}
+        \caption{Algoritem $GenPrimes(k)$ za generiranje praštevil.}
+        \label{alg:gen}
+        \begin{algorithmic}
+            \State $q \gets \text{naključno izbrano $k$-bitno število}$
+            \State $p \gets 2q + 1$
+            \While{$q$ ni praštevilo in $p$ ni praštevilo}
+                \State $q \gets \text{naključno izbrano $k$-bitno število}$
+                \State $p \gets 2q + 1$
+            \EndWhile
+            \State \Return{$p, q$}
+        \end{algorithmic}
+    \end{algorithm}
 
-Pri obravnavi večstranskega Schnorrovega podpisa bomo torej predpostavili, da drži definicija~\ref{def:asm_dlp}.
+    Kot primer predstavimo še točno predpostavko o težavnosti diskretnega logaritma v grupi $\Z_p^*$.
+    \begin{definicija}[Predpostavka o težavnosti diskretnega logaritma pri ASM v grupi $\Z_p^*$]
+    \label{def:asm_dlp}
+        Naj bo $A$ poljuben naključnostni algoritem, ki teče v polinomskem času in svoje parametre sprejme 
+        \begin{itemize}
+            \item praštevili $p$ in $q$, da velja $p = 2q + 1$ in $q$ je dolg $k$-bitov,
+            \item naključni element $g \in \Z_p^*$ reda $q$,
+            \item naključni element $I$ iz podgrupe $\Z_p^*$, ki jo generira $g$.
+        \end{itemize}
+        Naj $p_k^A$ označuje verjetnost, da $A$ vrne $s \in \Z_q$, tako da velja
+        $$
+        I \equiv g^s \pmod p.
+        $$
+        Potem za vsako konstanto $c > 0$ in za vsak dovolj velik $k$ velja, da je verjetnost $p_k^A$
+        zanemarljiva, oz.\ da obstaja zanemarljiva funkcija $\varepsilon$, za katero velja
+        $$ 
+        p_k^A < \varepsilon(k).
+        $$
+    \end{definicija}
+
+\end{primer}
 
 \subsubsection{Napad na generiranje ključev}
 Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso
 komunikacijo, lahko v tej fazi enostavno počaka, da vsi podpisniki ustvarijo svoje ključe. Na tej
-točki napadalec stopi v vlogo zadnjega podpisnika $P_L$ in generira nov par ključev.
+točki napadalec stopi v vlogo (torej pokvari) zadnjega podpisnika $P_L$ in generira nov par ključev.
 Če si torej izbere naključen $s \in \Z_q$, lahko izračuna svoj javni ključ kot
 $$
-I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \pmod p.
+I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s.
 $$
 To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj se bodo pri množenju v
-enačbi~\eqref{eq:naive-ver} za preverjanje tako izničil vsi ostali javni ključi.
+enačbi~\eqref{eq:naive-ver} za preverjanje tako izničil vsi ostali javni ključi:
+\begin{align*}
+    g^{\tilde{y}} &\stackrel{?}{=} \tilde{X} \cdot \left(\prod_{i=1}^L I_i \right)^{e}. \\
+                   &\stackrel{?}{=} \tilde{X} \cdot \left(\left(\prod_{i=1}^{L-1} I_i \right) \cdot I_L \right)^{e}. \\
+                   &\stackrel{?}{=} \tilde{X} \cdot \left(\left(\prod_{i=1}^{L-1} I_i \right) \cdot \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s \right)^{e}. \\
+                   &\stackrel{?}{=} \tilde{X} \cdot \left( g^s \right)^{e}. \\
+\end{align*}
+To pomeni, da na veljavnost podpisa vpliva samo napadalec, torej lahko ponaredi katerikoli podpis.
 
-Za rešitev tega problema se lahko zanesemo na dokaze o znanju brez razkritja znanja.
-Torej, da preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg
-svojega javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ
-glede na javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $I_i$ modulo $g$.
-Ta dokaz je neinteraktiven, saj obravnavmo model slučajnega oraklja in lahko uporabimo Fiat-Shamirjevo
+Za rešitev tega problema lahko uporabimo na dokaze o znanju brez razkritja znanja. Torej, da
+preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg svojega
+javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ glede na
+javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $I_i$ z bazo $g$. Ta dokaz je
+neinteraktiven, saj obravnavmo model slučajnega oraklja in lahko uporabimo Fiat-Shamirjevo
 hevristiko~\ref{sec:fiat-shamir}.
 
-Ker tovrstni dokazi brez preverjevalca nimajo smisla, se na tej točki vredno vprašati, kdo bo preverjal
+Ker tovrstni dokazi brez preverjevalca nimajo smisla, se je na tej točki vredno vprašati, kdo bo preverjal
 veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe.
 Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka
-sprememba podaljša javne ključe in privede do izgube učinkovitosti. Preverjanje veljavnosti podpisa 
-bo sedaj poleg dveh modularnih potenciranj, ki sta v enačbi~\eqref{eq:schnorr-ver} potrebni za
-preverjanje standarnega Schnorrovega podpisa, potrebovalo še dodatnih $2|S|$, saj je potrebno
+sprememba podaljša javne ključe in privede do izgube učinkovitosti. Preverjanje veljavnosti podpisa
+bo sedaj poleg dveh potenciranj, ki sta v enačbi~\eqref{eq:schnorr-ver} potrebni za preverjanje
+standarnega Schnorrovega podpisa, potrebovalo še dodatnih $2|S|$ potenciranj, saj je potrebno
 preveriti vse dokaze javnih ključev, kar ustreza preverjanju $|S|$ Schnorrovih podpisov. Posamezni
 preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat za vsako skupino, če natančno beleži
 rezultate preverjanja dokazov.
 
 \subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
-Kot bomo videli, je za dokaz varnosti potrebno, da lahko simulator (torej algoritem, ki bo simuliral
-proces podpisovanja napadalcu), v polinomskem času za vsakega pokvarjenega podpisnika $P_j$ pridobi
+Kot bomo videli, je za dokaz varnosti potrebno, da lahko algoritem $\mathcal{A}$, ki bo simuliral
+proces podpisovanja napadalcu, v polinomskem času za vsakega pokvarjenega podpisnika $P_j$ pridobi
 diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, da če
 bo $P_j$ dokaz izračunal s $q$ klici slučajnega oraklja, potem bo simulator uspešno pridobil diskretni
 logaritem z verjetnostjo največ $1/q$. Še več, če je $b$ pokvarjenih podpisnikov, bo simulator
@@ -2066,7 +2081,7 @@ Ker sta napadalec in šibek napadalec ekvivalentna, je dovolj pokazati varnost v
 napadalca, shema pa je potem tudi varna po izreku~\ref{izr:šibka-varnost}.
 
 \begin{izrek}[Varnost večstranskega Schnorrovega podpisa]
-    Če drži predpostavka o težavnosti diskretnega logaritma pri ASM~\ref{def:asm_dlp}, je večstranski 
+    Če drži predpostavka o težavnosti diskretnega logaritma pri ASM~\ref{def:dl}, je večstranski 
     Schnorrov podpis, definiran v razdelku~\ref{sec:def_multi_schnorr}, varen.
 \end{izrek}
 
