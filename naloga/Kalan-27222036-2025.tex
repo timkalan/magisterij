@@ -341,7 +341,7 @@ nemogoče najti dva različna niza z enako zgostitvijo. Natančno zgoščevalne 
         \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
             zelo težko najdemo drug niz z enako zgostitvijo. Če torej poznamo niz $m_1$ z zgostitvijo
             $h_1$, je računsko neizvedljivo najti zgostitev $m_2$, da velja $H(m_2) = h_1$.
-        \item \textbf{Odpornost na trčenja} pomeni, da je računsko neizvedljivo najti dva niza $m_1$
+        \item \textbf{Odpornost na trke} pomeni, da je računsko neizvedljivo najti dva niza $m_1$
             in $m_2$, ki imata enako zgostitev, oz.,\ da velja $H(m_1) = H(m_2)$.
         \item \textbf{Učinek plazu} pomeni, da vsaka sprememba v vhodnem nizu povzroči veliko in
             nepredvidljivo spremembo v zgostitvi. Če spremenimo en bit v vhodnem nizu, v povprečju
@@ -882,7 +882,7 @@ Hevristika torej deluje samo v modelu slučajnega oraklja.
     dovolj podatkov, da tudi sam izračuna vrednost zgostitve in preveri enakost.
 
     Fiat-Shamirjeva hevristika tu ohranja varnost, saj dokazovalec še vedno ne more izračunati
-    prepričljivega odgovora, preden izračuna zavezo (razen, če najde trčenje v $H$). Nekaj bitov
+    prepričljivega odgovora, preden izračuna zavezo (razen, če najde trk v $H$). Nekaj bitov
     varnosti se vseeno izgubi, ker napadalcu ni potrebno več čakati na odgovore, pač pa lahko izračuna
     poljubno mnogo zgostitev. Ob dovolj velikih parametrih to dejstvo ne predstavlja težav. Varnost bomo
     dokazali v razdelku~\ref{sec:schnorr-sec}.
@@ -1531,7 +1531,7 @@ I_i = g^{s_i}.
 $$
 Tako vsak podpisnik ustvari svoj par ključev
 \begin{align*}
-    \text{pk}_i &= (p, q, g, I_i), \\
+    \text{pk}_i &= (q, g, I_i), \\
     \text{sk}_i &= s_i.
 \end{align*}
 
@@ -1676,38 +1676,38 @@ Kot bomo videli, je za dokaz varnosti potrebno, da lahko algoritem $\mathcal{A}$
 proces podpisovanja napadalcu, v polinomskem času za vsakega pokvarjenega podpisnika $P_j$ pridobi
 diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, da če
 bo $P_j$ dokaz izračunal s $q$ klici slučajnega oraklja, potem bo simulator uspešno pridobil diskretni
-logaritem z verjetnostjo največ $1/q$. Še več, če je $b$ pokvarjenih podpisnikov, bo simulator
-uspešen z verjetnostjo največ $1/q^b$. Z drugimi besedami, če želimo polinomski simulator, je
-podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$, ker pa je teh klicev
-lahko največ polinomsko mnogo v varnostnem parametru $k$, je torej število podpisnikov lahko
-največ logaritemsko v $k$.
+logaritem z verjetnostjo največ $1/q$. Še več, če je $b$ pokvarjenih podpisnikov, bo algoritem $\mathcal{A}$
+uspešen z verjetnostjo največ $1/q^b$. Z drugimi besedami, če želimo, da algoritem $\mathcal{A}$ teče
+v polinomskem času, je podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$. Ker
+pa je teh klicev lahko največ polinomsko mnogo v varnostnem parametru $k$, je torej število podpisnikov
+lahko največ logaritemsko v $k$.
 
 Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$
 in na podlagi naključno izbrane vrednosti $r_i$ tudi zavezo $X_i = g^{r_i} \pmod p$, ki bi jo uporabil
 pri dokazu znanja brez razkritja znanja. Potem si vsi podpisniki izmenjajo javne ključe $I_i$ in
 zaveze $X_i$. Vsak podpisnik lahko sedaj izračuna \textit{skupni izziv}
 $$
-e = H(\text{enc}(X_1) || I_1 || \text{enc}(X_2) || I_2 || \dots || \text{enc}(X_L) || I_L).
+e = H(\text{enc}(X_1) || \text{enc}(I_1) || \text{enc}(X_2) || \text{enc}(I_2) || \dots || \text{enc}(X_L) || \text{enc}(I_L)).
 $$
 Podpisniki nato dokončajo svoj dokaz na podlagi zgostitve $e$ in svojega para ključev.
 
 Kot bomo videli, bo to pomenilo, da za generiranje dokazov $b$ pokvarjenih podpisnikov sedaj rabi le
-$bq$ klicev oraklja, torej je polinomski simulator uspešen z verjetnostjo $1/bq$. To omogoča, da je
-podpisnikov več kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo, saj mora
-sedaj vsak podpisnik v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa tudi vse
-javne ključe sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja (Schnorrov podpis)
-ni preverljiv. To pomeni, da je za katerokoli podskupino $S$ velikost ključa proporcionalna velikosti
-celotne skupine $P$. Poleg tega mora sedaj preverjevalec preveriti, da se vsi seznami javnih ključev
-ujemajo. V primerjavi z osnovno naivno idejo, kjer je preverjevalec potreboval le $|S|$ navadnih
+$bq$ klicev oraklja, torej je polinomski algoritem $\mathcal{A}$ uspešen z verjetnostjo $1/bq$. To
+omogoča, da je podpisnikov več kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo,
+saj mora sedaj vsak podpisnik v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa
+tudi vse javne ključe sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja (Schnorrov
+podpis) ni preverljiv. To pomeni, da je za katerokoli podskupino $S$ velikost ključa proporcionalna
+velikosti celotne skupine $P$. Poleg tega mora sedaj preverjevalec preveriti, da se vsi seznami javnih
+ključev ujemajo. V primerjavi z osnovno naivno idejo, kjer je preverjevalec potreboval le $|S|$ navadnih
 Schnorrovih javnih ključev, je v tej izvedbi velikost javnega ključa nedopustno velika.
 
-Da nazaj pridobimo učinkovit podpis, se lahko zanesemo na slučajnega oraklja in kriptografsko 
-orodje, imenovano \textbf{Merklovo drevo} (angl.\ \textit{Merkle tree}). V osnovi je to 
-\textit{binarno drevo}, torej drevo, kjer ima vsako vozlišče največ dva otroka. Ideja je, da v liste 
-shranimo zgostitve katerekolih podatkov, pridobljene s pomočjo izbranega slučajnega oraklja ali zgoščevalne 
-funkcije. Drevo potem gradimo navzgor tako, da v vsako vozlišče shranimo zgostitev stika zgostitev levega in desnega 
-otroka. Tako nadaljujemo do korena. Pomembno je, da je za pridobivanje zgostitev uporabljena zgoščevalna 
-funkcija, ki je skoraj brez trčenj ali pa slučajni orakelj. Osnovna 
+Da nazaj pridobimo učinkovit podpis, lahko uporabimo slučajnega oraklja in kriptografsko
+orodje, imenovano \textbf{Merklovo drevo} (angl.\ \textit{Merkle tree}). V osnovi je to
+\textit{binarno drevo}, torej drevo, kjer ima vsako vozlišče največ dva otroka. Ideja je, da v liste
+shranimo zgostitve katerekolih podatkov, pridobljene s pomočjo izbranega slučajnega oraklja ali zgoščevalne
+funkcije. Drevo potem gradimo navzgor tako, da v vsako vozlišče shranimo zgostitev stika levega in desnega
+otroka. Tako nadaljujemo do korena. Pomembno je, da je za pridobivanje zgostitev uporabljena zgoščevalna
+funkcija, za katero je računsko neizvedljivo najti trk, ali pa slučajni orakelj. Osnovna
 struktura je prikazana na sliki~\ref{fig:merkle}.
 \begin{figure}[ht]
   \centering
@@ -1772,6 +1772,13 @@ vrednosti prave. Povzeto po~\cite{micali2000csproofs}.
     \end{itemize}
 \end{dokaz}
 
+Varnost Merklovih dreves temelji na odpornosti zgoščevalne funkcije proti trkom. Ker je vsako vozlišče
+drevesa zgostitev kombinacije otrok, se kakršnakoli sprememba v drevesu prenese v spremembo korena.
+Torej javna objava korena zaveže objavitelja k vrednostim v listih. Da bi lahko spremenil vrednost
+lista brez spremembe korena, bi moral najdi trk v zgoščevalni funkciji, in zamenjati vrednost lista
+z vrednostjo, ki daje enako zgostitev. Če so uporabljene varne zgoščevalne funkcije, je to računsko
+neizvedljivo.
+
 Merklova drevesa lahko sedaj uporabimo, da naredimo večstranski podpis bolj učinkovit. Podpisniki
 še vedno predložijo dokaze znanja prek Schnorrovega podpisa, po izmenjavi dokazov pa vsak izračuna
 Merklovo drevo z listi $I_1, I_2, \dots, I_L$. To drevo bo torej globine $\log L$. Za svoj javni
@@ -1781,10 +1788,10 @@ ne podaljša veliko (npr.\, če je $I_i$ dolg $2000$ bitov in so zgostitve $200$
 podpisnikov ustvarilo ključe, dolge manj od $4000$ bitov, torej manj kot dvakrat daljše).
 
 Ko sedaj preverjevalec preverja podpis sporočila $m$ s strani $S$, lahko za vsakega podpisnika
-izračuna vrednost korena Merklovega drevesa in preveri, da se vse ujemajo. Obstoj enega nepokvarjenega
-podpisnika tako prisili vse pokvarjene, da uporabljajo prave ključe (ali pa najdejo trk v
-zgoščevalni funkciji, kar je izjemno težko). S to spremembo smo tako uspešno ohranili podpise
-varne in časovno učinkovite.
+izračuna vrednost korena Merklovega drevesa in preveri, da koreni za vse podpisnike ujemajo. Obstoj
+enega nepokvarjenega podpisnika tako prisili vse pokvarjene, da uporabljajo prave ključe (ali pa
+najdejo trk v zgoščevalni funkciji, kar je izjemno težko). S to spremembo smo tako uspešno ohranili
+podpise varne in časovno učinkovite.
 
 \subsection{Definicija večstranskega Schnorrovega podpisa}
 \label{sec:def_multi_schnorr}
@@ -1802,10 +1809,9 @@ oraklja $H$. Na dogovorjen način ga uporabijo, da ustvarijo pet neodvisnih orak
     H_3, H_5: \{0, 1\}^* &\rightarrow \{0, 1\}^{k'}, \\
     H_4: \{0, 1\}^* &\rightarrow \{0, 1\}^{2k'}.
 \end{align*}
-Prav tako predpostavimo, da imajo vsi podpisniki dostop do algoritma $GenPrimes$.
 
 Za lažjo obravnavo si izberemo še enega izmed podpisnikov, in ga označimo z $D$. Ta podpisnik bo
-vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. $D$ lahko tudi predstavlja vse podpisnike,
+vrnil končni podpis, ne ve pa nobenih dodatnih skrivnosti. Vlogo $D$ si lahko razdelijo vsi podpisniki,
 a je opis sheme malce lažji, če si izberemo enega -- v tem primeru je on prejemnik vseh sporočil
 ostalih podpisnikov, svoje odgovore pa potem oddaja (angl.\ \textit{broadcast}) ostalim podpisnikom.
 Če si ne izberemo podpisnika $D$, si podpisniki sporočila pošiljajo v krogu (vsak pošlje svoje sporočilo
@@ -1813,39 +1819,45 @@ desnemu sosedu, ko prejme sporočilo levega, spet pošlje desnemu. Vsak torej po
 koncu imajo vsi vse potrebne podatke za izračune).
 
 Kot že omenjeno, v praksi podpisniki uporabijo dobro poznano grupo in zato ne rabijo generirati
-parametrov, kar se pa tiče teoretične obravnave, pa morajo sami generirati parametre $p, q$ in $g$.
-Za prva dva uporabijo algoritem $GenPrimes(k)$. Za izvor naključnosti uporabijo zaporedje $H_1(2^k),
-H_1(2^k + 1), \dots$, Za generiranje elementa $g$ reda $q$ uporabijo izvor naključnosti
-$H_2(2^k), H_2(2^k + 1), \dots$
+parametrov, kar se pa tiče teoretične obravnave, pa morajo sami generirati parametre podpisne sheme.
+V nadaljevanju bomo predpostavili, imajo podpisniki na voljo skupno grupo $G$ reda $q$, ki jo generira
+generator $g$.
+
+\begin{primer}[Generiranje parametrov v grupi $\Z_p^*$]
+    Generiranje parametrov je seveda odvisno od izbrane grupe. V primeru $\Z_p^*$ morajo vsi podpisniki
+    generirati parametre $p$, $q$ in $g$. Za prva dva uporabijo algoritem $GenPrimes(k)~\ref{alg:gen}$.
+    Za izvor naključnosti uporabijo zaporedje $H_1(2^k), H_1(2^k + 1), \dots$, Za generiranje elementa
+    $g$ reda $q$ uporabijo izvor naključnosti $H_2(2^k), H_2(2^k + 1), \dots$
+\end{primer}
 
 \subsubsection{Generiranje ključev}
 Ko ima vsak podpisnik $P_i$ ($1 \le i \le L$) na voljo skupne parametre, si enakomerno naključno
 izbere svoj zasebni ključ $s_i \in \Z_q$ in izračuna
 $$ 
-I_i = g^{s_i} \bmod p.
+I_i = g^{s_i}.
 $$
 Do tu je postopek enak, kot pri naivni verziji. Da preprečimo napad na generiranje ključev, mora
-vsak podpisnik na tem mestu izbrati naključen $r_i \in \Z_q$ in izračunati zavezo
+vsak podpisnik na tem mestu izbrati naključen $u_i \in \Z_q$ in izračunati zavezo
 $$
-X_i = g^{r_i} \bmod p.
+X_i = g^{u_i}.
 $$
 Potem si podpisniki med seboj izmenjajo vrednosti $(X_i, I_i)$. Vsak na tem mestu lahko izračuna
 \begin{align*}
     e &= H_3(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L), \\
-    y_i &= e s_i + r_i,
+    y_i &= e s_i + u_i \bmod q,
 \end{align*}
 in pošlje $y_i$ vsem ostalim podpisnikom.
 
 Na tem mestu ima vsak podpisnik $P_i$ na voljo par $(X_j, y_j)$ vseh ostalih podpisnikov ($1 \le j
 \le L$). Ta par predstavlja Schnorrov podpis in s tem dokaz znanja brez razkritja znanja zasebnega
 ključa $s_j$ glede na javni ključ $I_j$. Ker je izziv $e$ izračunan iz podatkov vseh podpisnikov,
-onemogoča naknadne spremembe ključev. 
+onemogoča naknadne spremembe ključev.
 
 Vsak podpisnik $P_i$ mora preveriti veljavnost vseh podpisov $(X_j, y_j)$ vseh ostalih podpisnikov
 $P_j$ ($1 \le j \le L$). To stori s standardnim izračunom za preverjanje Schnorrovega
 podpisa~\eqref{eq:schnorr-ver}:
 $$
-g^{y_j} \stackrel{?}{\equiv} X_j \cdot I_j^{e} \pmod p.
+g^{y_j} \stackrel{?}{=} X_j \cdot I_j^{e}.
 $$
 
 Ko podpisnik $P_i$ ugotovi, da so vsi podpisi veljavni, lahko izračuna Merklovo drevo, ki ima v
@@ -1853,7 +1865,7 @@ listih po vrsti razporejene $I_1, I_2, \dots, I_L$ in za svojo zgoščevalno fun
 Ko je drevo izračunano, $P_i$ prebere overjevalno pot $\text{pot}_i$ svojega ključa $I_i$ in vrne
 javni ključ
 $$ 
-\text{pk}_i = (p, q, g, I_i, \text{pot}_i).
+\text{pk}_i = (q, g, I_i, \text{pot}_i).
 $$
 
 \subsubsection{Podpisovanje}
@@ -1862,19 +1874,19 @@ večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikaci
 \begin{enumerate}
     \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ si izbere naključno število $r_j \in \Z_q$
         in izračuna zavezo
-        $$ 
-        X_j = g^{r_j} \bmod p.
+        $$
+        X_j = g^{r_j}.
         $$
         Zavezo $X_j$ nato pošlje podpisniku $D$.
     \item $D$ izračuna skupno zavezo
-        $$ 
-        \tilde{X} = (X_1 \cdot X_2 \cdot \cdots \cdot X_l) \bmod p
+        $$
+        \tilde{X} = (X_1 \cdot X_2 \cdot \cdots \cdot X_l)
         $$
         in jo pošlje vsem podpisnikom $P_{id_j} (1 \le j \le l)$.
     \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ izračuna
         \begin{align*}
             e &= H_5(\tilde{X} || m || S), \\
-            y_j &= e s_j + r_j
+            y_j &= e s_j + r_j \bmod q,
         \end{align*}
         in pošlje $y_j$ podpisniku $D$.
 \end{enumerate}
@@ -1894,49 +1906,53 @@ sporočila $m$, moramo predpostaviti, da lahko dostopa do vseh javnih ključev $
 \text{pk}_{id_2}, \dots, \text{pk}_{id_l}\}$ vseh podpisnikov $S = \{P_{id_1}, P_{id_2}, \dots, 
 P_{id_l}\}$.
 
-Najprej mora preverjevalec preveriti, da se vseh $l$ izvodov skupnih parametrov $p, q$ in $g$ ujema.
-Da dokončno potrdi veljavnost in ustreznost javnih ključev, za vsakega podpisnika $P_{id_j} (1 \le
-j \le l)$ s pomočjo njegovega javnega ključa $I_{id_j}$ in overjevalne poti $\text{pot}_{id_j}$
-izračuna vrednost v korenu Merklovega drevesa $V_{id_j}$, kot prikazano v trditvi~\ref{trd:overjevalna_pot}.
-Ko izračuna vse vrednosti korenov $V_{id_j}$, mora preveriti, da so res enake. 
+Najprej mora preverjevalec preveriti, da se vseh $l$ izvodov skupnih parametrov $q$ in $g$ ujema (preveri
+torej, da so vsi podpisniki uporabljali enako grupo in generator). Da dokončno potrdi veljavnost in
+ustreznost javnih ključev, za vsakega podpisnika $P_{id_j} (1 \le j \le l)$ s pomočjo njegovega javnega
+ključa $I_{id_j}$ in overjevalne poti $\text{pot}_{id_j}$ izračuna vrednost v korenu Merklovega drevesa
+$V_{id_j}$, kot prikazano v trditvi~\ref{trd:overjevalna_pot}. Ko izračuna vse vrednosti korenov
+$V_{id_j}$, mora preveriti, da so res enake.
 
 Ko se preverjevalec prepriča o veljavnosti ključev, postopa podobno kot pri naivni verziji. Najprej
 mora izračunati
 $$
-\tilde{I}_S = (I_{id_1} \cdot I_{id_2} \cdot \cdots \cdot I_{id_l}) \bmod p.
+\tilde{I}_S = (I_{id_1} \cdot I_{id_2} \cdot \cdots \cdot I_{id_l}).
 $$
 Če si dosledno beleži izračune, lahko preverjevalec ta del preverjanja podpisa opravi le enkrat za
 vsako podskupino podpisnikov $S$.
 
-Potem mora preverjevalec izračunati izziv s pomočjo slučajnega oraklja
+Potem mora preverjevalec izračunati izziv $e$ s pomočjo slučajnega oraklja
 $$
 e = H_5(\tilde{X} || m || S)
 $$
 in preveriti, če velja
 \begin{equation}
 \label{eq:asm-check}
-g^{\tilde{y}} \stackrel{?}{\equiv} \tilde{X} \tilde{I}_S^e \pmod p.
+g^{\tilde{y}} \stackrel{?}{=} \tilde{X} \tilde{I}_S^e.
 \end{equation}
 
 Če je torej podpis $\sigma = (\tilde{X}, \tilde{y})$ veljaven podpis sporočila $m$, lahko levo stran
 enačbe~\eqref{eq:asm-check} zapišemo kot
 \begin{align*}
-    g^{\tilde{y}} \bmod p &= g^{(y_1 + y_2 + \cdots + y_l) \bmod q} \bmod p \\
-                          &\stackrel{\ref{trd:mod-q}}{=} g^{y_1 + y_2 + \cdots + y_l} \bmod p \\
-                          &= g^{e s_1 + r_1 + e s_2 + r_2 + \cdots + e s_l + r_l} \bmod p \\
-                          &= g^{r_1 + r_2 + \cdots r_l} g^{e (s_1 + s_2 + \cdots s_l)} \bmod p,
+    g^{\tilde{y}} &= g^{(y_1 + y_2 + \cdots + y_l) \bmod q} \\
+                  &= g^{y_1 + y_2 + \cdots + y_l} \\
+                  &= g^{e s_1 + r_1 + e s_2 + r_2 + \cdots + e s_l + r_l} \\
+                  &= g^{r_1 + r_2 + \cdots r_l} g^{e (s_1 + s_2 + \cdots s_l)},
 \end{align*}
-desno pa po trditvi~\ref{trd:mod-mn-pt}
+kjer smo pri prehodu iz prve v drugo vrstico uporabili lastnost, da je $g^x = g^{x \bmod q}$. To velja,
+saj lahko po osnovnem izreku o deljenju naravnih števil zapišemo $x = n_x q + r_x$. Če se spomnimo še,
+da je $g$ generator grupe $G$ reda $q$, in torej velja $g^q = 1$, lahko zapišemo
+$$
+g^x = g^{n_x q + r_x} = g^{n_x q} g^{r_x} = 1 \cdot g^{r_x} = g^{n_x q + r_x \bmod q} = g^{x \bmod q}.
+$$
+
+Desno stran enačbe~\eqref{eq:asm-check} pa lahko zapišemo kot
 \begin{align*}
-    \tilde{X} \tilde{I}_S^e \bmod p &= ((X_1 \cdot X_2 \cdot \cdots \cdot X_l) \bmod p)
-        ((I_{id_1} \cdot I_{id_2} \cdot \cdots \cdot I_{id_l}) \bmod p)^e \bmod p \\
-    &=((g^{r_1} \bmod p \cdot g^{r_2} \bmod p \cdot \cdots \cdot g^{r_l} \bmod p) \bmod p) \cdot \\
-    &\cdot ((g^{s_1} \bmod p \cdot g^{s_2} \bmod p \cdot \cdots \cdot g^{s_l} \bmod p) \bmod p)^e \bmod p \\
-    &\stackrel{\ref{trd:mod-mn-pt}}{=} (g^{r_1} \cdot g^{r_2} \cdot \cdots \cdot g^{r_l}) \bmod p) 
-        ((g^{s_1} \cdot g^{s_2} \cdot \cdots \cdot g^{s_l}) \bmod p)^e \bmod p \\
-    &\stackrel{\ref{trd:mod-mn-pt}}{=} (g^{r_1} \cdot g^{r_2} \cdot \cdots \cdot g^{r_l}) 
-        (g^{s_1} \cdot g^{s_2} \cdot \cdots \cdot g^{s_l})^e \bmod p \\
-    &= g^{r_1 + r_2 + \cdots r_l} g^{e (s_1 + s_2 + \cdots s_l)} \bmod p.
+    \tilde{X} \tilde{I}_S^e &= (X_1 \cdot X_2 \cdot \cdots \cdot X_l)
+        (I_{id_1} \cdot I_{id_2} \cdot \cdots \cdot I_{id_l})^e \\
+    &=(g^{r_1} \cdot g^{r_2} \cdot \cdots \cdot g^{r_l})
+        (g^{s_1} \cdot g^{s_2} \cdot \cdots \cdot g^{s_l})^e \\
+    &= g^{r_1 + r_2 + \cdots r_l} g^{e (s_1 + s_2 + \cdots s_l)}.
 \end{align*}
 Ker se leva in desna stran ujemata, enačba~\eqref{eq:asm-check} pravilno preveri pravilnost večstranskega
 Schnorrovega podpisa.
@@ -2336,7 +2352,7 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
     dva para $(m, \sigma)$ in $(m, \sigma')$, kjer sta $\sigma$ in $\sigma'$ veljavna podpisa sporočila
     $m$, ki temeljita na drugačnih zgostitvah. Tu smo uporabili pogoj $n \gg \log(k)$ oz.,\ da je
     dolžina orakljevih odgovorov $n$ veliko večja od varnostnega parametra $k$. Ta pogoj nam zagotavlja,
-    da je veliko različnih oraljevih odgovorov, oz.\ da je verjetnost, da se zgodi trčenje,
+    da je veliko različnih oraljevih odgovorov, oz.\ da je verjetnost, da se zgodi trk,
     zanemarljiva.
 
     Torej, z naključno izbiro $\beta$, $\omega$, $(\rho_1, \dots, \rho_{\beta - 1}), (\rho_\beta, 
