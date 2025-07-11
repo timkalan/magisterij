@@ -1,0 +1,110 @@
+\section{Pregled skupinskih podpisov}
+\label{sec:skpine}
+Ko pridemo do podpisovanja skupin, si lahko zamislimo več različnih rešitev. Micali~\cite{micali2001asm} 
+definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
+\begin{itemize}
+    \item \textbf{Prilagodljivost} (angl.\ \textit{flexibility}): Popolnoma prilagodljiv podpis skupine
+        je takšen, ki ga lahko proizvede katerakoli podskupina originalne skupine podpisnikov. Ko je podpis 
+        preverjen, se mora tisti, ki ga je preveril, odločiti, če je ustrezen del skupine podal svoj podpis. 
+        Popolnoma neprilagodljiv podpis bi bil takšen, ki ga lahko ustvari le celotna skupina ali pa
+        katerkoli član v imenu celotne skupine.
+    \item \textbf{Odgovornost} (angl.\ \textit{accountability}): Če lahko iz podpisa ugotovimo, kateri člani 
+        so sodelovali pri ustvarjanju, nam podpis omogoča odgovornost. Ta lastnost je lahko zaželena, če 
+        se želimo prepričati, ali je ustrezen del skupine sodeloval pri podpisu (npr.\ ali je pri podpisovanju 
+        sodeloval generalni direktor podjetja). V drugih primerih pa si želimo anonimnost posameznih članov 
+        (npr.\ če bi generiranje podpisa predstavljalo nekakšno tajno glasovanje, bi želeli vedeti samo, koliko 
+        članov je sodelovalo).
+\end{itemize}
+
+V nadaljevanju bomo skupino potencialnih podpisnikov (torej podpisnikov, ki imajo možnost sodelovati pri 
+podpisovanju) označili s $P = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
+ustvaril samo del skupine $S \subseteq P$.
+
+\subsection{Skupinski podpisi}
+\textbf{Skupinski podpis} (angl.\ \textit{group signature}) v imenu celotne skupine $P$ ustvari en 
+anonimen član. To torej pomeni, da je podpis popolnoma neprilagodljiv, saj ni možno prisiliti skupine,
+da bi podpis ustvaril več kot en član. Prav tako v splošnem noben član, niti tisti, ki preverja podpis,
+ne more ugotoviti, kdo je podpis ustvaril. Da skupinski podpisi omogočijo vsaj delno odgovornost, 
+skupina določi \textit{vodjo skupine}, ki ima možnost razkriti identiteto podpisnika, če pride do 
+težav. V tem primeru seveda vodja predstavlja atraktivno tarčo za napad. Skupinske podpise sta si
+zamislila Chaum in van Heyst~\cite{chaum1991group}.
+
+\begin{primer}
+    Skupinski podpisi so zelo uporabni v primerih, ko moramo vedeti samo, da neka oseba pripada skupini.
+    Primer je recimo dostop do varovanih območij, kjer je neprimerno, da bi natančno sledili vsem
+    posameznikom, vseeno pa mora biti dostop omejen samo zaposlenim.
+\end{primer}
+
+\subsection{Pragovni podpisi}
+Če želimo zagotoviti, da se s podpisom strinja zadosten delež skupine, lahko uporabimo \textbf{pragovni 
+podpis} (angl.\ \textit{threshold signature}). Ta nam omogoča določeno mero prilagodljivosti, saj lahko 
+katerikoli zadosten delež skupine ustvari podpis. Še vedno je nemogoče upoštevati morebitno hierarhično
+strukturo skupine. Po definiciji pragovnih podpisov, ti ne omogočajo odgovornosti, nekateri celo
+zagotavljajo popolno anonimnost podpisnikov.
+
+Večina pragovnih podpisov temelji na interpolaciji polinoma $(l - 1)$-stopnje z $l$ točkami. Podpis je 
+potem ustvarjen s pomočjo vrednosti polinoma v neki točki. Po interpolaciji se informacija o tem, točno 
+katere točke smo uporabili, izgubi. Take podpise imenujemo tudi \textit{$l$-od-$L$ sheme}.
+
+\begin{primer}
+    Denimo, da ima banka sef, v katerem hrani vse pomembne dokumente in denar. Zaradi
+    izjemne pomembnosti sefa si ne želimo, da bi ga lahko odprla katerakoli posamezna oseba. Če 
+    osebje banke uporabi pragovni podpis, lahko zagotovi, da je pri odpiranju sefa vedno prisotnih
+    več ljudi, vseeno katerih. Vsak zaposleni dobi točko interpolacije, ko se jih zbere dovolj,
+    lahko skupaj ugotovijo vrednost polinoma v vnaprej določeni točki in odklenejo sef.
+\end{primer}
+
+\subsection{Večstranski podpisi}
+\label{sec:multisig}
+Za nekatere uporabe podpisov, bi si od njih želeli podobne lastnosti, kot jih ima večstranski ročen podpis. 
+Pri njem lahko hitro preberemo podpisnike, torej imamo popolno prilagodljivost. Vidimo lahko seznam 
+podpisnikov, torej lahko presodimo, če so med njimi tisti, ki smo jih želeli. Prav tako podpisniki nosijo 
+popolno odgovornost, saj na papirju piše njihovo ime. 
+
+Podoben učinek bi z digitalnimi podpisi lahko dosegli, če bi namesto enega podpisa skupine, od članov 
+zbrali individualne podpise in jih nanizali v seznam. Dobili bi torej digitalni podpis skupine, ki 
+ponuja popolno prilagodljivost in odgovornost. Težava je samo, da je dolžina podpisa (in s tem čas 
+preverjanja) proporcionalna številu podpisnikov. \textbf{Večstranski podpisi} (angl.\textit{multisignatures})
+ohranijo lastnosti seznama podpisov, rezultat sheme je pa en sam podpis, ki je enako dolg ne glede 
+na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. Tega s seznamom podpisov 
+ni mogoče doseči, saj tako dolžina podpisa, kot čas preverjanja podpisa rasteta linearno s številom 
+podpisnikov (vsak doda en podpis seznamu, ki ga je potrebno preveriti). Večstranski podpisi so torej 
+odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito preverjanje.
+
+Še ena pomembna lastnost večstranskih podpisov je, da nekatere sheme vračajo podpise, ki so kar se
+preverjanja tiče, popolnoma zamenljivi z običajnimi digitalnimi podpisi. To omogoča enostavno
+nadgradnjo obstoječih sistemov, ki že uporabljajo digitalne podpise.
+
+\begin{primer}
+    Recimo, da imamo nek organ, ki izdaja certifikate avtentičnosti uporabnikov (npr.\ potrjuje 
+    avtentičnost javnih ključev). Za večjo robustnost in varnost, je lahko ta organ razporejen 
+    na več strežnikov. Tako preprečimo razpad sistema v primeru izpada enega strežnika. Zato je 
+    torej tudi pomembno, da certifikacijo uporabnika potrdi nekaj strežnikov, ne pa nujno vsi. 
+    Tu lahko torej neka podskupina vseh strežnikov organa skupaj izda en večstranski podpis, ki 
+    potrjuje avtentičnost uporabnika.
+\end{primer}
+
+\subsection{Agregirani podpisi}
+Agregirani podpisi imajo zelo podobne lastnosti kot večstranski. Poleg standardnih algoritmov pri digitalnih
+podpisih za ustvarjanje parametrov $\mathcal{P}$, ustvarjanje ključev $\mathcal{G}$, podpisovanje 
+$\mathcal{S}$ in preverjanje $\mathcal{V}$, imajo agregirani podpisi (angl.\ \textit{aggregate signatures})
+še dodaten algoritem za združevanje podpisov $\mathcal{C}$. Ta algoritem prejme seznam trojic javnih
+ključev, sporočil in podpisov, vrne pa en sam podpis. Od večstranskih podpisov se razlikuje po tem,
+da sporočila niso nujno vsa enaka~\cite{boneh2011aggregate}.
+
+\begin{primer}
+    Recimo, da avtentičnost ključev posameznih podpisnikov preverja niz centrov za certificiranje
+    podpisov, kjer vsak naslednji center jamči za avtentičnost centra pod njem. Prvi center zajamči
+    avtentičnost našega ključa, naslednji zajamči avtentičnost centra in tako naprej. Ko bi želel
+    nekdo prejeti naš certificiran javni ključ, bi moral preveriti veljavnost podpisov vseh centrov,
+    s pomočjo agregiranih podpisov bi to lahko storil z enim samim preverjanjem.
+\end{primer}
+
+\section{Večstranski Schnorrov podpis}
+\label{sec:multischnorr}
+Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali
+formalni dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si formalni model za večstranske
+podpise in ga poimenovali \textbf{večstranski podpis podskupine z odgovornostjo} (angl.\
+\textit{Accountable-Subgroup Multisignature (ASM)}). V tem razdelku predstavimo njihov model, primer
+večstranskega podpisa, ki temelji na Schnorrovem podpisu, in argumentiramo varnost podpisa oz.\
+modela na sploh.
