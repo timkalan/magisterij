@@ -18,17 +18,17 @@ skupina skupno podpisala sporočilo, vendar ne razkrivajo, kdo je bil član skup
 pa so sposobni vrniti kratke podpise, ki so v nekaterih primerih celo popolnoma enaki navadnim
 Schnorrovim podpisom~\cite{jonas2020musig2}.
 
-V nadaljevanju poglavja se najprej pogovorimo o varnostnih problemih večstranskih podpisov z dvema
+V nadaljevanju poglavja si najprej ogledamo varnostne probleme večstranskih podpisov z dvema
 krogoma komunikacije, nato pa predstavimo MuSig2, moderno, varno in učinkovito shemo, ki je v
 uporabi danes.
 
 \subsection{Varnost večstranskih podpisov v splošnem}
 \label{sec:varnost}
 Tekom let je bilo predstavljenih več shem večstranskih podpisov, ki so za podpisovanje potrebovale
-le dva kroga komunikacije med podpisniki in so temeljilena Schnorrovem podpisu. Večina je vsebovala
-tudi dokaze varnosti, katerih podlaga je prav formalni model, ki smo ga predstavili v
-poglavju~\ref{sec:multischnorr}, dejanski dokazi pa so bili mnogo kompleksnejši in daljši od 
-predstavljenega.
+le dva kroga komunikacije med podpisniki in so temeljile na Schnorrovem podpisu~\cite{bagherzandi2008bcj,
+ma2010mwld, syta2016cosi, maxwell2019musig}. Večina je vsebovala tudi dokaze varnosti, katerih podlaga
+je prav formalni model, ki smo ga predstavili v poglavju~\ref{sec:multischnorr}, dejanski dokazi pa
+so bili mnogo kompleksnejši in daljši od predstavljenega.
 
 Glavni cilj modernih večstranskih Schnorrovih podpisov je eliminirati prvi krog komunikacije
 pri podpisovanju, torej izračuna in izmenjave zavez $X_i$. Pristopov k temu je bilo več, prav vsi
@@ -39,29 +39,31 @@ Uporabo katerekoli novejše sheme v praksi pa so preprečili Drijvers et al.~\ci
 ko so pokazali, da so imeli prav vsi večstranski podpisi z dvema krogoma komunikacije varnostno
 luknjo. Dokazali niso samo, da so bili dokazi varnosti pomanjkljivi, temveč tudi, da predstavljene
 sheme niso varne (vsaj ne z uporabo poznanih metod dokazovanja). Še več, predstavili so tudi napad
-na te sheme, ki ima polinomsko časovno zahtevnost. Temeljni problem so predstavljali hkratni podpisi,
-ki jih prejšnji dokazi niso dopuščali. Specifično, napad temelji na tem, da napadalec napade več
-podpisovanj hkrati.
+na te sheme, ki ima polinomsko časovno zahtevnost. Temeljna pomanjkljivost predstavljenih dokazov
+varnosti je bila, da so zanemarili možnost, da napadalec izvede več napadov hkrati. Če je napadalec
+previt, medtem ko izvaja še en napad, lahko to izkoristimo, da pridobimo še en podpis, ki temelji
+na isti zavezi, kar privede do razkritja zasebnega ključa poštenega podpisnika~\cite{drijvers2019security}.
 
 Seveda pa je dokaz nevarnosti zajel samo do tedaj poznane metode. Kasneje je raziskovalcem uspelo
 ustvariti podpis, ki zaobide težave prejšnjih shem in je (zaenkrat) dokazano varen. Podpis MuSig2
 je predstavljal velik preboj, saj vrača podpise, ki so popolnoma enaki Schnorrovim. Med drugim to
 pomeni, da lahko njihovo veljavnost preverimo z uporabo Schnorrovee enačbe za preverjanje
-podpisov~\eqref{eq:schnorr-ver}.
+podpisov~\eqref{eq:gen-schnorr-ver}.
 
 \subsection{MuSig2}
 \label{sec:musig2}
 Zaradi popularnosti in enostavnosti Schnorrovih podpisov, se je pojavila težnja po razvoju večstranskega
 podpisa, ki je učinkovit, varen in vrača Schnorrove podpise. Obstoj takega podpisa pomeni takojšnjo
 priložnost za uporabo v vseh aplikacijah, ki temeljijo na Schnorrovih podpisih (recimo Bitcoin po
-nadgradnji Taproot). Prvi podpis, ki je izpolnjeval vse te pogoje, je bil MuSig2, ki so ga leta $2020$
-predstavili Jonas, Ruffing in Seurin~\cite{jonas2020musig2}.
+nadgradnji Taproot~\cite{wuille2020bip341}). Prvi podpis, ki je izpolnjeval vse te pogoje, je bil 
+MuSig2, ki so ga leta $2020$ predstavili Jonas, Ruffing in Seurin~\cite{jonas2020musig2}. Pred pojavom
+MuSig2 so obstajali drugi večstranski podpisi, ki so vračali Schnorrove podpise, vendar so zahtevali
+tri kroge komunikacije, ali pa so vsaj preprečevali hkratne podpise. Eden izmed njih je tudi originalni
+MuSig~\cite{maxwell2019musig}, čigar nevarnost je pokazal Drijvers~\cite{drijvers2019security}.
 
-Pred pojavom MuSig2 so obstajali drugi večstranski podpisi, ki so vračali Schnorrove podpise, vendar
-so zahtevali tri kroge komunikacije, ali pa so vsaj preprečevali hkratne podpise. V tem razdelku
-predstavimo glavne komponente in ideje MuSig2. Podpis je dokazano varen v modelu slučajnega oraklja,
-vendar bomo dokaz varnosti izpustili, saj je zelo kompleksen. Osredotočili se bomo na razlike med
-predstavljenim večstranskim Schnorrovim podpisom in MuSig2.
+V tem razdelku predstavimo glavne komponente in ideje MuSig2. Podpis je dokazano varen v modelu
+slučajnega oraklja, vendar bomo dokaz varnosti izpustili, saj je zelo kompleksen. Osredotočili se
+bomo na razlike med predstavljenim večstranskim Schnorrovim podpisom in MuSig2.
 
 Za začetek predstavimo glavne lastnosti MuSig2:
 \begin{itemize}
@@ -73,7 +75,7 @@ Za začetek predstavimo glavne lastnosti MuSig2:
     \item Vrnjeni podpisi so popolnoma enaki Schnorrovim podpisom. To pomeni, da preverjevalec lahko
         ne ve, ali preverja Schnorrov podpis ali MuSig2. To lastnost omogoča sposobnost agregacije
         ključev, saj lahko preverjevalec uporabi agregirani javni ključ in enačbo za preverjanje
-        Schnorrovih podpisov~\eqref{eq:schnorr-ver} za preverjanje veljavnosti podpisov MuSig2.
+        Schnorrovih podpisov~\eqref{eq:gen-schnorr-ver} za preverjanje veljavnosti podpisov MuSig2.
     \item Podpisovanje zahteva le dva kroga komunikacije med podpisniki. Še več, prvi krog podpisovanja
         se lahko zgodi preden je sploh znano sporočilo, kar še dodatno pohitri dejanski proces podpisa.
     \item Časovna zahtevnost podpisovanja in preverjanja je primerljiva z navadnim Schnorrovim
@@ -85,14 +87,13 @@ Za začetek predstavimo glavne lastnosti MuSig2:
 \end{itemize}
 
 \subsubsection{Skupni parametri}
-Ta del podpisa je praktično enak Schnorrovemu večstranskemu podpisu, le da je tu postopek opisan za
-poljubno ciklično grupo. Podpisniki si izberejo varnostni parameter $k$. Na podlagi tega parametra
-morajo si izberejo grupo $G$ reda $p$ z generatorjem $g$, v kateri je problem diskretnega logaritma
-težak.
+Ta del podpisa je praktično enak Schnorrovemu večstranskemu podpisu. Podpisniki si izberejo varnostni
+parameter $k$. Na podlagi tega parametra morajo si izberejo grupo $G$ reda $q$ z generatorjem $g$, v
+kateri je problem diskretnega logaritma težak.
 
 Poleg grupe podpisniki potrebujejo še tri zgoščevalne funkcije
 $$
-H_{agg}, H_{non}, H_{sig}:\{0, 1\}^* \rightarrow \Z_p,
+H_{agg}, H_{non}, H_{sig}:\{0, 1\}^* \rightarrow \Z_q,
 $$
 kjer s pomočjo funkcije $H_{agg}$ agregirajo javne, funkcija $H_{non}$ služi za agregiranje enkratnih
 vrednosti (angl.\ \textit{nonces}), ki jih potrebujejo tekom podpisa, funkcija $H_{sig}$ pa služi
@@ -100,25 +101,25 @@ za generiranje podpisov.
 
 Krajše lahko zapišemo
 $$
-((G, p, g), H_{agg}, H_{non}, H_{sig}) = \mathcal{P}(k).
+((G, q, g), H_{agg}, H_{non}, H_{sig}) = \mathcal{P}(k).
 $$
 
 \subsubsection{Generiranje ključev}
 Na tem mestu se pojavi prva velika prednost MuSig2. Večstranski Schnorrov podpis je preprečil napad
 na generiranje ključev tako, da je od podpisnikov zahteval dokaze znanja brez razkritja znanja in
 konstrukcijo Merklovega drevesa. To je zahtevalo veliko komunikacje med podpisniki, celo linearno
-v njihovem številu.MuSig2 se s tem napadom sooči kasneje, med podpisovanjem. To omogoča bistveno
+v njihovem številu. MuSig2 se s tem napadom sooči kasneje, med podpisovanjem. To omogoča bistveno
 enostavnejšo fazo generiranja ključev, ki je povsem enaka generiranju ključev pri navadnem
 Schnorrovem podpisu.
 
-Vsak podpisnik $P_i$ ($1 \le i \le L$) si izbere naključen zasebni ključ $s_i \in \Z_p$ in izračuna
+Vsak podpisnik $P_i$ ($1 \le i \le L$) si izbere naključen zasebni ključ $s_i \in \Z_q$ in izračuna
 svoj javni ključ
 $$
 I_i = g^{s_i}.
 $$
 Zapišemo lahko
 $$
-(I_i, s_i) = \mathcal{G}(G, p, g).
+(I_i, s_i) = \mathcal{G}(G, q, g).
 $$
 
 Da je MuSig2 dejansko lahko uporabljen kot navaden Schnorrov podpis, je potrebna še \textit{agregacija}
@@ -143,7 +144,7 @@ $$
 \subsubsection{Podpisovanje}
 Ker vsa varnost MuSig2 sloni na podpisovanju, je ta del malo kompleksnejši, a vseeno zelo učinkovit.
 Kot omenjeno, podpisovanje poteka v dveh krogih. Vsak krog je sestavljen iz korakov podpisovanja
-in agregaicje, ki ju označimo z $\mathcal{S}_i$ in $\mathcal{S}\mathcal{A}_i$ (za $i = 1, 2$). Po
+in agregaicje, ki ju označimo $\mathcal{S}_i$ in $\mathcal{S}\mathcal{A}_i$ (za $i = 1, 2$). Po
 komunikaciji je potreben še zadnji korak podpisovanja, ki ga označimo z $\mathcal{S}_3$.
 
 Velika varnostna pomanjkljivost preteklih večstranskih podpisov z dvema krogoma komunikacije je bila
@@ -152,7 +153,7 @@ sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo o
 \begin{itemize}
     \item \textbf{Prvi krog}:
         Vsak podpisnik $P_i$ ($1 \le i \le L$) si izbere $\nu$ naključnih
-        vrednosti $r_{1, i, j} \in \Z_p$ ($1 \le j \le \nu$) in izračuna zaveze
+        vrednosti $r_{1, i, j} \in \Z_q$ ($1 \le j \le \nu$) in izračuna zaveze
         $$
         X_{1, i, j} = g^{r_{1, i, j}},
         $$
@@ -168,36 +169,36 @@ sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo o
             (X_{1, i, 1}, X_{1, i, 2}, \dots, X_{1, i, \nu}) &= \mathcal{S}_1(P_i), \\
             (X_1, X_2, \dots, X_\nu) &= \mathcal{S}\mathcal{A}_1(X_{1, i, j} | 1 \le i \le L, 1 \le j \le \nu).
         \end{align*}
-        Lepa lastnost tega koraka je, da lahko podpisniki izračunajo zaveze $X_{1, i, j}$, preden je
+        Uporabna lastnost tega koraka je, da lahko podpisniki izračunajo zaveze $X_{1, i, j}$, preden je
         sploh znano s kom bodo podpisovali in preden se izbere sporočilo $m$. Ko je enkrat skupina
         ustvarjena, lahko izvedejo še korak $\mathcal{S}\mathcal{A}_1$, ponovno brez vednosti o
         sporočilu $m$.
 
     \item \textbf{Drugi krog}:
-        Vsak podpisnik na te mestu potrebuje agregirani javni ključ $\tilde{I}$, ki ga lahko izračuna
-        z algoritmom $\mathcal{A}$ in svoj koeficient agregacije $c_i$. Prav tako potrebujejo rezulat
-        prvega kroga, torej zaveze $\{X_j | 1 \le j \le \nu\}$ in sporočilo $m$. Vsak podpisnik $P_i$
-        ($1 \le i \le L$) izračuna
+        Vsak podpisnik na te mestu potrebuje svoj zasebni ključ $s_i$, agregirani javni ključ
+        $\tilde{I}$, ki ga lahko izračuna z algoritmom $\mathcal{A}$ in svoj koeficient agregacije
+        $c_i$. Prav tako potrebujejo rezulat prvega kroga, torej zaveze $\{X_j | 1 \le j \le \nu\}$
+        in sporočilo $m$. Vsak podpisnik $P_i$ ($1 \le i \le L$) izračuna
         \begin{align*}
             b &= H_{non}(\tilde{I} || X_1 || X_2 || \dots || X_\nu || m), \\
             \tilde{X} &= \prod_{j=1}^\nu X_j^{b^{j-1}}, \\
             a &= H_{sig}(\tilde{I} || \tilde{X} || m), \\
-            y_i &= a s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j} \bmod p.
+            y_i &= a s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j} \bmod q.
         \end{align*}
         Krajše zapišemo
         $$
-        y_i = \mathcal{S}_2(P_i, \tilde{I}, X_1, X_2, \dots, X_\nu, m).
+        y_i = \mathcal{S}_2(P_i, s_i, \tilde{I}, X_1, X_2, \dots, X_\nu, m).
         $$
         Vrednosti $y_i$ so poslane podpisniku $D$, ki izračuna vsoto
         $$
-        \tilde{y} = \sum_{i=1}^L y_i \bmod p = \mathcal{S}\mathcal{A}_2(y_i | 1 \le i \le L).
+        \tilde{y} = \sum_{i=1}^L y_i \bmod q = \mathcal{S}\mathcal{A}_2(y_i | 1 \le i \le L).
         $$
 
     \item \textbf{Končni korak}:
         Če je podpisnik $D$, tisti, ki bo vrnil podpis, ima na tem mestu vse potrebne podatke.
         Enostavno vrne podpis
         $$
-        \sigma = (\tilde{X}, \tilde{y}) = \mathcal{S}_3(X, y).
+        \sigma = (\tilde{X}, \tilde{y}) = \mathcal{S}_3(\tilde{X}, \tilde{y}).
         $$
         sporočila $m$.
 \end{itemize}
@@ -208,13 +209,22 @@ povsem enako preverjanju navadnega Schnorrovega podpisa. Preverjevalec prejme ag
 $\tilde{I}_S$ skupine podpisnikov $S$, sporočilo $m$ in podpis $\sigma = (\tilde{X}, \tilde{y})$.
 Izračuna izziv
 $$
-e = H_{sig}(\tilde{I}_S || \tilde{X} || m)
-$$ in uporabi enačbo~\eqref{eq:schnorr-ver}, ki jo tu zapišemo
+a = H_{sig}(\tilde{I}_S || \tilde{X} || m)
+$$ in uporabi enačbo~\eqref{eq:gen-schnorr-ver}, ki jo tu zapišemo
 $$
-g^{\tilde{y}} \stackrel{?}{=} \tilde{X} \tilde{I}_S^e,
+g^{\tilde{y}} \stackrel{?}{=} \tilde{X} \tilde{I}_S^a,
 $$
-da preveri veljavnost podpisa. Enačba res preveri veljavnost podpisa, po enakem argumentu kot pri
-navadnem Schnorrovem podpisu.
+da preveri veljavnost podpisa. Enačba res preveri veljavnost podpisa, saj lahko za veljaven podpis
+zapišemo
+\begin{align*}
+    g^{\tilde{y}} &= g^{\sum_{i=1}^L y_i \bmod q} \\
+    &= g^{\sum_{i=1}^L (a s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j})} \\
+    &= g^{\sum_{i=1}^L a s_i c_i} \cdot g^{\sum_{i=1}^L(\sum_{j=1}^\nu b^{j-1} r_{1, i, j})} \\
+    &= \prod_{i=1}^L g^{a s_i c_i} \cdot \prod_{j=1}^\nu (\prod_{i=1}^L g^{r_{1, i, j}})^{b^{j-1}} \\
+    &= \prod_{i=1}^L I_i^{a c_i} \cdot \prod_{j=1}^\nu X_j^{b^{j-1}} \\
+    &= \tilde{I}_S^a \cdot \tilde{X} \\
+    &= \tilde{X} \tilde{I}_S^a.
+\end{align*}
 
 \subsubsection{Varnost}
 Varnost pri podpisu MuSig2 ponovno pomeni nemoč napadalca, da ponaredi katerikoli podpis, pri katerem

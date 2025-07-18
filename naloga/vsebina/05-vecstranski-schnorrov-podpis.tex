@@ -1,4 +1,13 @@
 % LTeX: language=sl-SI
+\section{Večstranski Schnorrov podpis}
+\label{sec:multischnorr}
+Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali
+formalni dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si formalni model za večstranske
+podpise in ga poimenovali \textbf{večstranski podpis podskupine z odgovornostjo} (angl.\
+\textit{Accountable-Subgroup Multisignature (ASM)}). V tem razdelku predstavimo njihov model, primer
+večstranskega podpisa, ki temelji na Schnorrovem podpisu, in argumentiramo varnost podpisa oz.\
+modela na sploh.
+
 \subsection{Večstranski podpis podskupine z odgovornostjo}
 Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le predstavlja formalni model za
 večstranske pospise, predstavljene v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega
@@ -264,7 +273,7 @@ Ker tovrstni dokazi brez preverjevalca nimajo smisla, se je na tej točki vredno
 veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe.
 Tako pade breme preverjanja na tistega, ki bo preverjal podpis. Problematično je dejstvo, da taka
 sprememba podaljša javne ključe in privede do izgube učinkovitosti. Preverjanje veljavnosti podpisa
-bo sedaj poleg dveh potenciranj, ki sta v enačbi~\eqref{eq:schnorr-ver} potrebni za preverjanje
+bo sedaj poleg dveh potenciranj, ki sta v enačbi~\eqref{eq:gen-schnorr-ver} potrebni za preverjanje
 standarnega Schnorrovega podpisa, potrebovalo še dodatnih $2|S|$ potenciranj, saj je potrebno
 preveriti vse dokaze javnih ključev, kar ustreza preverjanju $|S|$ Schnorrovih podpisov. Posamezni
 preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat za vsako skupino, če natančno beleži
@@ -454,7 +463,7 @@ onemogoča naknadne spremembe ključev.
 
 Vsak podpisnik $P_i$ mora preveriti veljavnost vseh podpisov $(X_j, y_j)$ vseh ostalih podpisnikov
 $P_j$ ($1 \le j \le L$). To stori s standardnim izračunom za preverjanje Schnorrovega
-podpisa~\eqref{eq:schnorr-ver}:
+podpisa~\eqref{eq:gen-schnorr-ver}:
 $$
 g^{y_j} \stackrel{?}{=} X_j \cdot I_j^{e}.
 $$
