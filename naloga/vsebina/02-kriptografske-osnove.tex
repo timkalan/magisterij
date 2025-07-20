@@ -49,7 +49,7 @@ generator.
     Spomnimo se \textit{kongruence}: $a \equiv b \pmod m \iff m \text{ }|\text{ } a - b$.
 \end{opomba}
 
-Za konec tega popdpoglavja si oglejmo še dve trditvi, ki bosta pomembni pri dokazovanju pravilnega
+Za konec tega podpoglavja si oglejmo še nekaj trditev, ki bodo pomembne pri dokazovanju pravilnega
 delovanja Schnorrovega podpisa.
 
 \begin{trditev}
@@ -129,6 +129,26 @@ delovanja Schnorrovega podpisa.
             \end{align*}
     \end{itemize}
     S tem je indukcija končana in trditev dokazana.
+\end{dokaz}
+
+\begin{trditev}
+\label{trd:exp-mod-ord}
+    Naj bo $G$ končna ciklična grupa reda $q$ z generatorjem $g$. Naj bo $n$ poljubno naravno število.
+    Potem velja
+    $$
+    g^n = g^{n \bmod q}.
+    $$
+\end{trditev}
+\begin{dokaz}
+    Po definiciji reda elementa grupe in generatorja grupe velja, da je
+    $$
+    g^q = 1.
+    $$
+    Po osnovnem izreku o deljenju naravnih števil lahko $n$ na en sam način zapišemo kot $n = mq + r$,
+    kjer velja $m \in \N$ in $0 \leq r < q$. Potem lahko zapišemo
+    $$
+    g^n = g^{mq + r} = (g^q)^m g^r = 1^m g^r = g^{mq + r \bmod q} = g^{n \bmod q}.
+    $$
 \end{dokaz}
 
 \subsection{Zgoščevalne funkcije}

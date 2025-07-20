@@ -182,8 +182,8 @@ sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo o
         \begin{align*}
             b &= H_{non}(\tilde{I} || X_1 || X_2 || \dots || X_\nu || m), \\
             \tilde{X} &= \prod_{j=1}^\nu X_j^{b^{j-1}}, \\
-            a &= H_{sig}(\tilde{I} || \tilde{X} || m), \\
-            y_i &= a s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j} \bmod q.
+            e &= H_{sig}(\tilde{I} || \tilde{X} || m), \\
+            y_i &= e s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j} \bmod q.
         \end{align*}
         Krajše zapišemo
         $$
@@ -209,21 +209,21 @@ povsem enako preverjanju navadnega Schnorrovega podpisa. Preverjevalec prejme ag
 $\tilde{I}_S$ skupine podpisnikov $S$, sporočilo $m$ in podpis $\sigma = (\tilde{X}, \tilde{y})$.
 Izračuna izziv
 $$
-a = H_{sig}(\tilde{I}_S || \tilde{X} || m)
+e = H_{sig}(\tilde{I}_S || \tilde{X} || m)
 $$ in uporabi enačbo~\eqref{eq:gen-schnorr-ver}, ki jo tu zapišemo
 $$
-g^{\tilde{y}} \stackrel{?}{=} \tilde{X} \tilde{I}_S^a,
+g^{\tilde{y}} \stackrel{?}{=} \tilde{X} \tilde{I}_S^e,
 $$
 da preveri veljavnost podpisa. Enačba res preveri veljavnost podpisa, saj lahko za veljaven podpis
 zapišemo
 \begin{align*}
     g^{\tilde{y}} &= g^{\sum_{i=1}^L y_i \bmod q} \\
-    &= g^{\sum_{i=1}^L (a s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j})} \\
-    &= g^{\sum_{i=1}^L a s_i c_i} \cdot g^{\sum_{i=1}^L(\sum_{j=1}^\nu b^{j-1} r_{1, i, j})} \\
-    &= \prod_{i=1}^L g^{a s_i c_i} \cdot \prod_{j=1}^\nu (\prod_{i=1}^L g^{r_{1, i, j}})^{b^{j-1}} \\
-    &= \prod_{i=1}^L I_i^{a c_i} \cdot \prod_{j=1}^\nu X_j^{b^{j-1}} \\
-    &= \tilde{I}_S^a \cdot \tilde{X} \\
-    &= \tilde{X} \tilde{I}_S^a.
+                  &\stackrel{\ref{trd:exp-mod-ord}}{=} g^{\sum_{i=1}^L (e s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j})} \\
+    &= g^{\sum_{i=1}^L e s_i c_i} \cdot g^{\sum_{i=1}^L(\sum_{j=1}^\nu b^{j-1} r_{1, i, j})} \\
+    &= \prod_{i=1}^L g^{e s_i c_i} \cdot \prod_{j=1}^\nu (\prod_{i=1}^L g^{r_{1, i, j}})^{b^{j-1}} \\
+    &= \prod_{i=1}^L I_i^{e c_i} \cdot \prod_{j=1}^\nu X_j^{b^{j-1}} \\
+    &= \tilde{I}_S^e \cdot \tilde{X} \\
+    &= \tilde{X} \tilde{I}_S^e.
 \end{align*}
 
 \subsubsection{Varnost}

@@ -63,6 +63,12 @@ za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
     \begin{equation}
         g^{y'} \stackrel{?}{=} X' \cdot I^{e'}. \label{eq:gen-schnorr-ver}
     \end{equation}
+    Ta enačba res preveri veljavnost Schnorrovega podpisa, saj lahko za veljaven podpis $(X, y)$
+    sporočila $m$ zapišemo
+    $$
+    g^y \stackrel{\ref{trd:exp-mod-ord}}{=} g^{es + r \bmod q} = g^{es + r} = g^r \cdot (g^s)^e = X \cdot I^e,
+    $$
+    kjer smo uporabili trditev~\ref{trd:exp-mod-ord}.
 \end{itemize}
 
 Ker Schnorrov podpis deluje v skoraj poljubnih končnih grupah, je zelo prilagodljiv in uporaben.

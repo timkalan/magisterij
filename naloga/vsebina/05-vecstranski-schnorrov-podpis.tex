@@ -543,16 +543,11 @@ g^{\tilde{y}} \stackrel{?}{=} \tilde{X} \tilde{I}_S^e.
 enačbe~\eqref{eq:asm-check} zapišemo kot
 \begin{align*}
     g^{\tilde{y}} &= g^{(y_1 + y_2 + \cdots + y_l) \bmod q} \\
-                  &= g^{y_1 + y_2 + \cdots + y_l} \\
+                  &\stackrel{\ref{trd:exp-mod-ord}}{=} g^{y_1 + y_2 + \cdots + y_l} \\
                   &= g^{e s_1 + r_1 + e s_2 + r_2 + \cdots + e s_l + r_l} \\
                   &= g^{r_1 + r_2 + \cdots r_l} g^{e (s_1 + s_2 + \cdots s_l)},
 \end{align*}
-kjer smo pri prehodu iz prve v drugo vrstico uporabili lastnost, da je $g^x = g^{x \bmod q}$. To velja,
-saj lahko po osnovnem izreku o deljenju naravnih števil zapišemo $x = n_x q + r_x$. Če se spomnimo še,
-da je $g$ generator grupe $G$ reda $q$, in torej velja $g^q = 1$, lahko zapišemo
-$$
-g^x = g^{n_x q + r_x} = g^{n_x q} g^{r_x} = 1 \cdot g^{r_x} = g^{n_x q + r_x \bmod q} = g^{x \bmod q}.
-$$
+kjer smo pri prehodu iz prve v drugo vrstico uporabili lastnost~\ref{trd:exp-mod-ord}.
 
 Desno stran enačbe~\eqref{eq:asm-check} pa lahko zapišemo kot
 \begin{align*}
