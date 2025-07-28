@@ -229,25 +229,26 @@ zapišemo
 \subsubsection{Varnost}
 Varnost pri podpisu MuSig2 ponovno pomeni nemoč napadalca, da ponaredi katerikoli podpis, pri katerem
 sodeluje vsaj en nepokvarjen podpisnik. Varnost dokažemo na podoben način kot pri večstranskem Schnorrovem
-podpisu, le da je dokaz še bolj kompliciran. Na tem mestu bomo zato predstavili le osnovne ideje,
-na katerih dokaz sloni.
+podpisu, vendar dokaz presega meje magistrske naloge. Na tem mestu bomo zato predstavili le osnovne
+ideje, na katerih dokaz sloni.
 
 Podlago za varnost Schnorrovega podpisa predstavlja težavnost problema diskretnega logaritma. Pri
-MuSig2 se zanesemo na podoben problem, ki ga imenujemo \textit{problem še enega diskretnega logaritma}
-(angl.\ \textit{one-more discrete logarithm problem}). Zasnova je enaka kot pri PDL, imamo grupo z
-operacijo množenja, generator $g$ in element grupe $I$, zanima pa nas diskretni logaritem
-$s = \log_g I$. Razlika pri problemu še enega diskretnega logaritma je, da imamo na voljo oraklja,
-ki nam lahko pove $q$ rešitev problema diskretnega logaritma, mi pa želimo izračunati $q + 1$ problemov.
-Predpostavljamo, da ne obstaja polinomski naključnostni algoritem, ki to lahko stori z nezanemarljivo
-verjetnostjo.
+MuSig2 pa je za osnovo uporabljen soroden problem, ki ga imenujemo \textit{problem še enega diskretnega logaritma}
+(angl.\ \textit{one-more discrete logarithm problem})~\cite{bellare2003omdl}. Zasnova je enaka kot
+pri PDL. Imamo grupo z operacijo množenja, generator $g$ in element grupe $I$, zanima pa nas diskretni
+logaritem $s = \log_g I$. Razlika pri problemu še enega diskretnega logaritma je, da imamo na voljo
+oraklja, ki nam lahko pove $q$ rešitev problema diskretnega logaritma, mi pa želimo izračunati $q + 1$
+problemov. Predpostavljamo, da ne obstaja polinomski naključnostni algoritem, ki to lahko stori z
+nezanemarljivo verjetnostjo.
 
 Pod to predpostavko lahko v modelu slučajnega oraklja dokažemo, da je MuSig2 varen, če vsak podpisnik
 pri podpisovanju uporabi vsaj štiri naključne vrednosti ($\nu \geq 4$). Če dodatno predpostavimo še
-\textit{model algebraičnih grup} (angl.\ \textit{algebraic group model}), ki predpostavlja, da so
-napadalci algebraični, torej za vsak element grupe, ki ga izračunajo, podajo njegov algebraični
-opis (na podlagi do sedaj znanih elementov), potem lahko dokažemo, da je MuSig2 varen tudi za $\nu = 2$.
+\textit{model algebraičnih grup} (angl.\ \textit{algebraic group model})~\cite{fuchsbauer2018agm},
+ki predpostavlja, da so napadalci algebraični, torej za vsak element grupe, ki ga izračunajo, podajo
+njegov algebraični opis (na podlagi do sedaj znanih elementov), potem lahko dokažemo, da je MuSig2
+varen tudi za $\nu = 2$.
 
 Jedro dokaza je ponovno lema o razcepu~\ref{izr:forking} v kombinaciji s previjanjem. Dokaz pa je še
-dodatno kompleksnejši, ker dokazuje tudi varnost v primeru hkratnih podpisov, česar osnovna lema
-o razcepu ne omogoča. V tem primeru varnost omogoča dejstvo, da podpisniki izberejo več naključnih
-vrednosti, ki jih združijo s pomočjo zgoščevalne funkcije $H_{non}$.
+dodatno kompleksnejši, ker dokazuje tudi varnost v če podpisniki sodelujejo pri več podpisih naenkrat,
+česar osnovna lema o razcepu ne omogoča. V tem primeru varnost omogoča dejstvo, da podpisniki izberejo
+več naključnih vrednosti, ki jih združijo s pomočjo zgoščevalne funkcije $H_{non}$.
