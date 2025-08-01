@@ -280,15 +280,15 @@ preverjevalec podpisov lahko sicer dodatno delo opravi le enkrat za vsako skupin
 rezultate preverjanja dokazov.
 
 \subsubsection{Učinkovitost podpisovanja: Merklova drevesa}
-Kot bomo videli, je za dokaz varnosti potrebno, da lahko algoritem $\mathcal{A}$, ki bo simuliral
+Kot bomo videli, je za dokaz varnosti potrebno, da lahko algoritem $A$, ki bo simuliral
 proces podpisovanja napadalcu, v polinomskem času za vsakega pokvarjenega podpisnika $P_j$ pridobi
 diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, da če
-bo $P_j$ dokaz izračunal s $q$ klici slučajnega oraklja, potem bo simulator uspešno pridobil diskretni
-logaritem z verjetnostjo največ $1/q$. Še več, če je $b$ pokvarjenih podpisnikov, bo algoritem $\mathcal{A}$
-uspešen z verjetnostjo največ $1/q^b$. Z drugimi besedami, če želimo, da algoritem $\mathcal{A}$ teče
-v polinomskem času, je podpisnikov lahko največ logaritemsko mnogo v številu klicev oraklja $q$. Ker
-pa je teh klicev lahko največ polinomsko mnogo v varnostnem parametru $k$, je torej število podpisnikov
-lahko največ logaritemsko v $k$.
+bo $P_j$ dokaz izračunal s $q$ klici slučajnega oraklja, potem bo algoritem $A$ uspešno
+pridobil diskretni logaritem z verjetnostjo največ $1/q$. Še več, če je $b$ pokvarjenih podpisnikov,
+bo algoritem $A$ uspešen z verjetnostjo največ $1/q^b$. Z drugimi besedami, če želimo,
+da algoritem $A$ teče v polinomskem času, je podpisnikov lahko največ logaritemsko mnogo v
+številu klicev oraklja $q$. Ker pa je teh klicev lahko največ polinomsko mnogo v varnostnem parametru
+$k$, je torej število podpisnikov lahko največ logaritemsko v $k$.
 
 Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$
 in na podlagi naključno izbrane vrednosti $r_i$ tudi zavezo $X_i = g^{r_i} \pmod p$, ki bi jo uporabil
@@ -300,7 +300,7 @@ $$
 Podpisniki nato dokončajo svoj dokaz na podlagi zgostitve $e$ in svojega para ključev.
 
 Kot bomo videli, bo to pomenilo, da za generiranje dokazov $b$ pokvarjenih podpisnikov sedaj rabi le
-$bq$ klicev oraklja, torej je polinomski algoritem $\mathcal{A}$ uspešen z verjetnostjo $1/bq$. To
+$bq$ klicev oraklja, torej je polinomski algoritem $A$ uspešen z verjetnostjo $1/bq$. To
 omogoča, da je podpisnikov več kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo,
 saj mora sedaj vsak podpisnik v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa
 tudi vse javne ključe sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja (Schnorrov
@@ -451,7 +451,7 @@ X_i = g^{u_i}.
 $$
 Potem si podpisniki med seboj izmenjajo vrednosti $(X_i, I_i)$. Vsak na tem mestu lahko izračuna
 \begin{align*}
-    e &= H_3(X_1 || I_1 || X_2 || I_2 || \dots || X_L || I_L), \\
+    e &= H_3(\text{enc}(X_1) || \text{enc}(I_1) || \text{enc}(X_2) || \text{enc}(I_2) || \dots || \text{enc}(X_L) || \text{enc}(I_L)), \\
     y_i &= e s_i + u_i \bmod q,
 \end{align*}
 in pošlje $y_i$ vsem ostalim podpisnikom.
@@ -493,7 +493,7 @@ večstransko podpisati sporočilo $m$. To lahko storijo s tremi krogi komunikaci
         in jo pošlje vsem podpisnikom $P_{id_j} (1 \le j \le l)$.
     \item Vsak podpisnik $P_{id_j} (1 \le j \le l)$ izračuna
         \begin{align*}
-            e &= H_5(\tilde{X} || m || S), \\
+            e &= H_5(\text{enc}(\tilde{X}) || m || S), \\
             y_j &= e s_j + r_j \bmod q,
         \end{align*}
         in pošlje $y_j$ podpisniku $D$.
@@ -902,9 +902,9 @@ slučajnem oraklju:
 Za lažjo konstrukcijo algoritma $A$, je smotrno šibkega napadalca $F'$ še dodatno poenostaviti. Naj $\mathcal{F}$ označuje
 \textit{poenostavljenega napadalca}, ki deluje popolnoma enako kot šibek napadalec $F'$, le da pred
 drugim krogom podpisovalne poizvedbe $\mathcal{F}$ najprej pošlje zgoščevalno poizvedbo slučajnemu
-oraklju $H_5$ z vhodom $(\tilde{X}, m, S)$. Podobno, preden $\mathcal{F}$ vrne ponarejen podpis
+oraklju $H_5$ z vhodom $(\text{enc}(\tilde{X}), m, S)$. Podobno, preden $\mathcal{F}$ vrne ponarejen podpis
 $(\tilde{X}, \tilde{y})$ sporočila $m_F$, najprej opravi zgoščevalno poizedbo pri slučajnemu oraklju
-$H_5$ z vhodom $(\tilde{X}, m_F, S)$. Tako $\mathcal{F}$ vsaki podpisovalni poizvedbi in ponaredku
+$H_5$ z vhodom $(\text{enc}(\tilde{X}), m_F, S)$. Tako $\mathcal{F}$ vsaki podpisovalni poizvedbi in ponaredku
 dodeli zgostitev.
 
 Dodatno predpostavimo še, da poenostavljen napadalec $\mathcal{F}$ po vsaki zgoščevalni poizvedbi
@@ -945,11 +945,10 @@ poizvedba odgovorov.
 
 \begin{opomba}
     V kontekstu dokaza varnosti je napadalec naključnostni algoritem, omejen s polinomskim časom.
-    Simulator (algoritem $A$), ki ga konstruiramo, pa je algoritem, ki tekom svojega delovanja
-    uporablja napadalca kot podprogram. To simulatorju omogoča, da pozna celotno interno stanje
+    Algoritem $A$, ki ga konstruiramo, pa je algoritem, ki tekom svojega delovanja uporablja
+    napadalca kot podprogram. To algoritmu $A$ omogoča, da pozna celotno interno stanje
     napadalca, vključno z vsemi naključnimi izbirami, ki jih je napadalec opravil. Zato lahko
-    simulator shranjuje stanja napadalca, in shranjena stanja uporabi, da ga previje nazaj na
-    prejšnje stanje.
+    shranjuje stanja napadalca, in shranjena stanja uporabi, da ga previje nazaj na prejšnje stanje.
 \end{opomba}
 
 V tem primeru je previjanje nazaj nujno potrebno za simuliranje iskrenega podpisnika $P_i$. To je zato,
@@ -1062,9 +1061,9 @@ prav napadalec $\mathcal{F}$ (ki torej pozna vrednosti $s_{i_j}$).
 Ker so dokazi znanja brez razkritja znanja o diskretnih logaritmih samo Schnorrovi podpisi, lahko
 uporabimo lemo o razcepu~\ref{izr:forking}, prek katere algoritem $A$ lahko previje napadalca
 $\mathcal{F}$ in prejme diskretni logaritem $s_{i_j}$, katerega znanje dokazuje $\mathcal{F}$.
-Ker vsi podpisniki za dokaz uporabijo enak izziv $H_3(X_1, I_1, \dots, X_L, I_L)$, se
-mora zgoditi samo en razcep, na podlagi katerega lahko algoritem $A$ izračuna vse diskretne
-logaritme $s_{i_j}$.
+Ker vsi podpisniki za dokaz uporabijo enak izziv $H_3(\text{enc}(X_1), \text{enc}(I_1), \dots,
+\text{enc}(X_L), \text{enc}(I_L))$, se mora zgoditi samo en razcep, na podlagi katerega lahko
+algoritem $A$ izračuna vse diskretne logaritme $s_{i_j}$.
 
 Vprašanje, ki ostane, je časovna zahtevnost algoritma $A$. Standardne operacije podpisovanja
 so polinomske v varnostnem parametru $k$, zato so polinomske tudi za $A$. Prav tako so učinkoviti

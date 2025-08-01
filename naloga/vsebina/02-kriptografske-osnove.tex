@@ -511,35 +511,37 @@ En način, kako to storimo, je z uporabo \textit{iger}. Potek dokaza varnosti v 
         ponarejanja zanemarljiva). To shemo napada napadalec $\mathcal{F}$, ki je omejen s
         polinomskim časom. Napadalčevi interakciji s podpisno shemo rečemo \textit{igra}, zanima
         pa nas verjetnost ">zmage"< napadalca, torej uspešnega ponarejenja podpisa.
-    \item Definiramo še en algoritem $\mathcal{A}$. Cilj tega algoritma je izvesti redukcijo
-        iz napada na reševanje težavnega problema. Algoritem $\mathcal{A}$ mora v polinomskem času
+    \item Definiramo še en algoritem $A$. Cilj tega algoritma je izvesti redukcijo
+        iz napada na reševanje težavnega problema. Algoritem $A$ mora v polinomskem času
         prevesti uspešen napad napadalca $\mathcal{F}$ na shemo $\mathcal{S}$ v rešitev težavnega
-        problema. Ponavadi to pomeni, da algoritem $\mathcal{A}$ sodeluje pri izvajanju podpisne sheme.
-        Za dokaz analiziramo verjetnost uspeha algoritma $\mathcal{A}$, ki je seveda odvisna
-        od verjetnosti uspeha napadalca $\mathcal{F}$.
+        problema. Ponavadi to pomeni, da algoritem $A$ sodeluje pri izvajanju podpisne sheme,
+        navadno tako, da se pretvarja, da je podpisnik on sam. Napadalcu torej predstavi umetno ustvarjeno
+        okolje, v katerem napadalec misli, da napada podpisno shemo, v resnici pa le sodeluje pri
+        izvedbi algoritma $A$.
 
-        Navadno v dokazu predpostavimo, da je napadalec $\mathcal{F}$ uspešen z nezanemarljivo
-        verjetnostjo, kar se prevede v nezanemarljivo verjetnost uspeha algoritma $\mathcal{A}$.
-        Ker bi to pomenilo uspešno rešitev težavnega problema v polinomskem času, zaključimo, da je
-        shema varna.
+        Za dokaz varnosti analiziramo verjetnost uspeha algoritma $A$, ki je seveda odvisna
+        od verjetnosti uspeha napadalca $\mathcal{F}$. Navadno v dokazu predpostavimo, da je napadalec
+        $\mathcal{F}$ uspešen z nezanemarljivo verjetnostjo, kar se prevede v nezanemarljivo verjetnost
+        uspeha algoritma $A$. Ker bi to pomenilo uspešno rešitev težavnega problema v
+        polinomskem času, zaključimo, da je shema varna.
 \end{itemize}
 
-Za algoritem $\mathcal{A}$ predpostavimo naslednje lastnosti:
+Za algoritem $A$ predpostavimo naslednje lastnosti:
 \begin{itemize}
     \item \textbf{Nerazločljivost}: Napadalec $\mathcal{F}$ ne ve, ali komunicira s pravim podpisnikom
-        ali z algoritmom $\mathcal{A}$. Če bi lahko napadalec razlikoval, potem bi lahko zaključili,
+        ali z algoritmom $A$. Če bi lahko napadalec razlikoval, potem bi lahko zaključili,
         da shema napadalcu razkrije neko skrivnost, saj je prisotnost skrivnosti edina razlika med
-        pravim podpisnikom in algoritmom $\mathcal{A}$.
-    \item \textbf{Brez skrivnosti}: Algoritem $\mathcal{A}$ ne pozna zasebnih ključev. Ta lastnost
+        pravim podpisnikom in algoritmom $A$.
+    \item \textbf{Brez skrivnosti}: Algoritem $A$ ne pozna zasebnih ključev. Ta lastnost
         je ključna, saj nam pove, da napadalec prek interakcije z dejanskim podpisnikom ne izve
-        nobene dodatne informacije. Če je napadalec uspešen pri interakciji z algoritmom $\mathcal{A}$
+        nobene dodatne informacije. Če je napadalec uspešen pri interakciji z algoritmom $A$
         ali pa podpisnikom, ki ima zasebni ključ, potem smo lahko prepričani, da prisotnost zasebnega
         ključa ne pomaga pri napadu.
-    \item \textbf{Prilagodljivost}: Algoritem $\mathcal{A}$ in napadalec med seboj komunicirata.
-        Pogosto je potrebno, da algoritem $\mathcal{A}$ prilagodi svoje odločitve na podlagi
+    \item \textbf{Prilagodljivost}: Algoritem $A$ in napadalec med seboj komunicirata.
+        Pogosto je potrebno, da algoritem $A$ prilagodi svoje odločitve na podlagi
         napadalčevih odločitev.
 
-        V modelu slučajnega oraklja prilagodljivost dobi dodatno dimenzijo. Algoritem $\mathcal{A}$
+        V modelu slučajnega oraklja prilagodljivost dobi dodatno dimenzijo. Algoritem $A$
         poleg celotnega protokola simulira tudi delovanje oraklja. To mu omogoča, da napadalca ">previje"<
         na prejšnje stanje, prilagodi odgovor oraklja in ponovno izvede korak sheme.
 \end{itemize}

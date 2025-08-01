@@ -236,9 +236,13 @@ več pogovorov med dokazovalcem in preverjevalcem.
     Ker pa je uspeh algoritma $A$ ekvivalenten rešitvi problema diskretnega logaritma v polinomskem
     času, problem pa po predpostavki obravnavamo v grupi, kjer je problem diskretnega logaritma težek,
     lahko zaključimo, da je verjetnost uspeha algoritma $A$ zanemarljiva. Ker je velikost grupe $q$
-    odvisna od varnostnega parametra $k$, je tudi člen $1/q$ zanemarljiv. Iz tega lahko zaključimo
-tudi, da je verjetnost uspeha napadalca $F$ $\Pr(\text{Id}_F(k) = 1)$ zanemarljiva, kar pomeni,
-    da je Schnorrov identifikacijski protokol varen.
+    odvisna od varnostnega parametra $k$, je tudi člen $1/q$ zanemarljiv. Če preuredimo zgornjo izpeljavo
+    lahko za verjetnost uspeha napadalca zapišemo
+    $$
+    \Pr(\text{Id}_F(k) = 1) \leq \sqrt{\Pr(A \text{ uspe}) + \frac{1}{q}}.
+    $$
+    Ker je verjetnost uspeha napadalca koren iz vsote dveh zanemarljivih vrednosti, je tudi
+    $\Pr(\text{Id}_F(k) = 1)$ zanemarljiva. To pomeni, da je  Schnorrov identifikacijski protokol varen.
 \end{dokaz}
 
 Kot smo videli v primeru~\ref{primer:fiat-shamir}, lahko Fiat-Shamirjevo hevristiko uporabimo, da
@@ -256,7 +260,7 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 \begin{dokaz}
     Naj bo napadalec $F$ na podpisno shemo $\mathcal{S}$ naključnostni algoritem, ki teče v
     polinomskem času. Naj bo število napadalčevih klicev slučajnega oraklja polinomsko omejeno
-    v varnostnem parametru $k$. Zgornjo mejo označimo s $q$.
+    v varnostnem parametru $k$. Zgornjo mejo označimo s $q_H$.
 
     Brez škode za splošnost predpostavimo, da bo napadalec $F$ vsak klic slučajnega oraklja na
     nekem vhodu opravil največ enkrat. Predpostavimo tudi, da če napadalec $F$ uspešno ponaredi
@@ -288,10 +292,12 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
     primeru izbran enakomerno naključno (le iz drugega vira), prav tako je par $(X, y)$ iz
     transkripcijskega oraklja izračunan na enak način kot veljaven podpis. Napadalec $F'$ torej ne
     loči med simulacijo in pravim podpisom. Problem nastane le, če je napadalec $F'$ že definiral
-    orakljev odgovor s podatkoma $X$ in $m$, ko dobi transkript $(X, e', y)$ od transkripcijskega
-    oraklja $T_{sk}$. Če v tem primeru $e$ ni enak $e'$, simulacija ne uspe. Verjetnost, da se to
-    zgodi, je zanemarljiva, saj je $e$ izbran enakomerno naključno iz $\Z_q$ in je $q$ polinomsko
-    omejen v varnostnem parametru $k$.
+    orakljev odgovor s podatkoma $X$ in $m$, ko dobi transkript z isto zavezo $(X, e', y)$
+    od transkripcijskega oraklja $T_{sk}$. Če v tem primeru $e$ ni enak $e'$, simulacija ne uspe.
+    Verjetnost, da se to zgodi, je zanemarljiva. Zaveza v transkriptu je naključen element grupe reda
+    $q$, napadalec $F$ pa lahko opravi le polinomsko število klicev oraklja $H$. Torej je verjetnost
+    ujemanja zavez največ $q_H/q$, kar je zanemarljivo, saj je $q_H$ polinomska zgornja meja, $q$ pa
+    velikost grupe, ki je eksponentno velika v varnostnem parametru $k$.
 
     Potrdimo še, da je rezultat napada na identifikacijsko shemo smiseln. Če v zadnjem koraku velja
     $(X, m) = (X_j, m_j)$ in napadalec $F$ uspe ponarediti podpis $(X, y)$, potem napadalec $F'$
@@ -301,17 +307,17 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 
     Zadnji korak je, da pogledamo verjetnost uspeha napadalca $F'$. Naj $\delta_k$ označuje verjetnost,
     da pride do neujemanja pri odgovorih oraklja (zgoraj smo videli, da je zanemarljiva). Ker je $j$
-    izbran enakomerno naključno, je verjetnost, da velja $i=j$, enaka $1/q$. Verjetnost uspešnega
+    izbran enakomerno naključno, je verjetnost, da velja $i=j$, enaka $1/q_H$. Verjetnost uspešnega
     napada lahko izrazimo kot
     $$
-    \Pr(F' \text{ uspe}) = \frac{1}{q} \cdot (\Pr(F \text{ uspe}) - \delta_k),
+    \Pr(F' \text{ uspe}) = \frac{1}{q_H} \cdot (\Pr(F \text{ uspe}) - \delta_k),
     $$
     oz.
     $$
-    \Pr(F \text{ uspe}) = q \cdot \Pr(F' \text{ uspe}) + \delta_k.
+    \Pr(F \text{ uspe}) = q_H \cdot \Pr(F' \text{ uspe}) + \delta_k.
     $$
     Ker je po predpostavki identifikacijska shema varna, je verjetnost uspeha napadalca $F'$
-    zanemarljiva. Prav tako je tudi verjetnost $\delta_k$ zanemarljiva, $q$ pa je polinomska zgornja
+    zanemarljiva. Prav tako je tudi verjetnost $\delta_k$ zanemarljiva, $q_H$ pa je polinomska zgornja
     meja, kar pomeni, da je tudi verjetnost uspeha napadalca $F$ zanemarljiva. To pomeni, da je
     Schnorrov podpis varen, če je identifikacijska shema varna.
 \end{dokaz}

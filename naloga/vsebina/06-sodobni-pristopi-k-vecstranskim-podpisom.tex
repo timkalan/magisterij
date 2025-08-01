@@ -127,7 +127,7 @@ javnih ključev. Naj $\{I_1, I_2, \dots, I_L\}$ označuje množico vseh javnih k
 skupini $P$. Za agregacijo ključev najprej vsak podpisnik $P_i$ z javnim ključem $I_i$ ($1 \le i \le L$)
 izračuna \textit{koeficient agregacije} $c_i$:
 $$
-c_i = H_{agg}(\{I_1, I_2, \dots, I_L\} || I_i).
+c_i = H_{agg}(\{\text{enc}(I_1), \text{enc}(I_2), \dots, \text{enc}(I_L)\} || \text{enc}(I_i)).
 $$
 \textit{Agregirani javni ključ} skupine $P$ je nato
 $$
@@ -180,9 +180,9 @@ sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo o
         $c_i$. Prav tako potrebujejo rezulat prvega kroga, torej zaveze $\{X_j | 1 \le j \le \nu\}$
         in sporočilo $m$. Vsak podpisnik $P_i$ ($1 \le i \le L$) izračuna
         \begin{align*}
-            b &= H_{non}(\tilde{I} || X_1 || X_2 || \dots || X_\nu || m), \\
+            b &= H_{non}(\text{enc}(\tilde{I}) || \text{enc}(X_1) || \text{enc}(X_2) || \dots || \text{enc}(X_\nu) || m), \\
             \tilde{X} &= \prod_{j=1}^\nu X_j^{b^{j-1}}, \\
-            e &= H_{sig}(\tilde{I} || \tilde{X} || m), \\
+            e &= H_{sig}(\text{enc}(\tilde{I}) || \text{enc}(\tilde{X}) || m), \\
             y_i &= e s_i c_i + \sum_{j=1}^\nu b^{j-1} r_{1, i, j} \bmod q.
         \end{align*}
         Krajše zapišemo
