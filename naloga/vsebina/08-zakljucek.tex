@@ -1,0 +1,66 @@
+% LTeX: language=sl-SI
+\section{Zaključek}
+% intro
+V sodobnem digitalnem svetu, kjer sta varnost in avtentičnost podatkov ključnega pomena, digitalni
+podpisi predstavljajo temeljni gradnik varne komunikacije. Ta magistrska naloga se je osredotočila
+na področje večstranskih digitalnih podpisov, ki omogočajo skupini posameznikov, da skupaj podpišejo
+sporočilo z enim samim, kratkim podpisom. Takšni podpisi so še posebej relevantni v kontekstu
+tehnologije veriženja blokov, kjer je učinkovitost transakcij ključnega pomena.
+
+% povzetek
+Naloga se prične s celovitim pregledom kriptografskih osnov, nujnih za razumevanje digitalnih podpisov,
+vključno z modularno aritmetiko, zgoščevalnimi funkcijami in kriptografijo javnega ključa. Prvi del
+naloge je posvečen Schnorrovemu podpisu, ki se je uveljavil kot standarden gradnik za večstranske
+podpise.
+
+V nadaljevanju smo predstavili in analizirali formalni model za večstranske podpise, znan kot večstranski
+podpis podskupine z odgovornostjo (ASM), ki so ga prvi definirali Micali, Ohta in Reyzin~\cite{micali2001asm}.
+Ta model zagotavlja, da je iz podpisa mogoče razbrati, kateri člani so sodelovali pri njegovem
+ustvarjanju, kar omogoča polno odgovornost in prilagodljivost. Za zagotavljanje varnosti pred napadi,
+kot je napad na generiranje ključev, shema uporablja dokaze znanja brez razkritja znanja in Merklova
+drevesa. Varnost te sheme smo dokazali v modelu slučajnega oraklja, pri čemer smo se oprli na lemo o
+razcepu in težavnost problema diskretnega logaritma.
+
+Na koncu smo se osredotočili na sodobnejše pristope in predstavili podpis MuSig2~\cite{jonas2020musig2},
+ki je bil razvit kot odgovor na potrebo po bolj učinkovitih shemah z manj komunikacijskimi krogi.
+MuSig2 zmanjša število krogov komunikacije na dva, kar predstavlja znatno izboljšavo v primerjavi s
+tremi krogi, ki jih zahteva klasični večstranski Schnorrov podpis. Cena za to učinkovitost je opustitev
+lastnosti odgovornosti in prilagodljivosti, saj MuSig2 ne razkriva identitete podpisnikov, kar pa je
+v določenih aplikacijah, kot je Bitcoin~\cite{nakamoto2009bitcoin}, zaželena lastnost za večjo zasebnost.
+
+% sklepne misli
+Empirična analiza, izvedena v okviru naloge, je potrdila teoretične prednosti in slabosti obravnavanih
+shem. Medtem ko čas preverjanja pri navadnem Schnorrovem podpisu linearno narašča s številom
+podpisnikov, je čas preverjanja pri večstranskem Schnorrovem podpisu bistveno krajši, pri MuSig2 pa
+je celo konstanten in neodvisen od števila podpisnikov. To dejstvo daje večstranskim podpisom veliko
+prednost pri aplikacijah, kjer je delo preverjevalca omejeno ali drago. Po drugi strani pa večstranski
+podpisi zahtevajo komunikacijo med podpisniki, kar lahko predstavlja oviro v primerih, kjer je omejeno
+delo podpisnikov. 
+Večstranski Schnorrov podpis zahteva tri kroge komunikacije in kompleksnejše generiranje ključev,
+medtem ko MuSig2 potrebuje le dva kroga. Izbira med shemami je tako odvisna od specifičnih potreb
+aplikacije: kjer sta ključni prilagodljivost in odgovornost, je večstranski Schnorrov podpis kljub
+dodatni komunikaciji prava izbira. Kjer pa so v ospredju učinkovitost preverjanja, zasebnost in
+enostavna integracija, ima MuSig2 veliko prednost.
+% Podpis MuSig2 predstavlja pomemben korak v razvoju večstranskih podpisov. V primerih, ko želimo, da
+% se celotna skupina dokazljivo strinja s sporočilom, a ne želimo razkriti članov, je MuSig2 odlična
+% izbira. Poleg učinkovitosti in varnosti, je za praktično uporabo pomembno tudi, da vrača Schnorrove
+% podpise.
+%
+% Če pa želimo podpisno shemo, ki omogoča popolno prilagodljivost in odgovornost, pa je (vsaj zaenkrat)
+% potrebno uporabiti tri kroge komunikacije in podpis kot je recimo večstranski Schnorrov podpis. Čeprav
+% ni najbolj učinkovit, je predstavljal prvi korak k razvoju MuSig2, saj so njegovi avtorji prvi, ki so
+% predstavili formalni model in dokazali varnost večstranskih podpisov.
+
+% nadaljnje delo
+Nadaljnje delo bi se lahko osredotočilo na primerjavo predstavljenih shem s post-kvantnimi shemami,
+ki so zasnovane za zaščito pred potencialnimi napadi kvantnih računalnikov. Tu se sicer pojavijo
+velike razlike med shemami, saj post-kvantne sheme ne temeljijo na problemu diskretnega logaritma.
+V svetu večstranskih podpisov še ne obstaja standardna post-kvantna shema, veliko kandidatov pa temelji
+na problemih na rešetkah (ang.\ \textit{lattice problems}), kot je na primer MuSig-L~\cite{boschini2022musigl}.
+Ta shema je še posebaj zanimiva za nas, saj je njen cilj biti post-kvantna različica MuSig2.
+
+Možna nadgradnja empirične analize bi lahko bila natančnejša analiza učinkovitosti z upoštevanjem realnih
+pogojev komunikacijskih omrežij, saj je bila v tej nalogi komunikacija zanemarjena. Podpise bi lahko
+implementirali v realnem sistemu (npr.\ na izbrani verigi blokov) in izvedli realne meritve.
+Prav tako bi bilo smiselno raziskati optimizacije, kot je shranjevanje Merklovega drevesa med
+zaporednimi podpisi, kar bi še dodatno povečalo učinkovitost večstranskega Schnorrovega podpisa.

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCHNORR_RESULTS="results/bench_Schnorr.txt"
-ASM_RESULTS="results/bench_ASM.txt"
+ASM_RESULTS="results/bench_Večstranski Schnorr.txt"
 MUSIG2_RESULTS="results/bench_MuSig2.txt"
 BENCHMARKS="."
 RUNS=6
