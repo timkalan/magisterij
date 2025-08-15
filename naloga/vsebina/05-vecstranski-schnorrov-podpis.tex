@@ -656,77 +656,122 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
     $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na drugačnih zgostitvah.
 \end{izrek}
 
-\begin{dokaz}[Dokaz leme o razcepu~\ref{izr:forking}]
+\begin{dokaz}
     Naj bo napadalec $F$ napadalec naključnostni algoritem, ki teče v polinomskem času. Z $\omega$
     označimo vir naključnih bitov, do katerega ima $F$ dostop. Denimo, da med svojim napadom napadalec
     $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb v varnostnem parametru $k$.
-    Označimo  poizvedbe, ki jih $F$ stori $\mathcal{Q}_1, \mathcal{Q}_2, \dots, \mathcal{Q}_Q$
+    Označimo poizvedbe, ki jih $F$ stori s $\mathcal{Q}_1, \mathcal{Q}_2, \dots, \mathcal{Q}_{q_H}$
     (brez škode za splošnost lahko predpostavimo, da so poizvedbe med seboj različne). Pripadajoče
-    odgovore oraklja na poizvedbe označimo $\rho_1, \rho_2 , \dots, \rho_Q$.
+    odgovore oraklja na poizvedbe označimo z $\rho_1, \rho_2 , \dots, \rho_{q_H}$.
 
-    Predpostavimo, da lahko za naključno izbran vir bitov $\omega$ in naključno izbran orakelj $H$,
-    napadalec $F$ z nezanemarljivo verjetnostjo vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis
-    sporočila $m$. Vir naključnosti 
-    Verjetnost tu jemljemo nad vsemi viri bitov $\omega$ in nad vsemi orakljevimi
-    odgovori $\rho_1, \rho_2, \dots, \rho_Q$. To verjetnost označimo z $\Pr_{\omega, \rho_1,
-    \rho_2 , \dots, \rho_Q}$.
+    Predpostavimo, da napadalec $F$ uspe z nezanemarljivo verjetnostjo. Uspeh napadalca pomeni, da
+    vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis sporočila $m$.
 
-    Ker so odgovori oraklja izbrani iz naključne funkcije, je verjetnost, da je bila ena izmed
-    poizvedb oraklju prav tista, ki je vsebovala sporočilo $m$ in delni podpis $\sigma_1$,
-    nezanemarljiva. Sicer bi moral napadalec $F$ uganiti odgovor na to poizvedbo, da bi
-    lahko ustvaril drugi del podpisa $\sigma_2$ (uganiti bi torej moral naključno vrednost, kar lahko
-    stori z največ zanemarljivo verjetnostjo). Označimo poizvedbo s temi podatki $\mathcal{Q}_\beta
-    = (m, \sigma_1)$ ($1 < \beta < Q$). Ker je poizvedb polinomsko mnogo v varnostnem parametru $k$
-    in je verjetnost uspeha nezanemarljiva, morata obstajati polinom $P(k)$ in število $\beta$, za
-    katera je verjetnost uspeha
-    $$
-    \Pr_{\omega, \rho_1, \rho_2 , \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek in } \mathcal{Q}_\beta
-    = (m, \sigma_1)) \geq \frac{1}{P(k)},
-    $$
-    kjer je poizvedba $\mathcal{Q}_\beta$ res temeljila na sporočilu in delnem podpisu, slučajnost
-    pa izvira iz vira bitov $\omega$ in orakljevih odgovorov $\rho_1, \rho_2, \dots, \rho_Q$.
+    Če je napadalec $F$ uspešen, potem je na neki točki napada potreboval zgostitev sporočila $m$
+    in prvega dela podpisa $\sigma_1$. Do tega rezultata je lahko prišel na dva načina: bodisi je
+    odgovor uganil, bodisi je odgovor dobil z uporabo oraklja $H$. Uganiti odgovor oraklja pomeni
+    uganiti naključno vrednost iz $\{0, 1\}^n$. Ker velja $n > k$, je ta verjetnost zanemarljiva.
+    Zaključimo torej, da je verjetnost, da je bila ena izmed poizvedb oraklju tista, ki je vsebovala
+    sporočilo $m$ in delni podpis $\sigma_1$, nezanemarljiva.
 
-    Če označimo z $\Omega$ množico vseh naključnih virov bitov $\omega$ in z $R$ množico vseh
-    zaporedij $\rho_1, \rho_2, \dots, \rho_Q$ orakljevih odgovorov, lahko uporabimo lemo~\ref{lema:verjetnost},
-    kjer je $X = \Omega$, $Y = R$, $A$ je dogodek, da je $F$ uspešen in $\epsilon = 1/P(k)$.
-    Lema nam zagotavlja obstoj množice $\Omega_\beta$, ki vsebuje vse vire bitov $\omega$, za katere
-    velja, da je verjetnost uspeha po orakljevih odgovorih $\rho_1, \dots, \rho_Q$ navzdol omejena z
-    $1/2P(k)$, oz.,\ da za vir bitov $\omega$ iz množice $\Omega_\beta$ velja
+    Če torej označimo z \texttt{uspeh} dodogek, da napadalec $F$ vrne veljaven ponaredek
+    $(m, \sigma = (\sigma_1, \sigma_2))$, lahko za nek polinom $P(k)$ zapišemo
     $$
-    \Pr_{\rho_1, \rho_2, \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek in } \mathcal{Q}_\beta
-    = (m, \sigma_1)) \geq \frac{1}{2P(k)}.
+    \Pr(\text{\texttt{uspeh} $\wedge$ obstaja poizvedba z vhodnimi podatki $(m, \sigma_1)$}) \geq \frac{1}{P(k)},
     $$
 
-    Sedaj lahko poleg $\beta$ fiksiramo še vir bitov $\omega$ iz množice $\Omega_\beta$. To nam da
-    deterministično zaporedje poizvedb $Q_1, Q_2, \dots, Q_Q$, kjer velja $\mathcal{Q}_\beta =
-    (m, \sigma_1)$, napadalec pa uspe z nezanemaljivo verjetnostjo. Na tem mestu lahko ponovno
-    uporabimo lemo~\ref{lema:verjetnost}, kjer je $X$ množica odgovoro na prvih $\beta - 1$ poizvedb,
-    $Y$ množica odgovorov na preostalih $Q - \beta + 1$ poizvedb, $A$ je dogodek, da je $F$ uspešen
-    in $\epsilon = 1/2P(k)$. To nam zagotavlja obstoj množice $R_{\beta, \omega}$, ki vsebuje vsa
-    zaporedja $(\rho_1, \dots, \rho_{\beta - 1})$, za katera velja, da je verjetnost uspeha po
-    preostanku odgovorov $(\rho_\beta, \dots, \rho_Q)$ večja od $1/4P(k)$. To pomeni, da za
-    zaporedje $(\rho_1, \dots, \rho_{\beta - 1})$ iz množice $R_{\beta, \omega}$, velja
+    Zgornje pa je unija dogodkov, da napadalec $F$ uspe, in da je ravno $i$-ta poizvedba
+    tista, ki vsebuje sporočilo $m$ in delni podpis $\sigma_1$. Z uporabo osnovne lastnosti verjetnosti
+    lahko zapišemo
+    \begin{equation}
+    \frac{1}{P(k)} \leq \Pr(\bigcup_{i = 1}^{q_H} \text{\texttt{uspeh} $\wedge$ $\mathcal{Q}_i = (m, \sigma_1)$})
+    \leq \sum_{i = 1}^{q_H} \Pr(\text{\texttt{uspeh} $\wedge$ $\mathcal{Q}_i = (m, \sigma_1)$}).
+    \label{eq:forking-ineq}
+    \end{equation}
+    Označimo $p_i = \Pr(\text{\texttt{uspeh} $\wedge$ $\mathcal{Q}_i = (m, \sigma_1)$})$.
+    Želimo pokazati, da obstaja nek indeks $\beta$ ($1 < \beta < q_H$), za katerega velja, da je
+    $p_\beta \geq 1/P'(k)$, za nek polinom $P'(k)$. Predpostavimo, da je
     $$
-    \Pr_{\rho_\beta, \dots, \rho_Q}(\text{$F$ vrne veljaven ponaredek in } \mathcal{Q}_\beta
-    = (m, \sigma_1)) \geq \frac{1}{4P(k)}.
+    p_i < \frac{1}{q_H \cdot P(k)} \text{ za vsak } i = 1, 2, \dots, q_H.
+    $$
+    Potem velja
+    $$
+    \sum_{i = 1}^{q_H} p_i < \frac{q_H}{q_H \cdot P(k)} = \frac{1}{P(k)},
+    $$
+    kar pa je v nasprotju z neenakostjo~\eqref{eq:forking-ineq}. Tako lahko zaključimo, da obstaja
+    nek indeks $\beta$ ($1 < \beta < q_H$), za katerega velja
+    $$
+    p_\beta = \Pr(\text{\texttt{uspeh} $\wedge$ $\mathcal{Q}_\beta = (m, \sigma_1)$})
+    \geq \frac{1}{P'(k)},
+    $$
+    kjer smo s $P'(k)$ označili zmnožek polinoma $P(k)$ in števila $q_H$, kar je še vedno polinom
+    v varnostnem parametru $k$.
+
+    Sedaj lahko nadaljujemo z dokazom leme o razcepu. Za nadaljevanje potrebujemo lemo~\ref{lema:verjetnost}.
+    Z $X$ označimo množico vseh možnih naključnih virov bitov $\omega$ in z $Y$ množico vseh
+    možnih zaporedij orakljevih odgovorov $\rho_1, \dots, \rho_{q_H}$. Z $A$ označimo dogodek, da napadalec
+    $F$ vrne veljaven ponaredek $(m, \sigma = (\sigma_1, \sigma_2))$ in da je $\mathcal{Q}_\beta =
+    (m, \sigma_1)$. Z $\epsilon$ označimo $1/P'(k)$. Lema~\ref{lema:verjetnost} nam zagotavlja obstoj
+    množice $\Omega_\beta \subseteq X$, ki vsebuje vse vire bitov $a$, za katere velja
+    $$
+    \Pr(A \text{ }|\text{ } \omega = a) \geq \frac{1}{2P'(k)}.
     $$
 
-    Množici $\Omega_\beta$ in $R_{\beta, \omega}$ določata možne $\beta, \omega$ in $(\rho_1, \dots,
-    \rho_{\beta - 1})$, za katere si lahko izberemo dve množici odgovorov $(\rho_\beta, \dots, \rho_Q)$
-    in $(\rho_\beta', \dots, \rho_Q')$, za kateri napadalec $F$ z nezanemarljivo verjetnostjo vrne
-    dva para $(m, \sigma)$ in $(m, \sigma')$, kjer sta $\sigma$ in $\sigma'$ veljavna podpisa sporočila
-    $m$, ki temeljita na drugačnih zgostitvah. Tu smo uporabili pogoj $n \gg \log(k)$ oz.,\ da je
-    dolžina orakljevih odgovorov $n$ veliko večja od varnostnega parametra $k$. Ta pogoj nam zagotavlja,
-    da je veliko različnih oraljevih odgovorov, oz.\ da je verjetnost, da se zgodi trk,
-    zanemarljiva.
+    Sedaj lahko poleg $\beta$ fiksiramo še vir bitov $a$ iz množice $\Omega_\beta$. To nam da
+    deterministično zaporedje poizvedb $Q_1, Q_2, \dots, Q_{q_H}$, kjer velja $\mathcal{Q}_\beta =
+    (m, \sigma_1)$, napadalec pa uspe z nezanemarljivo verjetnostjo. Na tem mestu lahko ponovno
+    uporabimo lemo~\ref{lema:verjetnost}, kjer je $X$ množica odgovorov na prvih $\beta - 1$ poizvedb,
+    $Y$ množica odgovorov na preostalih $q_H - \beta + 1$ poizvedb, $A$ je kot prej in $\epsilon = 1/2P'(k)$.
+    To nam zagotavlja obstoj množice $R_{\beta, a}$, ki vsebuje zaporedja $(\rho_1, \dots,
+    \rho_{\beta - 1})$, za katera velja, da je verjetnost uspeha po preostanku odgovorov $(\rho_\beta,
+    \dots, \rho_{q_H})$ večja od $1/4P'(k)$. To pomeni, da za neko zaporedje $(r_1, \dots, r_{\beta - 1})$
+    iz množice $R_{\beta, a}$, velja
+    $$
+    \Pr(A \text{ }|\text{ } \omega = a, (\rho_1, \dots, \rho_{\beta - 1}) = (r_1, \dots, r_{\beta - 1})) \geq \frac{1}{4P'(k)}.
+    $$
 
-    Torej, z naključno izbiro $\beta$, $\omega$, $(\rho_1, \dots, \rho_{\beta - 1}), (\rho_\beta, 
-    \dots, \rho_Q)$ in $(\rho_\beta', \dots, \rho_Q')$ lahko z nezanemarljivo verjetnostjo dobimo
-    dva veljavna podpisa $\sigma$ in $\sigma'$ sporočila $m$, ki temeljita na drugačnih zgostitvah.
+    Tu se pokaže ključna vloga indeksa $\beta$ in odgovora $\rho_\beta$. Množici
+    $\Omega_\beta$ in $R_{\beta,a}$ nam zagotavljata, da obstaja nezanemarljiva množica
+    ">dobrih"< začetnih pogojev (vira naključnih bitov $a$ in prvih $\beta-1$ odgovorov oraklja),
+    za katere je verjetnost uspeha napadalca $F$ nezanemarljiva. Na podlagi tega lahko izvedemo
+    naslednji postopek, znan kot razcep (angl. \emph{forking}):
+
+    \begin{enumerate}
+        \item \textbf{Prvi poizkus:} Izberemo naključni trak $a \in \Omega_\beta$ in zaporedje
+            odgovorov $(\rho_1, \dots, \rho_{\beta-1}) \in R_{\beta,a}$. Poženemo napadalca $F$
+            s temi podatki. $F$ bo deterministično postavil prvih $\beta$ poizvedb. Za $\beta$-to
+            poizvedbo mu orakelj vrne naključni odgovor $\rho_\beta$. Nato simulacijo nadaljujemo
+            z naključnimi odgovori $(\rho_{\beta+1}, \dots, \rho_{q_H})$. Z verjetnostjo vsaj
+            $1/(4P'(k))$ bo $F$ uspešen in vrnil veljaven podpis $(m, \sigma)$, ki temelji na
+            odgovoru $\rho_\beta$.
+
+        \item \textbf{Drugi poizkus:} Sedaj napadalca $F$ previjemo nazaj v stanje, v kakršnem je bil
+            tik pred $\beta$-to poizvedbo. Ker so $a$ in $(\rho_1, \dots, \rho_{\beta-1})$ enaki, bo
+            $F$ postavil identično $\beta$-to poizvedbo za isto sporočilo $m$. Na tej točki v igro
+            vstopi drugi orakelj, predstavljen v lemi. Drug orakelj vrne naključni odgovor
+            $\rho_\beta'$. Simulacijo ponovno dokončamo z novimi naključnimi odgovori
+            $(\rho'_{\beta+1}, \dots, \rho'_{q_H})$. Verjetnost uspeha napadalaca $F$ je v tem primeru ponovno
+            vsaj $1/(4P'(k))$.
+    \end{enumerate}
+
+    Ker velja $n > k$, je verjetnost, da se zgodi trk med odgovori $\rho_\beta$ in $\rho_\beta'$
+    zanemarljiva, saj je prostor možnih odgovorov oraklja velikosti $2^n$. To verjetnost označimo
+    z $\epsilon_{\text{trk}}$. Verjetnost, da uspeta oba poizkusa, $rho_\beta$ in $\rho_\beta'$ pa
+    sta različna, je torej
+    $$
+    \Pr(\text{Uspe prvi poizkus} \wedge \text{Uspe drugi poizkus} \wedge \rho_\beta \neq \rho_\beta') \geq
+    \frac{1}{4P'(k)} \cdot \frac{1}{4P'(k)} \cdot (1 - \epsilon_{\text{trk}}),
+    $$
+    kar je nezanemarljivo, saj je produkt treh nezanemarljivih faktorjev še vedno nezanemarljiv.
+
+    Če sta uspela oba poizkusa, smo dobili dva veljavna podpisa $(m, \sigma)$ in
+    $(m, \sigma')$ za isto sporočilo $m$. Ker pa smo pri ključni, $\beta$-ti poizvedbi
+    uporabili različna odgovora $\rho_\beta$ in $\rho_\beta'$, podpisa temeljita na dveh
+    različnih zgostitvah. S tem je dokaz zaključen.
 \end{dokaz}
 
 \subsubsection{Šibek napadalec in šibka varnost}
-Nasledji korak pri dokazu varnosti je definicija \textbf{šibkega napadalca} (ali nasprotnika) (angl.\
+Naslednji korak pri dokazu varnosti je definicija \textbf{šibkega napadalca} (ali nasprotnika) (angl.\
 \textit{weak adversary}) $F'$. Njegov cilj je enak izvornemu napadalcu $F$. Želi si torej ponarediti podpis
 s pomočjo napada z izbranim sporočilom in podskupino. Izbere si lahko podpisnika, in od njega
 zahteva podpis izbranega sporočila skupaj z izbrano podskupino $S$. Napadalca se razlikujeta v tem,
@@ -931,7 +976,7 @@ Za simuliranje oraklja $H_5$ algoritem $A$ vnaprej izbere naključne vrednosti $
 Ko poenostavljen napadalec $\mathcal{F}$ opravi prvo zgoščevalno poizvedbo, mu algoritem $A$ vrne
 $e_1$. Ko opravi novo poizvedbo, z drugačnim vhodom, mu algoritem $A$ vrne $e_2$, in tako naprej.
 
-Odgovor na podpisovalno poizvedbo za podpisnika $P_i$ na vhodu $m$ in $S$ je malce bolj zapleten.
+Odgovor na podpisovalno poizvedbo za podpisnika $P_i$ z vhodom $m$ in $S$ je malce bolj zapleten.
 Algoritem $A$ stori sledeče:
 \begin{enumerate}
     \item Shrani notranje stanje poenostavljenega napadalca $\mathcal{F}$. To algoritem $A$ lahko
