@@ -21,7 +21,7 @@ $m$. V tem razdelku predstavimo osnovno idejo ASM.
 \label{def:asm}
     Skupina $P$ je sestavljena iz $L$ podpisnikov, torej
     $$
-    P = P_1, P_2, \dots, P_L.
+    P = \{P_1, P_2, \dots, P_L \}.
     $$
     Podpisnik predstavlja naključnostni polinomski algoritem. Vsak podpisnik pozna svojo 
     identifikacijsko številko (eno od števil $1, \dots, L$) in pa \textit{varnostni parameter} $k$,
@@ -44,13 +44,13 @@ $m$. V tem razdelku predstavimo osnovno idejo ASM.
             $$
             kjer smo brez škode za splošnost predpostavili, da je vsak podpisnik enolično predstavljen
             s svojim indeksom $i \in \{1, 2, \dots, L\}$ v skupini $P$.
-        \item $\mathcal{S}$ je protokol za podpisovanje. Pognan je vsakič, ko neka podskupina $S$ želi
-            ustvariti podpis. Vsak podpisnik požene algoritem $\mathcal{S}$ s seznamom vseh podpisnikov
-            $S$, njihovimi javnimi ključi $\text{pk}_j$, kjer $j$ teče po identifikacijskih številkah
-            vseh članov $S$, sporočilom $m$ in lastnim zasebnim ključem $\text{sk}_i$ kot vhodnimi
-            podatki. Algoritem $\mathcal{S}$ je porazdeljen protokol, pri izvedbi morajo sodelovati
-            vsi člani $S$, ki med seboj komunicirajo. Po uspešni izvedbi lahko en od članov objavi
-            podpis $\sigma$.
+        \item $\mathcal{S}$ je protokol za podpisovanje. Pognan je vsakič, ko neka podskupina 
+            $S \subseteq P$ želi ustvariti podpis. Vsak podpisnik požene algoritem $\mathcal{S}$ s
+            seznamom vseh podpisnikov $S$, njihovimi javnimi ključi $\text{pk}_j$, kjer $j$ teče po
+            identifikacijskih številkah vseh članov $S$, sporočilom $m$ in lastnim zasebnim ključem
+            $\text{sk}_i$ kot vhodnimi podatki. Algoritem $\mathcal{S}$ je porazdeljen protokol,
+            pri izvedbi morajo sodelovati vsi člani $S$, ki med seboj komunicirajo. Po uspešni
+            izvedbi lahko en od članov objavi podpis $\sigma$.
         \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
             preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $P$. 
             Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
@@ -75,7 +75,7 @@ lahko definiramo zelo močnega napadalca, ki ima velik vpliv na celoten sistem.
     Napadalca v modelu večstranskih podpisov podskupine z odgovornostjo bomo označili z $F$. Ima
     naslednje zmožnosti:
     \begin{itemize}
-        \item Ima popoln nadzor nad vsemi komunikacijskimi kanali med člani skupine $P$. Lahko bere,
+        \item Popoln nadzor nad vsemi komunikacijskimi kanali med člani skupine $P$. Lahko bere,
             spreminja in preprečuje dostavo vseh sporočil. Prav tako lahko v imenu kateregakoli
             podpisnika pošlje sporočilo.
         \item Kadarkoli lahko \textit{pokvari} kateregakoli podpisnika. Ko je podpisnik pokvarjen,
@@ -128,8 +128,8 @@ naključno izbrana funkcija med vsemi funkcijami, ki slikajo med $\{0, 1\}^*$ in
 V nadaljevanju bomo konstruirali večstransko verzijo Schnorrovega podpisa, predstavljenega v
 poglavju~\ref{sec:schnorr}. Končna shema spada med večstranske podpise podskupin z odgovornostjo.
 Ideja konstrukcije je, da začnemo z naivno verzijo, nato pa rešimo njene probleme, kar nas
-privede do formalne definicije v razdelku~\ref{sec:def_multi_schnorr} in dokaza varnosti v
-razdelku~\ref{sec:proof_multi_schnorr}.
+privede do formalne definicije podpisne sheme v razdelku~\ref{sec:def_multi_schnorr} in dokaza
+varnosti v razdelku~\ref{sec:proof_multi_schnorr}.
 
 \subsubsection{Naivna verzija}
 Vsi podpisniki v skupini $P$ se strinjajo o izboru končne grupe $G$ reda $q$, ki jo generira generator
@@ -190,21 +190,23 @@ g^{\tilde{y}'} \stackrel{?}{=} \tilde{X}' \cdot \left(\prod_{P_i \in S} I_i \rig
 \subsubsection{Generiranje parametrov in Predpostavka DL}
 Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo.
 Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa. Ker si podpisniki
-delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za parametre uporabiti
+delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za generiranje parametrov uporabiti
 $H$ na vnaprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih
 parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo,
-da to ne predstavlja nevarnosti.
+da to ne predstavlja nevarnosti. Možen način, kako to dosežemo v grupi $\Z_P^*$ je predstavljen v
+primeru~\ref{primer:gen-zp}.
 
 Ker pa je pri uporabi kriptografije standardno, da se uporabi znane, vnaprej definirane grupe, se
 s problemom generiranja parametrov ne bomo ukvarjali. Enostavno predpostavimo, da imajo podpisniki
 dostop do skupnih, varnih parametrov.
 
-Ker podpis temelji na Schnorrovem, varnost temelji na težavnosti diskretnega logaritma. Predpostavka
-o varnosti je tako standardna predpostavka o težavnosti diskretnega logaritma, predstavljena v
-definiciji~\ref{def:dl}. Pri obravnavi sheme torej predpostavimo, da je $G$ grupa, v kateri je
-izračun diskretnega logaritma težaven.
+Tako kot pri Schnorrovem podpisu, tudi pri večstranskem Schnorrovem podpisu varnost temelji na
+težavnosti diskretnega logaritma. Predpostavka o varnosti je tako standardna predpostavka o težavnosti
+diskretnega logaritma, predstavljena v definiciji~\ref{def:dl}. Pri obravnavi sheme torej predpostavimo,
+da je $G$ grupa, v kateri je izračun diskretnega logaritma težaven.
 
 \begin{primer}[Generianje parametrov v grupi $\Z_p^*$]
+\label{primer:gen-zp}
     V najosnovnejši obliki podpisa uporabimo grupo $\Z_p^*$, kjer je $p$ praštevilo. Za delovanje
     potrebujemo še praštevilo $q$, ki deli $p - 1$. Za generiranje lahko uporabimo standarden algoritem
     za pridobivanje praštevil~\ref{alg:gen}.
@@ -248,12 +250,12 @@ izračun diskretnega logaritma težaven.
 Naslednja težava nastopi v obliki napada v fazi generiranja ključev. Ker napadalec nadzoruje vso
 komunikacijo, lahko v tej fazi enostavno počaka, da vsi podpisniki ustvarijo svoje ključe. Na tej
 točki napadalec stopi v vlogo (torej pokvari) zadnjega podpisnika $P_L$ in generira nov par ključev.
-Če si torej izbere naključen $s \in \Z_q$, lahko izračuna svoj javni ključ kot
+Če si izbere naključen $s \in \Z_q$, lahko izračuna svoj javni ključ kot
 $$
 I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s.
 $$
 To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj se bodo pri množenju v
-enačbi~\eqref{eq:naive-ver} za preverjanje tako izničil vsi ostali javni ključi:
+enačbi za preverjanje~\eqref{eq:naive-ver} tako izničil vsi ostali javni ključi:
 \begin{align*}
     g^{\tilde{y}} &\stackrel{?}{=} \tilde{X} \cdot \left(\prod_{i=1}^L I_i \right)^{e}. \\
                    &\stackrel{?}{=} \tilde{X} \cdot \left(\left(\prod_{i=1}^{L-1} I_i \right) \cdot I_L \right)^{e}. \\
@@ -262,12 +264,11 @@ enačbi~\eqref{eq:naive-ver} za preverjanje tako izničil vsi ostali javni klju�
 \end{align*}
 To pomeni, da na veljavnost podpisa vpliva samo napadalec, torej lahko ponaredi katerikoli podpis.
 
-Za rešitev tega problema lahko uporabimo na dokaze o znanju brez razkritja znanja. Torej, da
-preprečimo napad na generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg svojega
-javnega ključa $I_i$ objavi tudi dokaz o znanju brez razkritja znanja za svoj zasebni ključ glede na
-javni ključ. Objaviti mora torej dokaz, da pozna diskretni logaritem $I_i$ z bazo $g$. Ta dokaz je
-neinteraktiven, saj obravnavmo model slučajnega oraklja in lahko uporabimo Fiat-Shamirjevo
-hevristiko~\ref{sec:fiat-shamir}.
+Za rešitev tega problema lahko uporabimo dokaze znanja brez razkritja znanja. Da preprečimo napad na
+generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg svojega javnega ključa $I_i$
+objavi tudi dokaz znanja brez razkritja znanja za svoj zasebni ključ glede na javni ključ. Objaviti
+mora torej dokaz, da pozna diskretni logaritem $I_i$ z bazo $g$. Ta dokaz je lahko neinteraktiven, saj
+obravnavmo model slučajnega oraklja in uporabimo Fiat-Shamirjevo hevristiko~\ref{sec:fiat-shamir}.
 
 Ker tovrstni dokazi brez preverjevalca nimajo smisla, se je na tej točki vredno vprašati, kdo bo preverjal
 veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe.
@@ -283,25 +284,25 @@ rezultate preverjanja dokazov.
 Kot bomo videli, je za dokaz varnosti potrebno, da lahko algoritem $A$, ki bo simuliral
 proces podpisovanja napadalcu, v polinomskem času za vsakega pokvarjenega podpisnika $P_j$ pridobi
 diskretni logaritem $I_j$ iz predloženega dokaza o znanju brez razkritja znanja. Izkaže pa se, da če
-bo $P_j$ dokaz izračunal s $q$ klici slučajnega oraklja, potem bo algoritem $A$ uspešno
-pridobil diskretni logaritem z verjetnostjo največ $1/q$. Še več, če je $b$ pokvarjenih podpisnikov,
-bo algoritem $A$ uspešen z verjetnostjo največ $1/q^b$. Z drugimi besedami, če želimo,
+bo $P_j$ dokaz izračunal s $q_H$ klici slučajnega oraklja, potem bo algoritem $A$ uspešno
+pridobil diskretni logaritem z verjetnostjo največ $1/q_H$. Še več, če je $b$ pokvarjenih podpisnikov,
+bo algoritem $A$ uspešen z verjetnostjo največ $1/q_H^b$. Z drugimi besedami, če želimo,
 da algoritem $A$ teče v polinomskem času, je podpisnikov lahko največ logaritemsko mnogo v
-številu klicev oraklja $q$. Ker pa je teh klicev lahko največ polinomsko mnogo v varnostnem parametru
+številu klicev oraklja $q_H$. Ker pa je teh klicev lahko največ polinomsko mnogo v varnostnem parametru
 $k$, je torej število podpisnikov lahko največ logaritemsko v $k$.
 
 Ta problem lahko rešimo tako, da vsak podpisnik $P_i$ najprej izračuna svoj par ključev $(s_i, I_i)$
-in na podlagi naključno izbrane vrednosti $r_i$ tudi zavezo $X_i = g^{r_i} \pmod p$, ki bi jo uporabil
-pri dokazu znanja brez razkritja znanja. Potem si vsi podpisniki izmenjajo javne ključe $I_i$ in
-zaveze $X_i$. Vsak podpisnik lahko sedaj izračuna \textit{skupni izziv}
+in na podlagi naključno izbrane vrednosti $r_i$ tudi zavezo $X_i = g^{r_i}$, ki bi jo uporabil pri
+dokazu znanja brez razkritja znanja. Potem si vsi podpisniki izmenjajo javne ključe $I_i$ in zaveze
+$X_i$. Vsak podpisnik lahko sedaj izračuna \textit{skupni izziv}
 $$
 e = H(\text{enc}(X_1) || \text{enc}(I_1) || \text{enc}(X_2) || \text{enc}(I_2) || \dots || \text{enc}(X_L) || \text{enc}(I_L)).
 $$
 Podpisniki nato dokončajo svoj dokaz na podlagi zgostitve $e$ in svojega para ključev.
 
-Kot bomo videli, bo to pomenilo, da za generiranje dokazov $b$ pokvarjenih podpisnikov sedaj rabi le
-$bq$ klicev oraklja, torej je polinomski algoritem $A$ uspešen z verjetnostjo $1/bq$. To
-omogoča, da je podpisnikov več kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo,
+Kot bomo videli, bo to pomenilo, da bo za generiranje dokazov $b$ pokvarjenih podpisnikov sedaj potrebnih
+le $b \cdot q_H$ klicev oraklja, torej bo polinomski algoritem $A$ uspešen z verjetnostjo $1/b \cdot q_H$.
+To omogoča, da je podpisnikov več kot logaritemsko mnogo. Pojavi pa se drugačen problem z učinkovitostjo,
 saj mora sedaj vsak podpisnik v svojem javnem ključu hraniti še Schnorrov podpis sporočila $e$ in pa
 tudi vse javne ključe sopodpisnikov in njihove zaveze. Brez teh podatkov namreč dokaz znanja (Schnorrov
 podpis) ni preverljiv. To pomeni, da je za katerokoli podskupino $S$ velikost ključa proporcionalna
@@ -312,7 +313,7 @@ Schnorrovih javnih ključev, je v tej izvedbi velikost javnega ključa nedopustn
 Da nazaj pridobimo učinkovit podpis, lahko uporabimo slučajnega oraklja in kriptografsko
 orodje, imenovano \textbf{Merklovo drevo} (angl.\ \textit{Merkle tree}). V osnovi je to
 \textit{binarno drevo}, torej drevo, kjer ima vsako vozlišče največ dva otroka. Ideja je, da v liste
-shranimo zgostitve katerekolih podatkov, pridobljene s pomočjo izbranega slučajnega oraklja ali zgoščevalne
+shranimo zgostitve katerihkoli podatkov, pridobljene s pomočjo izbranega slučajnega oraklja ali zgoščevalne
 funkcije. Drevo potem gradimo navzgor tako, da v vsako vozlišče shranimo zgostitev stika levega in desnega
 otroka. Tako nadaljujemo do korena. Pomembno je, da je za pridobivanje zgostitev uporabljena zgoščevalna
 funkcija, za katero je računsko neizvedljivo najti trk, ali pa slučajni orakelj. Osnovna
@@ -325,22 +326,22 @@ struktura je prikazana na sliki~\ref{fig:merkle}.
   \node [rectangle,draw] {$H(H(H(x_1) || H(x_2)) || H(H(x_3) || H(x_4)))$}
     child {node [rectangle,draw] {$H(H(x_1) || H(x_2))$}
         child {node [rectangle,draw] {$H(x_1)$}
-            child {node [rectangle,draw] {$x_1$}}
+            child {node [circle,draw] {$x_1$}}
         }
         child {node [rectangle,draw] {$H(x_2)$}
-            child {node [rectangle,draw] {$x_2$}}
+            child {node [circle,draw] {$x_2$}}
         } 
     }
     child {node [rectangle,draw] {$H(H(x_3) || H(x_4))$}
         child {node [rectangle,draw] {$H(x_3)$}
-            child {node [rectangle,draw] {$x_3$}}
+            child {node [circle,draw] {$x_3$}}
         } 
         child {node [rectangle,draw] {$H(x_4)$}
-            child {node [rectangle,draw] {$x_4$}}
+            child {node [circle,draw] {$x_4$}}
         }
     };
   \end{tikzpicture}
-  \caption[Merklovo drevo.]{Primer Merklovega drevesa s štirimi listi. Imamo torej $4$ vhodne podatke
+  \caption[Merklovo drevo.]{Primer Merklovega drevesa s štirimi listi. Imamo $4$ vhodne podatke
     $x_1, x_2, \dots, x_4$, na vsakem nivoju drevesa se izračuna stik in zgostitev. Ustvarjeno s 
     pomočjo~\cite{SOtikz}.}
   \label{fig:merkle}
@@ -373,8 +374,8 @@ vrednosti prave. Povzeto po~\cite{micali2000csproofs}.
         \item $d = 2$: Če je globina drevesa $2$, želimo pokazati, da moramo poleg $x$ povemo samo eno
             dodatno vrednost. Ta vrednost je torej zgostitev $x$-ove sosednje vrednosti $y$. Ko $B$ izračuna
             $H(x || y)$, je to že koren, in lahko vrednost primerja z zabeleženo.
-        \item $n \rightarrow n + 1$: Predpostavimo torej, da za globino drevesa $n$ lahko preverimo zavezo s
-            podanimi $1 + d$ vrednostmi. To nam omogoča izračuna vrednosti v enem od korenovih otrok v
+        \item $d = n \rightarrow d = n + 1$: Predpostavimo, da za globino drevesa $n$ lahko preverimo zavezo s
+            podanimi $1 + d$ vrednostmi. To nam omogoča izračun vrednosti v enem od korenovih otrok v
             drevesu globine $n + 1$, po indukcijski predpostavki. Če poznamo še vrednost drugega otroka, je
             možen izračun korena.
     \end{itemize}
@@ -407,8 +408,8 @@ Sedaj smo pripravili vse potrebno, da podamo natančno definicijo končne sheme.
 
 \subsubsection{Skupni parametri}
 Vsi podpisniki se strinjajo o skupnem varnostnem parametru $k$ in sekundarnem varnostnem parametru
-$k'$, ki je deterministično izračunan iz $k$ (v praksi zadostuje kar $k' = 100$). Za velikost $L$
-skupine podpisnikov $P$ predpostavimo, da je polinomska v $k$.
+$k'$, ki je deterministično izračunan iz $k$ (v praksi zadostuje, da je $k'$ vnaprej določena konstanta).
+Za velikost $L$ skupine podpisnikov $P$ predpostavimo, da je polinomska v $k$.
 
 Shemo obravnavamo v modelu slučajnega oraklja, tako da imajo vsi podpisniki dostop do slučajnega
 oraklja $H$. Na dogovorjen način ga uporabijo, da ustvarijo pet neodvisnih orakljev
@@ -428,8 +429,8 @@ koncu imajo vsi vse potrebne podatke za izračune).
 
 Kot že omenjeno, v praksi podpisniki uporabijo dobro poznano grupo in zato ne rabijo generirati
 parametrov, kar se pa tiče teoretične obravnave, pa morajo sami generirati parametre podpisne sheme.
-V nadaljevanju bomo predpostavili, imajo podpisniki na voljo skupno grupo $G$ reda $q$, ki jo generira
-generator $g$.
+V nadaljevanju bomo predpostavili, da imajo podpisniki na voljo skupno grupo $G$ reda $q$, ki jo
+generira generator $g$.
 
 \begin{primer}[Generiranje parametrov v grupi $\Z_p^*$]
     Generiranje parametrov je seveda odvisno od izbrane grupe. V primeru $\Z_p^*$ morajo vsi podpisniki
@@ -449,7 +450,7 @@ vsak podpisnik na tem mestu izbrati naključen $u_i \in \Z_q$ in izračunati zav
 $$
 X_i = g^{u_i}.
 $$
-Potem si podpisniki med seboj izmenjajo vrednosti $(X_i, I_i)$. Vsak na tem mestu lahko izračuna
+Potem si podpisniki med seboj izmenjajo vrednosti $(X_i, I_i)$. Vsak sedaj lahko izračuna
 \begin{align*}
     e &= H_3(\text{enc}(X_1) || \text{enc}(I_1) || \text{enc}(X_2) || \text{enc}(I_2) || \dots || \text{enc}(X_L) || \text{enc}(I_L)), \\
     y_i &= e s_i + u_i \bmod q,
@@ -562,9 +563,9 @@ Schnorrovega podpisa.
 
 \subsection{Varnost večstranskega Schnorrovega podpisa}
 \label{sec:proof_multi_schnorr}
-Dokazati si želimo, da je shema, definirana v zgornjem razdelku~\ref{sec:def_multi_schnorr}, \textit{varna},
+Dokazati si želimo, da je shema, definirana v razdelku~\ref{sec:def_multi_schnorr}, \textit{varna},
 torej ustreza pogojem definicije varnosti~\ref{def:asm-varnost}, kjer ima napadalec $F$ sposobnosti,
-definirane v~\ref{def:asm-napadalec}. Varnost torej pomeni, da je preprečimo eksistencialno ponarejanje,
+definirane v~\ref{def:asm-napadalec}. Varnost torej pomeni, da je preprečeno eksistencialno ponarejanje,
 zaradi napadalčevega nadzora nad komunikacijskim omrežjem pa si lahko privošči napad z izbranimi sporočili.
 Še več, ker se ukvarjamo z večstranskimi podpisi, si napadalec lahko izbere še podskupino, ki bo 
 sporočilo podpisovala. Napadalec lahko torej na katerikoli točki od katerekoli podskupine zahteva
@@ -597,14 +598,14 @@ Pred dokazom leme o razcepu moramo najprej pokazati enostavnejšo lemo iz verjet
     Potem obstaja podmnožica $\Omega \subset \mathcal{X}$, tako da velja:
     \begin{itemize}
         \item $\Pr(X \in \Omega) > \epsilon / 2$ (posebej to pomeni, da $\Omega \neq \emptyset$) in
-        \item za vsak $a$ iz $\Omega$ velja, da $\Pr((a, Y) \in A) \geq \epsilon / 2$.
+        \item za vsak $a$ iz $\Omega$ velja, da $\Pr((X, Y) \in A \mid X = a) \geq \epsilon / 2$.
     \end{itemize}
 \end{lema}
 
 \begin{dokaz}
-    Za vsak $x$ iz $\mathcal{X}$ definirajmo $p(x): \mathcal{X} \rightarrow [0, 1]$ kot
+    Za vsak $x$ iz $\mathcal{X}$ definirajmo $p: \mathcal{X} \rightarrow [0, 1]$ kot
     $$
-    p(x) = \Pr((x, Y) \in A \text{ }|\text{ } X = x).
+    p(x) = \Pr((X, Y) \in A \mid X = x).
     $$
     Zakon o popolni verjetnosti nam pove, da velja
     $$
@@ -617,19 +618,19 @@ Pred dokazom leme o razcepu moramo najprej pokazati enostavnejšo lemo iz verjet
 
     Sedaj lahko definiramo množico $\Omega$ kot
     $$
-    \Omega = \{x \in \mathcal{X} \text{ }|\text{ }p(x) \geq \epsilon / 2\} \subseteq \mathcal{X}.
+    \Omega = \{x \in \mathcal{X} \mid p(x) \geq \epsilon / 2\} \subseteq \mathcal{X}.
     $$
     Neposredno iz definicije množice sledi drugi del leme: če je $a$ v $\Omega$, mora zanj veljati
     $$
-    p(a) = \Pr((a, Y) \in A \text{ }|\text{ } X = a) \geq \epsilon / 2.
+    p(a) = \Pr((X, Y) \in A \mid X = a) \geq \epsilon / 2.
     $$
 
     Za prvi del leme pa najprej predpostavimo obratno, da je $\Pr(X \in \Omega) \leq \epsilon / 2$.
     Ker za $x$, ki ni v $\Omega$ velja $p(x) < \epsilon / 2$ (zunaj $\Omega$ je $p(x)$ strogo manjši
     od $\epsilon / 2$), lahko pričakovano vrednost ocenimo kot
     \begin{align*}
-        \text{E}[p(X)] &= \text{E}[p(X) \text{ }|\text{ } X \in \Omega] \Pr(X \in \Omega) +
-            \text{E}[p(X) \text{ }|\text{ } X \notin \Omega ] \Pr(X \notin \Omega) \\
+        \text{E}[p(X)] &= \text{E}[p(X) \mid X \in \Omega] \Pr(X \in \Omega) +
+            \text{E}[p(X) \mid X \notin \Omega ] \Pr(X \notin \Omega) \\
                        &\leq 1 \cdot \Pr(x \in \Omega) + \frac{\epsilon}{2} \cdot \Pr(x \notin \Omega) \\
                        &= \Pr(x \in \Omega) + \frac{\epsilon}{2} \cdot (1 - \Pr(x \in \Omega)) \\
                        &\leq \frac{\epsilon}{2} + \frac{\epsilon}{2} \cdot \left(1 - \frac{\epsilon}{2}\right) \\
@@ -653,16 +654,16 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
     podpisni shemi $\mathcal{S}$ in dostop do oraklja $H$. Če lahko $F$ z nezanemarljivo verjetnostjo
     vrne par $(m, \sigma)$, kjer je $\sigma$  veljaven podpis sporočila $m$, potem lahko z nezanemarljivo
     verjetnostjo z enakimi vhodnimi podatki in uporabo drugega oraklja, $F$ vrne dva para
-    $(m, \sigma)$ in $(m. \sigma')$, kjer podpisa temeljita na drugačnih zgostitvah.
+    $(m, \sigma)$ in $(m, \sigma')$ veljavnih podpisov, kjer podpisa temeljita na drugačnih zgostitvah.
 \end{izrek}
 
 \begin{dokaz}
-    Naj bo napadalec $F$ napadalec naključnostni algoritem, ki teče v polinomskem času. Z $\omega$
-    označimo vir naključnih bitov, do katerega ima $F$ dostop. Denimo, da med svojim napadom napadalec
-    $F$ slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb v varnostnem parametru $k$.
-    Označimo poizvedbe, ki jih $F$ stori s $\mathcal{Q}_1, \mathcal{Q}_2, \dots, \mathcal{Q}_{q_H}$
-    (brez škode za splošnost lahko predpostavimo, da so poizvedbe med seboj različne). Pripadajoče
-    odgovore oraklja na poizvedbe označimo z $\rho_1, \rho_2 , \dots, \rho_{q_H}$.
+    Naj bo napadalec $F$ naključnostni algoritem, ki teče v polinomskem času. Z $\omega$ označimo
+    vir naključnih bitov, do katerega ima $F$ dostop. Denimo, da med svojim napadom napadalec  $F$
+    slučajnemu oraklju $H$ pošlje največ polinomsko mnogo poizvedb v varnostnem parametru $k$. Označimo
+    poizvedbe, ki jih $F$ stori s $\mathcal{Q}_1, \mathcal{Q}_2, \dots,\allowbreak \mathcal{Q}_{q_H}$ (brez
+    škode za splošnost lahko predpostavimo, da so poizvedbe med seboj različne). Pripadajoče odgovore
+    oraklja na poizvedbe označimo z $\rho_1, \rho_2 , \dots, \rho_{q_H}$.
 
     Predpostavimo, da napadalec $F$ uspe z nezanemarljivo verjetnostjo. Uspeh napadalca pomeni, da
     vrne par $(m, \sigma)$, kjer je $\sigma$ veljaven podpis sporočila $m$.
@@ -677,12 +678,12 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
     Če torej označimo z \texttt{uspeh} dodogek, da napadalec $F$ vrne veljaven ponaredek
     $(m, \sigma = (\sigma_1, \sigma_2))$, lahko za nek polinom $P(k)$ zapišemo
     $$
-    \Pr(\text{\texttt{uspeh} $\wedge$ obstaja poizvedba z vhodnimi podatki $(m, \sigma_1)$}) \geq \frac{1}{P(k)},
+    \Pr(\text{\texttt{uspeh} $\wedge$ obstaja poizvedba z vhodnimi podatki $(m, \sigma_1)$}) \geq \frac{1}{P(k)}.
     $$
 
     Zgornje pa je unija dogodkov, da napadalec $F$ uspe, in da je ravno $i$-ta poizvedba
-    tista, ki vsebuje sporočilo $m$ in delni podpis $\sigma_1$. Z uporabo osnovne lastnosti verjetnosti
-    lahko zapišemo
+    tista, ki vsebuje sporočilo $m$ in delni podpis $\sigma_1$ ($1 \leq i \leq q_H$). Z uporabo osnovne
+    lastnosti verjetnosti lahko zapišemo
     \begin{equation}
     \frac{1}{P(k)} \leq \Pr(\bigcup_{i = 1}^{q_H} \text{\texttt{uspeh} $\wedge$ $\mathcal{Q}_i = (m, \sigma_1)$})
     \leq \sum_{i = 1}^{q_H} \Pr(\text{\texttt{uspeh} $\wedge$ $\mathcal{Q}_i = (m, \sigma_1)$}).
@@ -714,7 +715,7 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
     (m, \sigma_1)$. Z $\epsilon$ označimo $1/P'(k)$. Lema~\ref{lema:verjetnost} nam zagotavlja obstoj
     množice $\Omega_\beta \subseteq X$, ki vsebuje vse vire bitov $a$, za katere velja
     $$
-    \Pr(A \text{ }|\text{ } \omega = a) \geq \frac{1}{2P'(k)}.
+    \Pr(A \mid \omega = a) \geq \frac{1}{2P'(k)}.
     $$
 
     Sedaj lahko poleg $\beta$ fiksiramo še vir bitov $a$ iz množice $\Omega_\beta$. To nam da
@@ -750,13 +751,13 @@ Sedaj imamo vse potrebno, da dokažemo lemo o razcepu.
             $F$ postavil identično $\beta$-to poizvedbo za isto sporočilo $m$. Na tej točki v igro
             vstopi drugi orakelj, predstavljen v lemi. Drug orakelj vrne naključni odgovor
             $\rho_\beta'$. Simulacijo ponovno dokončamo z novimi naključnimi odgovori
-            $(\rho'_{\beta+1}, \dots, \rho'_{q_H})$. Verjetnost uspeha napadalaca $F$ je v tem primeru ponovno
+            $(\rho'_{\beta+1}, \dots, \rho'_{q_H})$. Verjetnost uspeha napadalca $F$ je v tem primeru ponovno
             vsaj $1/(4P'(k))$.
     \end{enumerate}
 
     Ker velja $n > k$, je verjetnost, da se zgodi trk med odgovori $\rho_\beta$ in $\rho_\beta'$
     zanemarljiva, saj je prostor možnih odgovorov oraklja velikosti $2^n$. To verjetnost označimo
-    z $\epsilon_{\text{trk}}$. Verjetnost, da uspeta oba poizkusa, $rho_\beta$ in $\rho_\beta'$ pa
+    z $\epsilon_{\text{trk}}$. Verjetnost, da uspeta oba poizkusa, $\rho_\beta$ in $\rho_\beta'$ pa
     sta različna, je torej
     $$
     \Pr(\text{Uspe prvi poizkus} \wedge \text{Uspe drugi poizkus} \wedge \rho_\beta \neq \rho_\beta') \geq
@@ -880,7 +881,7 @@ ekvivalentnost šibkega napadalca in napadalca.
     \end{align*}
     kjer smo pri prehodu iz tretje v četrto vrstico uporabili osnovno lastnost verjetnosti, ki pravi
     $$
-    \Pr(A \cap B) = \Pr(A \text{ }|\text{ } B) \cdot \Pr(B),
+    \Pr(A \cap B) = \Pr(A \mid B) \cdot \Pr(B),
     $$
     pri prehodu v zadnjo vrstico pa smo upoštevali, da velja
     \begin{equation}
@@ -1101,7 +1102,7 @@ na podlagi enake zgoščevalne poizvedbe, kot pri prvem pogonu, je $1/q_H$. V te
 lahko nadaljuje, sicer pa je poskus napada neuspešen.
 
 \begin{opomba}
-    V dejstvo, da nobena od prvih $r - 1$ podpisovalnih poizvedb v drugem pogonu ni temeljila na
+    Dejstvo, da nobena od prvih $r - 1$ podpisovalnih poizvedb v drugem pogonu ni temeljila na
     $j_0$-ti zgoščevalni poizvedbi, temelji na predpostavki, da ne dovoljujemo hkratnih podpisovalnih
     poizvedb. Ta predpostavka je standardna pri dokazih varnosti z lemo o razcepu, saj bi v nasprotnem
     primeru lahko napadalec sodeloval pri večih podpisovalnih sejah hkrati. Previjanje v tej situaciji

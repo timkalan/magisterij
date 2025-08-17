@@ -18,7 +18,7 @@ definira dve lastnosti oz.\ spektra, ki jim lahko zadošča podpis skupine:
 \end{itemize}
 
 V nadaljevanju bomo skupino potencialnih podpisnikov (torej podpisnikov, ki imajo možnost sodelovati pri 
-podpisovanju) označili s $P = P_1, \dots, P_L$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
+podpisovanju) označili s $P = \{ P_1, \dots, P_L \}$, kjer ima skupina $L$ članov. Dejanski podpis pa bo 
 ustvaril samo del skupine $S \subseteq P$.
 
 \subsection{Skupinski podpisi}
@@ -33,7 +33,7 @@ zamislila Chaum in van Heyst~\cite{chaum1991group}.
 \begin{primer}
     Skupinski podpisi so zelo uporabni v primerih, ko moramo vedeti samo, da neka oseba pripada skupini.
     Primer je recimo dostop do varovanih območij, kjer je neprimerno, da bi natančno sledili vsem
-    posameznikom, vseeno pa mora biti dostop omejen samo zaposlenim.
+    posameznikom, vseeno pa mora biti dostop omogočen samo zaposlenim.
 \end{primer}
 
 \subsection{Pragovni podpisi}
@@ -65,7 +65,9 @@ popolno odgovornost, saj na papirju piše njihovo ime.
 Podoben učinek bi z digitalnimi podpisi lahko dosegli, če bi namesto enega podpisa skupine, od članov 
 zbrali individualne podpise in jih nanizali v seznam. Dobili bi torej digitalni podpis skupine, ki 
 ponuja popolno prilagodljivost in odgovornost. Težava je samo, da je dolžina podpisa (in s tem čas 
-preverjanja) proporcionalna številu podpisnikov. \textbf{Večstranski podpisi} (angl.\textit{multisignatures})
+preverjanja) proporcionalna številu podpisnikov.
+
+\textbf{Večstranski podpisi} (angl.\textit{multisignatures})
 ohranijo lastnosti seznama podpisov, rezultat sheme je pa en sam podpis, ki je enako dolg ne glede 
 na število podpisnikov, prav tako je od števila neodvisen čas preverjanja. Tega s seznamom podpisov 
 ni mogoče doseči, saj tako dolžina podpisa, kot čas preverjanja podpisa rasteta linearno s številom 
@@ -73,15 +75,17 @@ podpisnikov (vsak doda en podpis seznamu, ki ga je potrebno preveriti). Večstra
 odlična posplošitev ročnih podpisov skupin, ki vseeno ohrani učinkovito preverjanje.
 
 Še ena pomembna lastnost večstranskih podpisov je, da nekatere sheme vračajo podpise, ki so kar se
-preverjanja tiče, popolnoma zamenljivi z običajnimi digitalnimi podpisi. To omogoča enostavno
-nadgradnjo obstoječih sistemov, ki že uporabljajo digitalne podpise.
+preverjanja tiče, popolnoma zamenljivi s tradicionalnimi digitalnimi podpisi. To omogoča enostavno
+nadgradnjo obstoječih sistemov, ki že uporabljajo digitalne podpise. V zadnjem času je ta lastnost
+postala celo pomembnejša od odgovornosti, zato jo moderni večstranski podpisi opuščajo, zagotavljajo
+pa hitro ustvarjen podpis, ki je zamenljiv s tradicionalnim (npr.\ Schnorrovim) podpisom.
 
 \begin{primer}
-    Recimo, da imamo nek organ, ki izdaja certifikate avtentičnosti uporabnikov (npr.\ potrjuje 
-    avtentičnost javnih ključev). Za večjo robustnost in varnost, je lahko ta organ razporejen 
-    na več strežnikov. Tako preprečimo razpad sistema v primeru izpada enega strežnika. Zato je 
-    torej tudi pomembno, da certifikacijo uporabnika potrdi nekaj strežnikov, ne pa nujno vsi. 
-    Tu lahko torej neka podskupina vseh strežnikov organa skupaj izda en večstranski podpis, ki 
+    Recimo, da imamo nek organ, ki izdaja certifikate avtentičnosti uporabnikov (npr.\ potrjuje
+    avtentičnost javnih ključev). Za večjo robustnost in varnost, je lahko ta organ razporejen
+    na več strežnikov. Tako preprečimo razpad sistema v primeru izpada enega strežnika. Zato je
+    torej tudi pomembno, da certifikacijo uporabnika potrdi nekaj strežnikov, ne pa nujno vsi.
+    Tu lahko torej neka podskupina vseh strežnikov organa skupaj izda en večstranski podpis, ki
     potrjuje avtentičnost uporabnika.
 \end{primer}
 

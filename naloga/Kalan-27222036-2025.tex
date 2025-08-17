@@ -40,21 +40,47 @@
 % - povzetek v slovenščini
 %   V povzetku na kratko opišite vsebinske rezultate dela. Sem ne sodi razlaga
 %   organizacije dela, torej v katerem razdelku je kaj, pač pa le opis vsebine.
-\povzetek{Tukaj napišemo povzetek vsebine. Sem sodi razlaga vsebine in ne opis tega, kako je delo organizirano.}
+\povzetek{V sodobnem digitalnem svetu so večstranski digitalni podpisi ključni za aplikacije, ki
+zahtevajo soglasje več udeležencev. Ta naloga obravnava
+teoretične in praktične vidike večstranskih Schnorrovih podpisov. Delo se prične s pregledom
+kriptografskih osnov in podrobno analizo standardnega Schnorrovega podpisa. Osrednji del naloge
+je posvečen formalnemu modelu večstranskega podpisa podskupine z odgovornostjo (ASM), ki omogoča
+polno prilagodljivost in odgovornost podpisnikov s pomočjo dokazov znanja brez razkritja znanja in Merklovih dreves.
+Varnost sheme je dokazana v modelu slučajnega oraklja z redukcijo na težavnost problema diskretnega
+logaritma. V nadaljevanju je predstavljena sodobna alternativa, podpis MuSig2, ki zmanjša število
+komunikacijskih krogov na dva in omogoča agregacijo ključev, s čimer doseže večjo učinkovitost in
+zasebnost v zameno za opustitev odgovornosti. Empirična analiza potrdi teoretične prednosti shem:
+medtem ko čas preverjanja pri nizu posameznih Schnorrovih podpisov narašča linearno, je pri shemi
+ASM bistveno manjši, pri MuSig2 pa konstanten. Sklep naloge je, da izbira med shemami predstavlja
+kompromis med odgovornostjo in učinkovitostjo, kar je odvisno od specifičnih zahtev posamezne
+aplikacije.}
 
 % - povzetek v angleščini
-\abstract{An abstract of the work is written here. This includes a short description of
-the content and not the structure of your work.}
+\abstract{In the modern digital world, multisignatures are crucial for applications requiring
+consensus from multiple parties. This thesis addresses the theoretical
+and practical aspects of Schnorr multisignatures. The work begins with an overview of cryptographic
+fundamentals and a detailed analysis of the standard Schnorr signature. The core of the thesis is
+dedicated to the formal Accountable-Subgroup Multisignature (ASM) model, which provides full
+flexibility and signer accountability through the use of zero-knowledge proofs of knowledge and Merkle trees. The
+scheme's security is proven in the random oracle model via a reduction to the hardness of the
+discrete logarithm problem. Subsequently, a modern alternative, the MuSig2 signature scheme, is
+presented. MuSig2 reduces the number of communication rounds to two and enables key aggregation,
+thereby achieving greater efficiency and privacy in exchange for accountability. An empirical
+analysis confirms the theoretical advantages of these schemes: while the verification time for a
+series of individual Schnorr signatures grows linearly, it is significantly lower for the ASM scheme
+and constant for MuSig2. The thesis concludes that the choice between these schemes represents a
+trade-off between accountability and efficiency, dependent on the specific requirements of the
+application.}
 
 % - klasifikacijske oznake, ločene z vejicami
 %   Oznake, ki opisujejo področje dela, so dostopne na strani https://www.ams.org/msc/
 \klasifikacija{94A60, 11T71}
 
 % - ključne besede, ki nastopajo v delu, ločene s \sep
-\kljucnebesede{kriptografija\sep digitalni podpis\sep Schnorrov podpis\sep večstranski podpis}
+\kljucnebesede{kriptografija\sep digitalni podpis\sep dokaz brez razkritja znanja\sep Schnorrov podpis\sep večstranski podpis\sep MuSig2}
 
 % - angleški prevod ključnih besed
-\keywords{cryptography\sep digital signature\sep Schnorr signature\sep multisignature} % angleški prevod ključnih besed
+\keywords{cryptography\sep digital signature\sep zero-knowledge proof\sep Schnorr signature\sep multisignature\sep MuSig2} % angleški prevod ključnih besed
 
 % - neobvezna zahvala
 % \zahvala{

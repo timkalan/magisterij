@@ -88,16 +88,16 @@ Za začetek predstavimo glavne lastnosti MuSig2:
 
 \subsubsection{Skupni parametri}
 Ta del podpisa je praktično enak Schnorrovemu večstranskemu podpisu. Podpisniki si izberejo varnostni
-parameter $k$. Na podlagi tega parametra morajo si izberejo grupo $G$ reda $q$ z generatorjem $g$, v
-kateri je problem diskretnega logaritma težak.
+parameter $k$. Na podlagi tega parametra si izberejo grupo $G$ reda $q$ z generatorjem $g$, v kateri
+je problem diskretnega logaritma težak.
 
 Poleg grupe podpisniki potrebujejo še tri zgoščevalne funkcije
 $$
 H_{agg}, H_{non}, H_{sig}:\{0, 1\}^* \rightarrow \Z_q,
 $$
-kjer s pomočjo funkcije $H_{agg}$ agregirajo javne, funkcija $H_{non}$ služi za agregiranje enkratnih
-vrednosti (angl.\ \textit{nonces}), ki jih potrebujejo tekom podpisa, funkcija $H_{sig}$ pa služi
-za generiranje podpisov.
+kjer s pomočjo funkcije $H_{agg}$ agregirajo javne ključe, funkcija $H_{non}$ služi za agregiranje
+enkratnih vrednosti (angl.\ \textit{nonces}), ki jih potrebujejo tekom podpisa, funkcija $H_{sig}$
+pa služi za generiranje podpisov.
 
 Krajše lahko zapišemo
 $$
@@ -237,7 +237,7 @@ MuSig2 pa je za osnovo uporabljen soroden problem, ki ga imenujemo \textit{probl
 (angl.\ \textit{one-more discrete logarithm problem})~\cite{bellare2003omdl}. Zasnova je enaka kot
 pri PDL. Imamo grupo z operacijo množenja, generator $g$ in element grupe $I$, zanima pa nas diskretni
 logaritem $s = \log_g I$. Razlika pri problemu še enega diskretnega logaritma je, da imamo na voljo
-oraklja, ki nam lahko pove $q$ rešitev problema diskretnega logaritma, mi pa želimo izračunati $q + 1$
+oraklja, ki nam lahko pove $t$ rešitev problema diskretnega logaritma, mi pa želimo izračunati $t + 1$
 problemov. Predpostavljamo, da ne obstaja polinomski naključnostni algoritem, ki to lahko stori z
 nezanemarljivo verjetnostjo.
 
@@ -249,6 +249,6 @@ njegov algebraični opis (na podlagi do sedaj znanih elementov), potem lahko dok
 varen tudi za $\nu = 2$.
 
 Jedro dokaza je ponovno lema o razcepu~\ref{izr:forking} v kombinaciji s previjanjem. Dokaz pa je še
-dodatno kompleksnejši, ker dokazuje tudi varnost v če podpisniki sodelujejo pri več podpisih naenkrat,
+dodatno kompleksnejši, ker dokazuje tudi varnost, tudi če podpisniki sodelujejo pri več podpisih naenkrat,
 česar osnovna lema o razcepu ne omogoča. V tem primeru varnost omogoča dejstvo, da podpisniki izberejo
 več naključnih vrednosti, ki jih združijo s pomočjo zgoščevalne funkcije $H_{non}$.

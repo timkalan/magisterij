@@ -5,7 +5,7 @@
 % katerem razdelku.
 Odkar se je na svetu pojavil koncept (ročnega) podpisa, je večina primerov uporabe temeljila na
 pridobivanju podpisov več deležnikov, saj je bila večina podpisanih dokumentov sporazum ali pogodba
-med večimi deležniki. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih držav
+med večimi udeleženci. Odličen primer je npr.\ Deklaracija neodvisnosti Združenih držav
 Amerike, vidna na sliki~\ref{fig:declaration}. 
 
 \begin{figure}[ht]
@@ -35,9 +35,9 @@ Poleg individualnih podpisov, pa lahko digitalne podpise uporabimo tudi za podpi
 če mora skupina deležnikov podpisati pogodbo. Najenostavneje to dosežemo tako, da vsak član pripne
 svoj digitalni podpis. Če je skupina velika, če je računska moč omejena (npr.\ če želimo zmanjšati
 ceno transakcij pri tehnologiji veriženja blokov), ali pa če enostavno želimo preverjevalcu podpisov
-olajšati delo, lahko poskrbimo, da se skupina podpiše z enim samim, \textit{večstranskim} podpisom.
-Ta podpis vseeno priča o vseh podpisnikih, njegova verifikacija oz.\ preverjanje pa zajema približno
-enako dela, kot preverjanje enega samega podpisa.
+olajšati delo, lahko poskrbimo, da se skupina podpiše z enim samim, \textit{večstranskim} podpisom
+(angl.\ \textit{multisignature}). Ta podpis vseeno priča o vseh podpisnikih, njegova verifikacija
+oz.\ preverjanje pa zajema približno enako dela, kot preverjanje enega samega podpisa.
 
 Taki podpisi so samo en izmed možnih načinov, kako se skupina podpiše. Od ostalih načinov izstopajo
 po tem, da omogočajo vpogled v sestavo skupine podpisnikov, kar nudi preverjevalcu več informacij
@@ -65,5 +65,6 @@ splošnih definicij pri digitalnih podpisih in potem še nekaj besed o varnosti.
 predstavimo Schnorrov podpis, ki je osnova za ostale sheme, ki jih obravnavamo. V 
 poglavju~\ref{sec:skpine} predstavimo nekaj možnih pristopov za podpisovanje skupin. Poglavje~\ref{sec:multischnorr}
 predstavi večstranski Schnorrov podpis, tam tudi dokažemo njegovo varnost v modelu slučajnega oraklja.
-V poglavju~\ref{sec:primerjava} primerjamo učinkovitost navadnega in večstranskega Schnorrovega podpisa.
-Na koncu pa v poglavju~\ref{sec:sodobno} omenimo še, kako se je področje razvijalo v zadnjem času.
+V poglavju~\ref{sec:sodobno} omenimo, kako se je področje razvijalo v zadnjem času in predstavimo
+podpis MuSig2. Na koncu pa poglavju~\ref{sec:primerjava} primerjamo učinkovitost navadnega Schnorrovega,
+večstranskega Schnorrovega in MuSig2 podpisa.

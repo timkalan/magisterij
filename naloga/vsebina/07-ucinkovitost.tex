@@ -5,7 +5,7 @@ Naravno vprašanje, ki se pojavi ob omembi večstranskega Schnorrovega podpisa p
 ali pa MuSig2, je, kakšne prednosti ponujata pred uporabo več navadnih Schnorrovih podpisov. Najočitnejša
 prednost je, da večstranski podpis vrne en sam podpis, ki je primerljivo dolg s Schnorrovim, medtem
 ko uporaba individualnih podpisov pomeni, da mora preverjevalec preveriti toliko podpisov, kot je
-velika skupina. To prednost večstranskega podpisa je posebej pomembna v primerih, ko je preverjevalčev
+velika skupina. Ta prednost večstranskega podpisa je posebej pomembna v primerih, ko je preverjevalčev
 čas zelo omejen ali drag. Odličen primer je pri vseh aplikacijah, ki temeljijo na veriženju blokov,
 kjer preverjanje podpisov poteka ">na verigi"<, torej je za vsako operacijo potrebno plačati.
 
@@ -55,13 +55,13 @@ Kot je razvidno iz slike~\ref{fig:generiranje}, je čas generiranja ključev pri
 podpisu mnogo daljši, ne glede na količino podpisnikov. MuSig2 porabi enako časa kot Schnorrov podpis,
 vendar smo vključili še čas agregacije ključev, zato je potrebno še nekaj dodantega časa. Rast
 zahtevnosti v vseh primerih je linearna s številom podpisnikov, a je vseeno hitrejša pri večstranskih
-podpisu. V praksi je za večstranski Schnorrov podpis potrebno še več časa, saj smo tu zanemarili čas
+podpisih. V praksi je za večstranski Schnorrov podpis potrebno še več časa, saj smo tu zanemarili čas
 komunikacije, ki je v tem primeru linearen s številom podpisnikov. Ker pa se mora ta komunikacija
 zgoditi samo enkrat, jo tu zanemarimo (ključe skupina ustvari le ob začetku sodelovanja). Za predstavo
 razlike, pri $100$ podpisnikih se za generiranje ključev pri navadnem podpisu porabita približno $2$
-milisekundi, pri MuSig2 $6$ milisekund, pri večstranskem Schnorrovem pa $6$ milisekund.
+milisekundi, pri MuSig2 $4$ milisekunde, pri večstranskem Schnorrovem pa $6$ milisekund.
 
-Generiranje ključev predstavlja veliko prednost za uporabo navadnega Schnorrovega podpisa, vendar
+Generiranje ključev predstavlja veliko prednost navadnega Schnorrovega podpisa, vendar
 si moramo zapomniti, da je to postopek, ki ga mora skupina opraviti le enkrat, hkrati pa ne obremenjuje
 preverjevalca. Če smo torej v situaciji, kjer mora ista skupina podpisnikov velikokrat podpisati
 sporočila, je čas generiranje ključev zanemarljiv, v primeru enkratnih skupin pa je morda smiselno
@@ -75,7 +75,9 @@ krogi komunikacije za večstranski Schnorrov podpis:
     \item izmenjava zavez $X_i$,
     \item izmenjava skupne zaveze $\tilde{X}$
     \item in izmenjava izziva $e$,
+\end{itemize}
 in dva kroga pri MuSig2:
+\begin{itemize}
     \item izmenjava zavez $X_{1, i, j}$,
     \item izmenjava delnih podpisov $y_i$.
 \end{itemize}

@@ -68,7 +68,7 @@ za množenje in je problem diskretnega logaritma~\ref{def:dl} težek.
     $$
     g^y \stackrel{\ref{trd:exp-mod-ord}}{=} g^{es + r \bmod q} = g^{es + r} = g^r \cdot (g^s)^e = X \cdot I^e,
     $$
-    kjer smo uporabili trditev~\ref{trd:exp-mod-ord}.
+    kjer v prvem koraku uporabili trditev~\ref{trd:exp-mod-ord}.
 \end{itemize}
 
 Ker Schnorrov podpis deluje v skoraj poljubnih končnih grupah, je zelo prilagodljiv in uporaben.
@@ -77,9 +77,9 @@ Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj časovno in pro
 
 \begin{opomba}
 \label{opomba:nonce}
-    V primeru, da je enak $r$ uporabljen večkrat, podpisnik tvega, da lahko napadalec iz dveh njegovih
-    podpisov izračuna njegov zasebni ključ $s$. Naj bosta $(X_1, y_1)$ in $(X_2, y_2)$ podpisa sporočil
-    $m_1$ in $m_2$. Potem velja
+    V primeru, da je enak $r$ uporabljen pri večih podpisih, podpisnik tvega, da lahko napadalec iz
+    dveh njegovih podpisov izračuna njegov zasebni ključ $s$. Naj bosta $(X_1, y_1)$ in $(X_2, y_2)$
+    podpisa sporočil $m_1$ in $m_2$. Potem velja
     $$
     y_1 - y_2 = e_1 s + r_1 - e_2 s - r_2 = (e_1 - e_2)s + (r_1 - r_2).
     $$
@@ -96,8 +96,8 @@ Te omogočajo izbiro manjših parametrov, kar naredi podpis bolj časovno in pro
 \subsection{Varnost Schnorrovega podpisa}
 \label{sec:schnorr-sec}
 Ko govorimo o varnosti Schnorrovega podpisa, imamo v mislih odpornost sheme proti eksistencialnem
-ponarejanju, kjer napadalec lahko za katerokoli sporočilo dobi veljaven podpis. Želimo torej, da
-napadalcu ne uspe ponarediti podpisa za nobeno sporočilo, ki še ni bilo podpisano.
+ponarejanju. Želimo torej, da napadalcu ne uspe ponarediti podpisa za nobeno sporočilo, ki še ni
+bilo podpisano.
 
 Kot omenjeno na začetku poglavja, je varnost Schnorrovega podpisa odvisna od težavnosti problema
 diskretnega logaritma. Varnost Schnorrovega podpisa je zato odvisna od varnosti grupe, v kateri deluje.
@@ -115,7 +115,7 @@ težek.
         \item Napadalec $F$ podpisniku $P$ lahko pošlje sporočilo $m$, v odgovor pa dobi podpis $\sigma$.
             To lahko stori poljubno mnogokrat.
         \item Napadalec $F$ si izbere sporočilo $m'$ in zanj izračuna podpis $\sigma'$. Eksperiment
-            vrne $1$, če je podpis $\sigma'$ veljaven postup za sporočilo $m'$, sicer vrne $0$.
+            vrne $1$, če je podpis $\sigma'$ veljaven podpis za sporočilo $m'$, sicer vrne $0$.
     \end{enumerate}
     Cilj napadalca je torej ponarediti podpis za sporočilo, ki še ni bilo podpisano, brez da bi poznal
     zasebni ključ podpisnika. Podpisna shema je varna , če je verjetnost, da izvedba eksperimenta
@@ -132,11 +132,11 @@ več pogovorov med dokazovalcem in preverjevalcem.
 
 \begin{definicija}[Varnost identifikacijske sheme]
 \label{def:id-sec}
-    Naj bo $k$ varnostni parameter in $T_{sk}$ orakelj, ki ne prejme nobenega vhodnega podatka, ob klicu
-    pa vrne \textit{transkript} ene izvedbe identifikacijske sheme. Transkript predstavlja eno izvedbo
-    identifikacijske sheme z izbranimi javnimi parametri. Formalizira napadalčevo sposobnost
-    ">prisluškovanja"< in mu omogoča, da pridobi vsa izmenjana sporočila med dokazovalcem in
-    preverjevalcem. Naj bo $F$ napadalec, omejen s polinomskim časom. Definirajmo 
+    Naj bo $k$ varnostni parameter in $T_{sk}$ transkriptijski orakelj, ki ne prejme nobenega vhodnega
+    podatka, ob klicu pa vrne \textit{transkript} ene izvedbe identifikacijske sheme. Transkript
+    predstavlja eno izvedbo identifikacijske sheme z izbranimi javnimi parametri. Formalizira
+    napadalčevo sposobnost ">prisluškovanja"< in mu omogoča, da pridobi vsa izmenjana sporočila med
+    dokazovalcem in preverjevalcem. Naj bo $F$ napadalec, omejen s polinomskim časom. Definirajmo 
     \textit{identifikacijski eksperiment} $\text{Id}_F(k)$:
     \begin{enumerate}
         \item Na podlagi varnostnega parametra se definira par ključev $(I, s)$, kjer je $I$
@@ -188,7 +188,7 @@ več pogovorov med dokazovalcem in preverjevalcem.
                     $$
                     Tako lahko vrne veljaven transkript $(y, e, X)$ napadalcu $F$.
             \end{itemize}
-            Ker račuana v obratnem vrstnem redu, se izogne izračunu diskretnega logaritma, opraviti
+            Ker računa v obratnem vrstnem redu, se izogne izračunu diskretnega logaritma, opraviti
             mora le eno eksponenciranje.
         \item Ko napadalec pošlje zavezo $X$, algoritem $A$ izbere enakomerno naključno število $e_1
             \in \Z_q$, jo pošlje napadalcu $F$, ta pa odgovori z odgovorom $y_1$.
@@ -205,7 +205,7 @@ več pogovorov med dokazovalcem in preverjevalcem.
                 X = g^{y_1} \cdot I^{-e_1} &= g^{y_2} \cdot I^{-e_2} \\
                 g^{y_1} \cdot g^{-y_2} &= I^{e_1} \cdot I^{-e_2} \\
                 g^{y_1 - y_2} &= (g^s)^{e_1 - e_2} \\
-                s &= (y_1 - y_2)(e_1 - e_2)^{-1}
+                s &= (y_1 - y_2)(e_1 - e_2)^{-1} \bmod q.
             \end{align*}
     \end{enumerate}
 
@@ -264,7 +264,8 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 
     Brez škode za splošnost predpostavimo, da bo napadalec $F$ vsak klic slučajnega oraklja na
     nekem vhodu opravil največ enkrat. Predpostavimo tudi, da če napadalec $F$ uspešno ponaredi
-    podpis $(X, y)$ sporočila $m$, potem je gotovo poklical oraklja $H$ s podatki $\text{enc}(X) || m$.
+    podpis $(X, y)$ sporočila $m$, potem je gotovo poklical oraklja $H$ s podatki $\text{enc}(X) || m$
+    (sicer bi moral uganiti izziv $e$, kar lahko stori največ z zanemarljivo verjetnostjo).
 
     Na podlagi napadalca $F$ na podpisno shemo $\mathcal{S}$ želimo konstruirati napadalca $F'$
     na identifikacijsko shemo $\mathcal{S'}$, ki ima dostop do transkripcijskega oraklja $T_{sk}$
@@ -337,8 +338,7 @@ da je ta transformacija varna, smo dokazali varnost Schnorrovega podpisa.
 \subsection{Primer: Schnorrov podpis v \texorpdfstring{$\Z_p^*$}{Zp∗}}
 Za ilustrativni primer si poglejmo, kako je bil Schnorrov podpis prvotno opisan~\cite{schnorr1989sig}.
 Predstavljeni podpis je poseben primer podpisa, opisanega zgoraj, kjer je grupa $G$ multiplikativna
-grupa naravnih števil modulo praštevila $p$. Za namene tega dela si ga je posebej koristno pogledati,
-saj bo enaka grupa uporabljena tudi pri njegovi večstranski različici v poglavju~\ref{sec:multischnorr}.
+grupa naravnih števil modulo $p$, kjer je $p$ praštevilo.
 \begin{itemize}
     \item \textbf{Parametri}:
     Najprej je potrebno generirati par praštevil $p$ in $q$, tako da $q$ deli $p - 1$. Praštevilo $p$
