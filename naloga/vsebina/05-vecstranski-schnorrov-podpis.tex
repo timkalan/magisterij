@@ -216,7 +216,7 @@ da je $G$ grupa, v kateri je izračun diskretnega logaritma težaven.
         \begin{algorithmic}
             \State $q \gets \text{naključno izbrano $k$-bitno število}$
             \State $p \gets 2q + 1$
-            \While{$q$ ni praštevilo in $p$ ni praštevilo}
+            \While{$q$ ni praštevilo ali $p$ ni praštevilo}
                 \State $q \gets \text{naključno izbrano $k$-bitno število}$
                 \State $p \gets 2q + 1$
             \EndWhile
