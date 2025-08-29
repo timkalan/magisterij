@@ -10,7 +10,6 @@
     publisher = {ACM},
     editor = {Samarati, Pierangela},
     address = {Philadelphia, PA, USA},
-    doi = {10.1145/501983.502017},
     isbn = {978-1-58113-385-1},
     url = {https://doi.org/10.1145/501983.502017},
 }
@@ -90,7 +89,6 @@
     number = {4},
     pages = {1253-1298},
     year = {2000},
-    doi = {10.1137/S0097539795284959},
     URL = { https://doi.org/10.1137/S0097539795284959 },
     eprint = { https://doi.org/10.1137/S0097539795284959 },
     abstract = { This paper puts forward a new notion of a proof based on
@@ -198,7 +196,6 @@
     address = "Boston, MA",
     pages = "27--27",
     isbn = "978-1-4419-5906-5",
-    doi = "10.1007/978-1-4419-5906-5_139",
     url = "https://doi.org/10.1007/978-1-4419-5906-5_139",
 }
 
@@ -236,8 +233,7 @@
     pages = {1084-1101},
     keywords = {Public key;Read only
                 memory;Protocols;Bitcoin;Aggregates;Forgery;multi-signature;cryptography
-                },
-    doi = {10.1109/SP.2019.00050},
+                }
 }
 
 @misc{jonas2020musig2,
@@ -245,7 +241,6 @@
     title = {{MuSig2}: Simple Two-Round Schnorr Multi-Signatures},
     howpublished = {Cryptology {ePrint} Archive, Paper 2020/1261},
     year = {2020},
-    doi = {10.1007/978-3-030-84242-0_8},
     url = {https://eprint.iacr.org/2020/1261},
 }
 
@@ -315,8 +310,8 @@ abstract = {Cryptography is ubiquitous and plays a key role in ensuring data sec
   volume={22},
   number={6},
   pages={644-654},
-  keywords={Cryptography;Receivers;Authentication;Eavesdropping;Costs;Business;Public key cryptography},
-  doi={10.1109/TIT.1976.1055638}}
+  keywords={Cryptography;Receivers;Authentication;Eavesdropping;Costs;Business;Public key cryptography}
+}
 
 @article{rivest1978rsa,
 author = {Rivest, R. L. and Shamir, A. and Adleman, L.},
@@ -329,7 +324,6 @@ volume = {21},
 number = {2},
 issn = {0001-0782},
 url = {https://doi.org/10.1145/359340.359342},
-doi = {10.1145/359340.359342},
 abstract = {An encryption method is presented with the novel property that publicly revealing an encryption key does not thereby reveal the corresponding decryption key. This has two important consequences: (1) Couriers or other secure means are not needed to transmit keys, since a message can be enciphered using an encryption key publicly revealed by the intented recipient. Only he can decipher the message, since only he knows the corresponding decryption key. (2) A message can be “signed” using a privately held decryption key. Anyone can verify this signature using the corresponding publicly revealed encryption key. Signatures cannot be forged, and a signer cannot later deny the validity of his signature. This has obvious applications in “electronic mail” and “electronic funds transfer” systems. A message is encrypted by representing it as a number M, raising M to a publicly specified power e, and then taking the remainder when the result is divided by the publicly specified product, n, of two large secret primer numbers p and q. Decryption is similar; only a different, secret, power d is used, where e * d ≡ 1(mod (p - 1) * (q - 1)). The security of the system rests in part on the difficulty of factoring the published divisor, n.},
 journal = {Commun. ACM},
 month = feb,
@@ -356,8 +350,8 @@ keywords = {security, public-key cryptosystems, privacy, prime number, message-p
   volume={31},
   number={4},
   pages={469-472},
-  keywords={},
-  doi={10.1109/TIT.1985.1057074}}
+  keywords={}
+}
 
 @article{nakamoto2009bitcoin,
   abstract = {A purely peer-to-peer version of electronic cash would allow online payments to be sent directly from one party to another without going through a financial institution. Digital signatures provide part of the solution, but the main benefits are lost if a trusted third party is still required to prevent double-spending. We propose a solution to the double-spending problem using a peer-to-peer network. The network timestamps transactions by hashing them into an ongoing chain of hash-based proof-of-work, forming a record that cannot be changed without redoing the proof-of-work. The longest chain not only serves as proof of the sequence of events witnessed, but proof that it came from the largest pool of CPU power. As long as a majority of CPU power is controlled by nodes that are not cooperating to attack the network, they'll generate the longest chain and outpace attackers. The network itself requires minimal structure. Messages are broadcast on a best effort basis, and nodes can leave and rejoin the network at will, accepting the longest proof-of-work chain as proof of what happened while they were gone.},
@@ -382,7 +376,6 @@ isbn = {9781595938107},
 publisher = {Association for Computing Machinery},
 address = {New York, NY, USA},
 url = {https://doi.org/10.1145/1455770.1455827},
-doi = {10.1145/1455770.1455827},
 abstract = {Multisignatures allow n signers to produce a short joint signature on a single message. Multisignatures were achieved in the plain model with a non-interactive protocol in groups with bilinear maps, by Boneh et al, and by a three-round protocol under the Discrete Logarithm (DL) assumption, by Bellare and Neven, with multisignature verification cost of, respectively, O(n) pairings or exponentiations. In addition, multisignatures with O(1) verification were shown in so-called Key Verification (KV) model, where each public key is accompanied by a short proof of well-formedness, again either with a non-interactive protocol using bilinear maps, by Ristenpart and Yilek, or with a three-round protocol under the Diffie-Hellman assumption, by Bagherzandi and Jarecki.We improve on these results in two ways: First, we show a two-round O(n)-verification multisignature secure under the DL assumption in the plain model, improving on the three-round protocol of Bellare-Neven. Second, we show a two-round O(1)-verification multisignature secure under the DL assumption in the KV model, improving on assumptions and/or communication rounds of the schemes of Ristenpart and Yilek and Bagherzandi and Jarecki. Exact security of both schemes matches (in ROM) that of Schnorr signatures. The reduced round complexity is due to a new multiplicatively homomorphic equivocable commitment scheme which can be of independent interest. Moreover, our KV model scheme is enabled by a generalized forking lemma, which shows that standard non-interactive zero-knowledge (NIZK) proofs of knowledge in ROM admit efficient simultaneous post-execution extraction of witnesses of all proof instances. As a consequence of this lemma, any DL-based multisignature secure in so-called Knowledge-of-Secret-Key model can be implemented in the KV model using standard ROM-based NIZK's of DL as proofs of key well-formedness.},
 booktitle = {Proceedings of the 15th ACM Conference on Computer and Communications Security},
 pages = {449–458},
@@ -407,7 +400,6 @@ number={2},
 pages={121-133},
 abstract={In this paper, we provide a new multi-signature scheme that is proven secure in the plain public key model. Our scheme is practical and efficient according to computational costs, signature size and security assumptions. At first, our scheme matches the single ordinary discrete logarithm based signature scheme in terms of signing time, verification time and signature size. Secondly, our scheme requires only two rounds of interactions and each signer needs nothing more than a certified public key to produce the signature, meaning that our scheme is compatible with existing PKIs. Thirdly, our scheme has been proven secure in the random oracle model under standard discrete logarithm (DL) assumption. It outperforms a newly proposed multi-signature scheme by Bagherzandi, Cheon and Jarecki (BCJ scheme) in terms of both computational costs and signature size.},
 issn={1573-7586},
-doi={10.1007/s10623-009-9313-z},
 url={https://doi.org/10.1007/s10623-009-9313-z}
 }
 
@@ -419,8 +411,8 @@ url={https://doi.org/10.1007/s10623-009-9313-z}
   volume={},
   number={},
   pages={526-545},
-  keywords={Servers;Public key;Protocols;Software;Prototypes;Browsers;transparency;signatures;multisignatures;cryptography;distributed protocols;scalability},
-  doi={10.1109/SP.2016.38}}
+  keywords={Servers;Public key;Protocols;Software;Prototypes;Browsers;transparency;signatures;multisignatures;cryptography;distributed protocols;scalability}
+}
 
 @article{maxwell2019musig,
 author = {Maxwell, Gregory and Poelstra, Andrew and Seurin, Yannick and Wuille, Pieter},
@@ -433,7 +425,6 @@ volume = {87},
 number = {9},
 issn = {0925-1022},
 url = {https://doi.org/10.1007/s10623-019-00608-x},
-doi = {10.1007/s10623-019-00608-x},
 abstract = {We describe a new Schnorr-based multi-signature scheme (i.e., a protocol which allows a group of signers to produce a short, joint signature on a common message) called $$mathsf {MuSig}$$, provably secure under the Discrete Logarithm assumption and in the plain public-key model (meaning that signers are only required to have a public key, but do not have to prove knowledge of the private key corresponding to their public key to some certification authority or to other signers before engaging the protocol). $$mathsf {MuSig}$$ improves over the state-of-art scheme of Bellare and Neven (ACM Conference on Computer and Communications Security-CCS 2006) and its variants by Bagherzandi et al. (ACM Conference on Computer and Communications Security-CCS 2008) and Ma et al. (Des Codes Cryptogr 54(2):121–133, 2010) in two respects: (i) it is simple and efficient, having the same key and signature size as standard Schnorr signatures; (ii) it allows key aggregation, which informally means that the joint signature can be verified exactly as a standard Schnorr signature with respect to a single “aggregated” public key which can be computed from the individual public keys of the signers. To the best of our knowledge, this is the first multi-signature scheme provably secure under the Discrete Logarithm assumption in the plain public-key model which allows key aggregation. As an application, we explain how our new multi-signature scheme could improve both performance and user privacy in Bitcoin.},
 journal = {Des. Codes Cryptography},
 month = sep,
@@ -536,7 +527,6 @@ isbn="978-3-319-96881-0"
     year = {2016},
     volume = {9},
     number = {8},
-    doi = {10.3390/ma9080639},
     publisher = {Multidisciplinary Digital Publishing Institute},
 }
 
@@ -640,7 +630,6 @@ isbn="978-3-319-96881-0"
     pages = {140--151},
     address = {Berlin, Heidelberg},
     publisher = {Springer},
-    doi = {10.1007/978-3-540-74976-9_16},
     isbn = {978-3-540-74976-9},
     url = {https://doi.org/10.1007/978-3-540-74976-9_16},
 }
@@ -653,7 +642,6 @@ isbn="978-3-319-96881-0"
     year = {1975},
     volume = {79},
     pages = {49--58},
-    doi = {10.6028/jres.079b.005},
 }
 
 @book{vanoosten2008realizability,

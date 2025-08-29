@@ -6,32 +6,32 @@ ali pa MuSig2, je, kakšne prednosti ponujata pred uporabo več navadnih Schnorr
 prednost je, da večstranski podpis vrne en sam podpis, ki je primerljivo dolg s Schnorrovim, medtem
 ko uporaba individualnih podpisov pomeni, da mora preverjevalec preveriti toliko podpisov, kot je
 velika skupina. Ta prednost večstranskega podpisa je posebej pomembna v primerih, ko je preverjevalčev
-čas zelo omejen ali drag. Odličen primer je pri vseh aplikacijah, ki temeljijo na veriženju blokov,
-kjer preverjanje podpisov poteka ">na verigi"<, torej je za vsako operacijo potrebno plačati.
+čas zelo omejen ali drag. Odličen primer je pri vseh aplikacijah, ki temeljijo na tehnologiji veriženja
+blokov, kjer preverjanje podpisov poteka ">na verigi"<, torej je za vsako operacijo potrebno plačati.
 
 Seveda pa je potrebno omeniti tudi slabosti večstranskih podpisov v primerjavi z navadnimi. Najbolj
 očitna je, da morajo podpisniki med seboj komunicirati, kar lahko pomeni velike izgube časa. Uporabna
 vrednost večstranskih podpisov torej sloni na primerih, kjer je komunikacija enostavna, čas in
-računska moč preverjevalca pa izjemno dragocena (ponovno so odličen primer aplikacije, ki slonijo
+računska moč preverjevalca pa izjemno dragocena (ponovno so odličen primer aplikacije, ki temeljijo
 na veriženju blokov).
 
 \subsection{Empirična analiza}
-Za empirično potrditev zgornjih trditev smo naredili program, ki implementira vse podpise v nekoliko
+Za empirično potrditev zgornjih trditev smo razvili program, ki implementira vse podpise v nekoliko
 poenostavljenem okolju. Zanemarili smo čas komunikacije pri vseh verzijah podpisov, saj je to nezanesljiv
 podatek, ki je odvisen od okolja. Cilj primerjave je videti, kako se razlikuje čas izvedbe posameznih
 komponent podpisov pri različnem številu podpisnikov.
 
-Zaradi zanemarjanja komunikaicje pričakujemo, da bodo časi podpisovanja in generiranja ključev pri
-večstranskih podpisih nekoliko krajši, kot v resnici, čas preverjanja pa bo odražal realno stanje.
+Zaradi zanemarjanja komunikacije pričakujemo, da bodo časi podpisovanja in generiranja ključev pri
+večstranskih podpisih nekoliko krajši, kot so v resnici, čas preverjanja pa bo odražal realno stanje.
 
 Podpise smo implementirali v programskem jeziku Go, vsa izvorna koda je na voljo na
 \url{https://github.com/timkalan/magisterij}. Poskusi so bili izvedeni na računalniku z Apple M1 Pro
 procesorjem in 16 GB RAM-a. Vsak poskus smo ponovili šestkrat, da smo dobili stabilne rezultate, ki
-smo jih nato povprečili. Za dodatno nazornost, smo izračunali še standardne odklone vseh poskusov.
+smo jih nato povprečili. Za dodatno nazornost smo izračunali še standardne odklone vseh poskusov.
 Vsi grafi prikazujejo povprečne vrednosti skupaj s standardnim odklonom.
 
 Poskusi so bili narejeni z $1, 2, 5, 10, 20, 30, \dots, 200$ podpisniki. Velikost parametra $q$, ki
-določa grupo iz katere je generator, je bila $256$ bitov. Za grupo smo izbrali multiplikativno grupo
+določa grupo, iz katere je generator, je bila $256$ bitov. Za grupo smo izbrali multiplikativno grupo
 naravnih števil modulo $p$, kjer je $p-1$ večkratnik parametra $q$. Za zgoščevalno funkcijo smo
 uporabili \texttt{SHA-256}, ki je bila izbrana zaradi velike razširjenosti.
 
@@ -53,19 +53,19 @@ tudi potrebno samo enkrat generirati par ključev pri navadnem Schnorrovem podpi
 
 Kot je razvidno iz slike~\ref{fig:generiranje}, je čas generiranja ključev pri večstranskem Schnorrovem
 podpisu mnogo daljši, ne glede na količino podpisnikov. MuSig2 porabi enako časa kot Schnorrov podpis,
-vendar smo vključili še čas agregacije ključev, zato je potrebno še nekaj dodantega časa. Rast
+vendar smo vključili še čas agregacije ključev, zato je potreben še dodaten čas. Rast
 zahtevnosti v vseh primerih je linearna s številom podpisnikov, a je vseeno hitrejša pri večstranskih
 podpisih. V praksi je za večstranski Schnorrov podpis potrebno še več časa, saj smo tu zanemarili čas
 komunikacije, ki je v tem primeru linearen s številom podpisnikov. Ker pa se mora ta komunikacija
-zgoditi samo enkrat, jo tu zanemarimo (ključe skupina ustvari le ob začetku sodelovanja). Za predstavo
-razlike, pri $100$ podpisnikih se za generiranje ključev pri navadnem podpisu porabita približno $2$
+zgoditi samo enkrat, jo tu zanemarimo (ključe skupina ustvari le ob začetku sodelovanja). Za ponazoritev
+razlike: pri $100$ podpisnikih se za generiranja ključev pri navadnem podpisu porabita približno $2$
 milisekundi, pri MuSig2 $4$ milisekunde, pri večstranskem Schnorrovem pa $6$ milisekund.
 
 Generiranje ključev predstavlja veliko prednost navadnega Schnorrovega podpisa, vendar
 si moramo zapomniti, da je to postopek, ki ga mora skupina opraviti le enkrat, hkrati pa ne obremenjuje
-preverjevalca. Če smo torej v situaciji, kjer mora ista skupina podpisnikov velikokrat podpisati
+preverjevalca. Če smo torej v situaciji, kjer mora ista skupina podpisnikov velikokrat skupaj podpisati
 sporočila, je čas generiranje ključev zanemarljiv, v primeru enkratnih skupin pa je morda smiselno
-razmišljati o uporabi navadnega Schnorrovga podpisa.
+razmišljati o uporabi navadnega Schnorrovega podpisa.
 
 \subsubsection{Podpisovanje}
 Pri podpisovanju največjo razliko med podpisi naredi potreba po komunikaciji med podpisniki pri
@@ -83,12 +83,12 @@ in dva kroga pri MuSig2:
 \end{itemize}
 Če pa komunikacijo zanemarimo, pa je čas podpisovanja enak za Schnorrov in večstranski Schnorrov podpis,
 kot je razvidno tudi iz naše analize na sliki~\ref{fig:podpisovanje} (kjer smo zanemarili čas
-komunikacije). Vsa računska kompleksnost pri MuSig2 pa se zgodi ravno v času podpisovanja, zato v
-povprečju porabi dvakrat več časa kot ostala podpisa. Rezultati tega preizkusa na prvi pogled
+komunikacije). Vsa računska kompleksnost pri MuSig2 pa se pojavi ravno v času podpisovanja, zato v
+povprečju porabi dvakrat več časa kot ostali dve shemi. Rezultati tega preizkusa na prvi pogled
 nakazujejo na pomanjkljivost MuSig2 v primerjavi z večstranskim Schnorrovim podpisom, vendar je ta
 prednost varljiva, saj se glavnina časa pri ustvarjanju večstranskih podpisov porabi za komunikacijo.
 V primeru, da bi upoštevali čas komunikacije, bi dobili bolj realen rezultat, torej veliko prednost
-MuSig2, ki potrebuje le dva kroga komunikaicje.
+MuSig2, ki potrebuje le dva kroga komunikacije.
 
 \begin{figure}[ht]
   \centering
@@ -180,7 +180,9 @@ preverjanje Merklovega drevesa, kar je zamudno in težko optimizirati za zelo ve
 Druga težava je potreba po usklajeni komunikaciji pri podpisovanju. Ker so za vsak podpis potrebni trije
 komunikacijski krogi, je to lahko velik strošek v omrežjih z visoko zakasnitvijo ali nizko zanesljivostjo.
 Te težave vsaj delno odpravi MuSig2, kjer je generiranje ključev enako zahtevno kot pri navadnem
-Schnorrovem podopisu, podpisovanje pa poteka v dveh krogih komunikacije. 
+Schnorrovem podpisu, podpisovanje pa poteka v dveh krogih komunikacije. Še več, prvi krog komunikacije
+pri MuSig2 se lahko izvede, preden je znano sporočilo, kar še dodatno zmanjša odvisnost od komunikacijskih
+pogojev.
 
 Izboljšali bi lahko tudi naš preizkus: trenutno ne upoštevamo časa, ki se porabi za
 komunikacijo med podpisniki, kar je seveda lahko velik faktor. Tako smo se odločili, ker je glavna

@@ -2,7 +2,7 @@
 \section{Večstranski Schnorrov podpis}
 \label{sec:multischnorr}
 Micali et al.~\cite{micali2001asm} so prvi definirali formalni model za večstranske podpise in podali
-formalni dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si formalni model za večstranske
+dokaz varnosti za podpisno shemo v tem modelu. Zamislili so si formalni model za večstranske
 podpise in ga poimenovali \textbf{večstranski podpis podskupine z odgovornostjo} (angl.\
 \textit{Accountable-Subgroup Multisignature (ASM)}). V tem razdelku predstavimo njihov model, primer
 večstranskega podpisa, ki temelji na Schnorrovem podpisu, in argumentiramo varnost podpisa oz.\
@@ -10,12 +10,12 @@ modela na sploh.
 
 \subsection{Večstranski podpis podskupine z odgovornostjo}
 Kljub daljšemu imenu, večstranski podpis podskupine z odgovornostjo le predstavlja formalni model za
-večstranske pospise, predstavljene v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega
+večstranske podpise, predstavljene v razdelku~\ref{sec:multisig}. Ideja oz.\ cilj večstranskega
 podpisa je torej, da lahko katerakoli podskupina podpisnikov $S$, neke skupine $P$, brez potrebe po
 \textbf{centru zaupanja} (angl.\ \textit{trusted third party (TTP)}) ustvari podpis. Generiranje
 ključev je torej popolnoma v domeni skupine $P$. Podpis, ki ga ustvari $S$ predstavlja splošno
-preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine stoji za (torej podpisuje) sporočilom
-$m$. V tem razdelku predstavimo osnovno idejo ASM.
+preverljiv dokaz strukture $S$ in dejstva, da vsak član skupine soglaša s sporočilom $m$. V tem
+razdelku predstavimo osnovno idejo ASM.
 
 \begin{definicija}[Večstranski podpis podskupine z odgovornostjo]
 \label{def:asm}
@@ -23,8 +23,8 @@ $m$. V tem razdelku predstavimo osnovno idejo ASM.
     $$
     P = \{P_1, P_2, \dots, P_L \}.
     $$
-    Podpisnik predstavlja naključnostni polinomski algoritem. Vsak podpisnik pozna svojo 
-    identifikacijsko številko (eno od števil $1, \dots, L$) in pa \textit{varnostni parameter} $k$,
+    Podpisnik predstavlja naključnostni polinomski algoritem. Vsak podpisnik pozna svojo
+    identifikacijsko številko (eno od števil $1, \dots, L$) in \textit{varnostni parameter} $k$,
     ki je enak za vse podpisnike.
 
     Kot vsi digitalni podpisi iz definicije~\ref{def:digisig}, ima tudi ta štiri glavne komponente:
@@ -50,7 +50,7 @@ $m$. V tem razdelku predstavimo osnovno idejo ASM.
             identifikacijskih številkah vseh članov $S$, sporočilom $m$ in lastnim zasebnim ključem
             $\text{sk}_i$ kot vhodnimi podatki. Algoritem $\mathcal{S}$ je porazdeljen protokol,
             pri izvedbi morajo sodelovati vsi člani $S$, ki med seboj komunicirajo. Po uspešni
-            izvedbi lahko en od članov objavi podpis $\sigma$.
+            izvedbi lahko eden od članov objavi podpis $\sigma$.
         \item $\mathcal{V}$ je algoritem za preverjanje veljavnosti podpisa. Požene ga tisti, ki želi 
             preveriti veljavnost večstranskega podpisa. Ni nujno, da je to eden izmed podpisnikov iz $P$. 
             Kot vhod algoritem dobi seznam podpisnikov $S$, pripadajoče javne ključe, sporočilo $m$ in 
@@ -115,8 +115,8 @@ zmožen ponarediti podpisa za katerokoli sporočilo v imenu katerekoli podskupin
 Kot je standardno pri varnostni obravnavi digitalnih podpisov, tudi tu predpostavimo, da preverjevalec
 kljub močnemu napadalcu lahko vedno pridobi prave javne ključe podpisnikov iz $S$. To pomeni, da
 v času preverjanja pozna prave identitete podpisnikov, tudi če napadalec lahko doseže, da podpisniki
-v času podpisovanja ne vedo zares, s kom podpisujejo (ne morejo zaupati, da res sodelujejo s člani
-podskupine $S$, saj napadalec nadzira komunikacijo).
+v času podpisovanja ne morejo z gotovostjo vedeti, s kom podpisujejo (ne morejo zaupati, da res
+sodelujejo s člani podskupine $S$, saj napadalec nadzira komunikacijo).
 
 \subsubsection{Slučajni orakelj pri ASM}
 Varnostna obravnava shem za večstranske podpise podskupine z odgovornostjo zahteva model slučajnega
@@ -190,7 +190,7 @@ g^{\tilde{y}'} \stackrel{?}{=} \tilde{X}' \cdot \left(\prod_{P_i \in S} I_i \rig
 \subsubsection{Generiranje parametrov in Predpostavka DL}
 Micali et al.~\cite{micali2001asm} so izpostavili in rešili več problemov z zgornjo naivno idejo.
 Prvi problem se pojavi pri generiranju skupnih parametrov javnega ključa. Ker si podpisniki
-delijo samo varnostni parameter $k$ in pa slučajnega oraklja $H$, morajo za generiranje parametrov uporabiti
+delijo samo varnostni parameter $k$ in slučajnega oraklja $H$, morajo za generiranje parametrov uporabiti
 $H$ na vnaprej dogovorjen način. Napadalec bo tako poznal točen postopek ustvarjanja skupnih
 parametrov, kar mu potencialno da prednost. Izkaže se, da lahko s primerno uporabo $H$ poskrbimo,
 da to ne predstavlja nevarnosti. Možen način, kako to dosežemo v grupi $\Z_P^*$ je predstavljen v
@@ -205,7 +205,7 @@ težavnosti diskretnega logaritma. Predpostavka o varnosti je tako standardna pr
 diskretnega logaritma, predstavljena v definiciji~\ref{def:dl}. Pri obravnavi sheme torej predpostavimo,
 da je $G$ grupa, v kateri je izračun diskretnega logaritma težaven.
 
-\begin{primer}[Generianje parametrov v grupi $\Z_p^*$]
+\begin{primer}[Generiranje parametrov v grupi $\Z_p^*$]
 \label{primer:gen-zp}
     V najosnovnejši obliki podpisa uporabimo grupo $\Z_p^*$, kjer je $p$ praštevilo. Za delovanje
     potrebujemo še praštevilo $q$, ki deli $p - 1$. Za generiranje lahko uporabimo standarden algoritem
@@ -255,7 +255,7 @@ $$
 I_L = \left( \prod_{i=1}^{L-1} I_i \right)^{-1} \cdot g^s.
 $$
 To mu omogoča, da se podpisuje v imenu celotne podskupine $S$, saj se bodo pri množenju v
-enačbi za preverjanje~\eqref{eq:naive-ver} tako izničil vsi ostali javni ključi:
+enačbi za preverjanje~\eqref{eq:naive-ver} tako izničili vsi ostali javni ključi:
 \begin{align*}
     g^{\tilde{y}} &\stackrel{?}{=} \tilde{X} \cdot \left(\prod_{i=1}^L I_i \right)^{e}. \\
                    &\stackrel{?}{=} \tilde{X} \cdot \left(\left(\prod_{i=1}^{L-1} I_i \right) \cdot I_L \right)^{e}. \\
@@ -268,7 +268,7 @@ Za rešitev tega problema lahko uporabimo dokaze znanja brez razkritja znanja. D
 generiranje ključev, od vsakega podpisnika $P_i$ zahtevamo, da poleg svojega javnega ključa $I_i$
 objavi tudi dokaz znanja brez razkritja znanja za svoj zasebni ključ glede na javni ključ. Objaviti
 mora torej dokaz, da pozna diskretni logaritem $I_i$ z bazo $g$. Ta dokaz je lahko neinteraktiven, saj
-obravnavmo model slučajnega oraklja in uporabimo Fiat-Shamirjevo hevristiko~\ref{sec:fiat-shamir}.
+obravnavamo model slučajnega oraklja in uporabimo Fiat-Shamirjevo hevristiko~\ref{sec:fiat-shamir}.
 
 Ker tovrstni dokazi brez preverjevalca nimajo smisla, se je na tej točki vredno vprašati, kdo bo preverjal
 veljavnost dokazov. Izkaže se, da je najbolj enostavno, da se dokaze doda v posamezne javne ključe.
@@ -310,7 +310,7 @@ velikosti celotne skupine $P$. Poleg tega mora sedaj preverjevalec preveriti, da
 ključev ujemajo. V primerjavi z osnovno naivno idejo, kjer je preverjevalec potreboval le $|S|$ navadnih
 Schnorrovih javnih ključev, je v tej izvedbi velikost javnega ključa nedopustno velika.
 
-Da nazaj pridobimo učinkovit podpis, lahko uporabimo slučajnega oraklja in kriptografsko
+Da ponovno pridobimo učinkovit podpis, lahko uporabimo slučajnega oraklja in kriptografsko
 orodje, imenovano \textbf{Merklovo drevo} (angl.\ \textit{Merkle tree}). V osnovi je to
 \textit{binarno drevo}, torej drevo, kjer ima vsako vozlišče največ dva otroka. Ideja je, da v liste
 shranimo zgostitve katerihkoli podatkov, pridobljene s pomočjo izbranega slučajnega oraklja ali zgoščevalne
@@ -384,7 +384,7 @@ vrednosti prave. Povzeto po~\cite{micali2000csproofs}.
 Varnost Merklovih dreves temelji na odpornosti zgoščevalne funkcije proti trkom. Ker je vsako vozlišče
 drevesa zgostitev kombinacije otrok, se kakršnakoli sprememba v drevesu prenese v spremembo korena.
 Torej javna objava korena zaveže objavitelja k vrednostim v listih. Da bi lahko spremenil vrednost
-lista brez spremembe korena, bi moral najdi trk v zgoščevalni funkciji, in zamenjati vrednost lista
+lista brez spremembe korena, bi moral najdi trk v zgoščevalni funkciji in zamenjati vrednost lista
 z vrednostjo, ki daje enako zgostitev. Če so uporabljene varne zgoščevalne funkcije, je to računsko
 neizvedljivo.
 
@@ -820,7 +820,7 @@ izreku~\ref{izr:šibka-varnost}. Pred dokazom izreka pa moramo, tako kot za napa
     $$
 \end{definicija}
 
-Sedej imamo vse potrebno, da dokažemo ekvivalentnost šibke varnosti in varnosti, in s tem
+Sedaj imamo vse potrebno, da dokažemo ekvivalentnost šibke varnosti in varnosti, in s tem
 ekvivalentnost šibkega napadalca in napadalca.
 
 \begin{izrek}
@@ -1037,7 +1037,7 @@ Denimo, da $\mathcal{F}$ vrne ponarejen podpis $(\tilde{X}_0, \tilde{y}_0)$ spor
 podskupine $S_0$. Še več, ponaredek je nastal na podlagi $j_0$-te poizvedbe oraklju $H_5$ z vhodom
 $(\tilde{X}_0, m_0, S_0)$ in odgovorom $e_{j_0}$. Ker $A$ pozna celotno notranje stanje poenostavljenega
 napadalca $\mathcal{F}$ in si je shranjeval njegova interna stanja, lahko algoritem $A$ previje
-poenostavljenega napadalca $\mathcal{F}$ nazaj na začetek podpisovnja z enakim virom naključnih bitov
+poenostavljenega napadalca $\mathcal{F}$ nazaj na začetek podpisovanja z enakim virom naključnih bitov
 $\omega$. Na njegove poizvedbe odgovarja enako kot prej, le na $j_0$-to poizvedbo odgovori z novo
 naključno vrednostjo $e_{j_0}'$. Delovanje napadalca $\mathcal{F}$ pred previjanjem imenujemo prvi
 pogon, delovanje po previjanju pa drugi pogon.
@@ -1105,7 +1105,7 @@ lahko nadaljuje, sicer pa je poskus napada neuspešen.
     Dejstvo, da nobena od prvih $r - 1$ podpisovalnih poizvedb v drugem pogonu ni temeljila na
     $j_0$-ti zgoščevalni poizvedbi, temelji na predpostavki, da ne dovoljujemo hkratnih podpisovalnih
     poizvedb. Ta predpostavka je standardna pri dokazih varnosti z lemo o razcepu, saj bi v nasprotnem
-    primeru lahko napadalec sodeloval pri večih podpisovalnih sejah hkrati. Previjanje v tej situaciji
+    primeru lahko napadalec sodeloval pri več podpisovalnih sejah hkrati. Previjanje v tej situaciji
     bi namreč previlo vse seje hkrati, s čimer bi ta pristop k dokazovanju varnosti postal neveljaven.
 \end{opomba}
 
@@ -1128,7 +1128,7 @@ $$
 \tilde{X}_0 = g^{\tilde{y}_0}(\tilde{I}_{S_0}^{e_{j_0}})^{-1}
     = g^{\tilde{y}_1}(\tilde{I}_{S_0}^{e_{j_0}'})^{-1}.
 $$
-Če premečemo dobljeno enačbo, dobimo
+Če preuredimo dobljeno enačbo, dobimo
 $$
 \tilde{I}_{S_0}^{- e_{j_0}'} \tilde{I}_{S_0}^{e_{j_0}} = g^{\tilde{y}_0}(g^{\tilde{y}_1})^{-1},
 $$
@@ -1174,6 +1174,6 @@ Verjetnost uspeha algoritma $A$ temelji na verjetnosti uspeha poenostavljenega n
 Ta verjetnost je pomnožena še s faktorjem, ki je obratno sorazmeren polinomu v $q_H$. Ker smo
 začeli z nezanemarljivo verjetnostjo, in jo skalirali samo s polinomskimi faktorji, je verjetnost
 uspeha algoritma $A$ še vedno nezanemarljiva. $A$ je torej res polinomski algoritem, ki z
-nezanemarljivo verjetnostjo vrne odgovor na problem diskretnega algoritma. Ker predpostavljamo, da
+nezanemarljivo verjetnostjo vrne odgovor na problem diskretnega logaritma. Ker predpostavljamo, da
 tak algoritem ne obstaja, je večstranski Schnorrov podpis varen.
 \end{dokaz}

@@ -1,8 +1,8 @@
 % LTeX: language=sl-SI
 \section{Kriptografske osnove}
 \label{sec:osnove}
-Preden si lahko natančneje pogledamo, kako lahko skupina ustvari en sam podpis sporočila, si moramo 
-pogledati nekaj kriptografskih osnov. Namen tega poglavja je predstaviti stvari, ki so predpogoj za
+Preden si lahko natančno pogledamo, kako lahko skupina ustvari en sam podpis sporočila, si moramo 
+pogledati nekaj kriptografskih osnov. Namen tega poglavja je predstaviti koncepte, ki so predpogoj za
 branje praktično kakršnegakoli kriptografskega besedila s področja digitalnih podpisov.
 
 \subsection{Aritmetika v \texorpdfstring{$\Z_p^*$}{Zp∗}}
@@ -49,7 +49,7 @@ generator.
 \end{opomba}
 
 Za konec tega podpoglavja si oglejmo še nekaj trditev, ki bodo pomembne pri dokazovanju pravilnega
-delovanja Schnorrovega podpisa v grupi $\Z_p^*$.
+delovanja podpisov.
 
 \begin{trditev}
 \label{trd:mod-q}
@@ -89,7 +89,7 @@ delovanja Schnorrovega podpisa v grupi $\Z_p^*$.
     \end{align}
 \end{trditev}
 \begin{dokaz}
-    Uporabimo osnovni izrek o deljenju naravnih števil, da $a$ in $b$ en sam način zapišemo kot 
+    Uporabimo osnovni izrek o deljenju naravnih števil, da $a$ in $b$ na en sam način zapišemo kot 
     \begin{align*}
         a &= n_a p + r_a, \\
         b &= n_b p + r_b,
@@ -113,7 +113,7 @@ delovanja Schnorrovega podpisa v grupi $\Z_p^*$.
     indukcijo na $b$ in enačbo~\eqref{eq:mod-prod}:
     \begin{itemize}
         \item $b = 2$: Primer, ko je $b = 1$ (ali $b = 0$) je trivialen, če pa je $b = 2$, pa se 
-            problem reducira v 
+            problem reducira na
             $$ 
             a \cdot a \bmod p \stackrel{?}{=} (a \bmod p) \cdot (a \bmod p) \bmod p,
             $$
@@ -155,7 +155,7 @@ V grobem so (kriptografske) \textit{zgoščevalne funkcije} take funkcije, ki pr
 niz (ki lahko predstavlja besede, številke, celotne dokumente, \dots), vrnejo pa binarni niz, ki ima
 vnaprej določeno dolžino. Tem rezultatom pravimo \textit{zgostitve}. Namen zgoščevalnih funkcij je
 za dokument ustvariti kratek niz, ki ga unikatno identificira. Želimo si, da je v praksi nemogoče
-najti dva različna niza z enako zgostitvijo. Natančno zgoščevalne funkcije definiramo:
+najti dva različna niza z enako zgostitvijo. Zgoščevalne funkcije natančneje definiramo:
 
 \begin{definicija}
 \label{def:hash}
@@ -166,15 +166,15 @@ najti dva različna niza z enako zgostitvijo. Natančno zgoščevalne funkcije d
         \item \textbf{Določenost} pomeni, da bo zgoščevanje enakih nizov vedno privedlo do enake 
             zgostitve, tj.\ $H$ je funkcija in ne naključni algoritem. Zapišemo lahko
             $\forall m: ((h_1 = H(m) \wedge h_2 = H(m)) \implies h_1 = h_2)$.
-        \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem 
+        \item \textbf{Učinkovitost} pomeni, da lahko računalnik izračuna poljubno zgostitev v doglednem
             času. Izračun zgostitve mora biti računsko učinkovit. Običajno tu zahtevamo, da je časovna
             zahtevnost funkcije $H$ polinomska v dolžini vhodnega niza.
-        \item \textbf{Enosmernost} oz.\ \textbf{odpornost na prasliko} pomeni, da iz predložene 
-            zgostitve zelo težko ugotovimo, kateri niz je funkcija prejela kot vhod. Če torej poznamo 
+        \item \textbf{Enosmernost} oz.\ \textbf{odpornost na prasliko} pomeni, da iz predložene
+            zgostitve zelo težko ugotovimo, kateri niz je funkcija prejela kot vhod. Če torej poznamo
             zgostitev $h$ za nek neznan $m$, je računsko neizvedljivo najti niz $m$, da velja $h = H(m)$.
-        \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev, 
+        \item \textbf{Odpornost na drugo prasliko} pomeni, da če poznamo niz in njegovo zgostitev,
             zelo težko najdemo drug niz z enako zgostitvijo. Če torej poznamo niz $m_1$ z zgostitvijo
-            $h_1$, je računsko neizvedljivo najti zgostitev $m_2$, da velja $H(m_2) = h_1$.
+            $h_1$, je računsko neizvedljivo najti niz $m_2$, da velja $H(m_2) = h_1$.
         \item \textbf{Odpornost na trke} pomeni, da je računsko neizvedljivo najti dva niza $m_1$
             in $m_2$, ki imata enako zgostitev, oz.,\ da velja $H(m_1) = H(m_2)$.
         \item \textbf{Učinek plazu} pomeni, da vsaka sprememba v vhodnem nizu povzroči veliko in
@@ -191,7 +191,7 @@ najti dva različna niza z enako zgostitvijo. Natančno zgoščevalne funkcije d
 \begin{primer}
     Ena izmed najbolj znanih zgoščevalnih funkcij je \texttt{SHA-256}. Njeno ime pomeni \textit{Secure
     Hash Algorithm} (slov.\ varen zgoščevalni algoritem), $256$ pa predstavlja dolžino vrnjene zgostitve.
-    Pogostokrat to ime zasledimo pri nameščanju programske opreme, kjer služi kot avtentikator, da smo res
+    To ime pogosto zasledimo pri nameščanju programske opreme, kjer služi kot avtentikator, da smo res
     naložili pravi program. Preverja namreč, da se zgostitvi naloženih in prenešenih datotek ujemajo.
 
     Za primer si lahko ogledamo zgostitvi dveh podobnih nizov, \textit{Ljubljana} in \textit{Ljubljena}. 
@@ -216,7 +216,7 @@ za komunikacijo obe morali poznati skriven \textit{ključ}, s pomočjo katerega 
 
 \begin{primer}[Cezarjeva šifra]
     Ena najbolj znanih šifer, ki izvira iz Antičnega Rima, je \textit{Cezarjeva šifra}. Njen ključ 
-    je število, ki je krajše od dolžine naše abecede, v Cezarjevem primeru je bilo to število $3$.
+    je število, ki je manjše od dolžine naše abecede, v Cezarjevem primeru je bilo to število $3$.
     Šifra potem deluje tako, da vsako črko zamakne za toliko mest v abecedi, kolikor definira 
     ključ. Npr.\ za slovensko abecedo, bi šifra zamaknila črke:
     \begin{verbatim}
@@ -228,7 +228,7 @@ za komunikacijo obe morali poznati skriven \textit{ključ}, s pomočjo katerega 
 \end{primer}
 
 V prejšnjem stoletju pa se je pojavila alternativa, imenovana \textit{asimetrična kriptografija}, oz.\
-\textit{kriptografija javnega ključa}. Glavna prednost te je, da osebi za komunikacijo ne rabita
+\textit{kriptografija javnega ključa}. Glavna prednost te je, da osebama za komunikacijo ni treba
 poznati enakega skrivnega ključa, vendar ima vsak od njiju par ključev, ki ju imenujemo \textbf{javni
 ključ} (angl.\ \textit{public key}) in \textbf{zasebni ključ} (angl.\ \textit{secret/private key}) in
 označimo kot par $(\text{pk}, \text{sk})$. Vsaka oseba objavi svoj javni ključ in poskrbi, da nihče 
@@ -237,8 +237,8 @@ ne izve, kaj je njen zasebni ključ.
 Šifriranje potem poteka tako, da pridobimo javni ključ od osebe, s katero želimo komunicirati, ga
 uporabimo za šifriranje in objavimo šifrirano sporočilo. Lastnik ustreznega zasebnega ključa (vsakemu
 javnemu pripada natanko en zasebni) potem pridobi šifrirano sporočilo in ga z zasebnim ključem
-dešifrira. Kriptosistemi delujejo na način, da lahko sporočilo, šifrirano z javnim ključem dešifrira
-samo ustrezen zasebni ključ. Tako zagotovimo varno komunikacijo.
+dešifrira. Kriptosistemi delujejo na način, da lahko sporočilo, šifrirano z javnim ključem se lahko
+dešifrira le z ustreznim zasebnim ključem. Tako zagotovimo varno komunikacijo.
 
 \begin{primer}[RSA]
 \label{primer:rsa}
@@ -258,7 +258,7 @@ samo ustrezen zasebni ključ. Tako zagotovimo varno komunikacijo.
     Dogovoriti se moramo še o zasebnem ključu. Za to bomo potrebovali eksponent za dešifriranje $d$,
     tako da bo veljalo 
     $$
-    (m^e)^d \equiv 1 \pmod{\varphi(n)},
+    e \cdot d \equiv 1 \pmod{\varphi(n)},
     $$ 
     kjer $\varphi$ označuje Eulerjevo funkcijo. Iščemo torej multiplikativni inverz eksponenta 
     $e$, modulo $\varphi(n)$. V našem primeru je to $d = 235$. Zasebni ključ je potem 
@@ -278,7 +278,7 @@ samo ustrezen zasebni ključ. Tako zagotovimo varno komunikacijo.
 Poleg šifriranja, brez da bi si delili ključ, pa je kriptografija javnega ključa omogočila tudi
 \textit{digitalne podpise}. Ti so uporabljeni vsakič, ko pošljemo transakcijo ali dostopamo do katerekoli
 spletne strani. Delujejo na podoben način kot šifriranje z javnim ključem, le da najprej uporabimo
-zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Velikokrat sta šifrianje
+zasebni ključ na sporočilu, prek javnega ključa pa preverjamo veljavnost podpisa. Velikokrat sta šifriranje
 in podpisovanje uporabljena hkrati, saj tako pošljemo šifrirano sporočilo, ki ga lahko prebere le oseba,
 kateri je namenjeno, hkrati pa lahko oseba preveri, da je sporočilo res prišlo od nas.
 
@@ -325,13 +325,10 @@ bit, mora pri naslednjem klicu prebrati naslednji bit.
             $$
             \text{Par} = \mathcal{P}(k).
             $$
-        \item $\mathcal{G}$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$, 
+        \item $\mathcal{G}$ je naključnostni algoritem za ustvarjanje para ključev $(\text{pk}, \text{sk})$,
             ki za svoj vhod prejme parametre $\text{Par}$ (javno dostopni ali pa ustvarjeni prek $\mathcal{P}$).
             Z javnim ključem $\text{pk}$ lahko preverjevalec preveri avtentičnost podpisa, z zasebnim
-            ključem $\text{sk}$ pa podpisnik podpisuje. Formalno velja
-            $$
-            (\text{pk}, \text{sk}) = \mathcal{G}(\text{Par}).
-            $$
+            ključem $\text{sk}$ pa se podpisnik podpisuje.
         \item $\mathcal{S}$ je naključnostni algoritem, ki za svoja argumenta prejme zasebni ključ $\text{sk}$
             in sporočilo $m$, vrne pa podpis $\sigma$ sporočila $m$ z zasebnim ključem $\text{sk}$
             oz.\ $\mathcal{S}(\text{sk}, m)$ vrne podpis $\sigma$ sporočila $m$.
@@ -346,14 +343,15 @@ bit, mora pri naslednjem klicu prebrati naslednji bit.
             \end{cases}
             $$
             Podpis $\sigma$ sporočila $m$ je veljaven, če je bil ustvarjen z uporabo algoritma
-            $\mathcal{S}$ in zasebnim ključem $\text{sk}$, ki ustreza javnemu ključu $\text{pk}$.
+            $\mathcal{S}$ in zasebnim ključem $\text{sk}$, ki ustreza javnemu ključu $\text{pk}$,
+            torej paru ključev, ustvarjenemu z algoritmom $\mathcal{G}$.
     \end{itemize}
 \end{definicija}
 
 \begin{primer}
-    Digitalni podpisi, obravnavni v tem besedilu, temeljijo na grupah. Algoritem $\mathcal{P}$ iz
-    definicije~\ref{def:digisig} v tem primeru izbere parametre, ki določajo grupo $G$. Za varnostni
-    parameter $k$ lahko zapišemo 
+    Digitalni podpisi, obravnavani v tem besedilu, temeljijo na grupah. Algoritem $\mathcal{P}$ iz
+    definicije~\ref{def:digisig} v tem primeru izbere parametre, ki določajo grupo $G$. Za izbran
+    varnostni parameter $k$ lahko zapišemo 
     $$
     G = \mathcal{P}(k).
     $$
@@ -410,8 +408,7 @@ shem za digitalne podpise temelji prav na (domnevni) težavnosti določenih mate
 V primeru~\ref{primer:rsa} smo omenili, da je varnost algoritma RSA odvisna od težavnosti problema
 iskanja prafaktorjev velikega števila. To je le eden izmed mnogih problemov, ki služijo kot osnova
 za varnost kriptografskih sistemov. V kriptografiji javnega ključa se pogosto srečamo s cikličnimi
-grupami, ki podpirajo množenje. V nadaljevanju bomo pogosto uporabili operacijo množenja, za izračune
-tipa 
+grupami z operacijo množenja. V nadaljevanju bomo pogosto uporabili to operacijo za izračune tipa
 $$
 I = g^s,
 $$
@@ -424,7 +421,7 @@ Taki izračuni v (nekaterih) cikličnih grupah žal (ali pa na srečo) niso tako
 koncepta \textit{diskretnega logaritma}. Pri izračunu logaritmov v množici realnih števil ključno
 vlogo igra koncept urejenosti. Ker je eksponentna funkcija strogo naraščajoča, realna števila pa urejena,
 lahko učinkovito izračunamo logaritme do poljubne natančosti (npr.\ z uporabo bisekcije). V diskretnih
-cikličih grupah, kot je npr.\ $\Z_p^*$, ni koncepta urejenosti, kar smo videli tudi v
+cikličnih grupah, kot je npr.\ $\Z_p^*$, ni koncepta urejenosti, kar smo videli tudi v
 primeru~\ref{primer:Z11} z grupo $\Z_{11}^*$. Odnos med $g^s_1$ in $g^s_2$ nam ne pove ničesar o
 odnosu med $s_1$ in $s_2$, zato nam ">približki"< logaritma ne pomagajo čisto nič. Za izračun takih
 logaritmov se moramo zanesti na drugačne metode, kot za izračun logaritmov v množici realnih števil.
@@ -432,11 +429,11 @@ logaritmov se moramo zanesti na drugačne metode, kot za izračun logaritmov v m
 \begin{definicija}[Problem diskretnega logaritma~\cite{boneh2023appcry}]
 \label{def:dl}
     Naj bo $G$ ciklična grupa reda $q$, ki jo generira element $g$. Naj bo $h$ naključni element iz 
-    grupe $G$. Naj velja $g^x = h$. Eksponent $x$ imenujemo \textbf{Diskretni logaritem (DL)}.
+    grupe $G$. Naj velja $g^x = h$. Eksponent $x$ imenujemo \textbf{diskretni logaritem (DL)}.
 
     Zamislimo si igro, kjer izzivalec in nasprotnik kot vhod prejmeta opis grupe $G$ (torej $q \in \N$
     in $g \in G$). Izzivalec potem izbere naključen element $\alpha \in G$ in izračuna $h = g^{\alpha}$.
-    $h$ pošlje nasprotniku, ta pa mora odgovoriti nazaj z elementom $\alpha$. To igro imenujemo 
+    $h$ pošlje nasprotniku, ta pa mora odgovoriti z elementom $\alpha$. To igro imenujemo 
     \textbf{problem diskretnega logaritma (PDL)} (angl.\ \textit{discrete logarithm problem}).
 
     Pri tej igri nas zanima verjetnost pravilnega odgovora nasprotnika, ki je računsko omejen. S tem
@@ -458,7 +455,7 @@ Preden nadaljujemo, natančneje definirajmo, kaj pomeni, da je verjetnost zanema
     $$
     |\varepsilon(n)| < \frac{1}{n^c}.
     $$
-    V nadaljevanju bomo v $\varepsilon$ označevali poljubno zanemarljivo funkcijo.
+    V nadaljevanju bomo z $\varepsilon$ označevali poljubno zanemarljivo funkcijo.
 \end{definicija}
 
 To so torej funkcije, ki padajo proti nič hitreje, kot inverz kateregakoli polinoma. V kontekstu
@@ -468,12 +465,12 @@ V besedilu bomo večkrat govorili o ">zanemarljivih verjetnostih"<, kar pomeni, 
 verjetnosti v odvisnosti od določene spremenljivke vedle kot zanemarljive funkcije. Predvsem nas bo
 zanimala verjetnost uspeha napadalca v povezavi z varnostnim parametrom $k$. V dokazljivo varnih sistemih
 imamo opravka z napadalcem, ki je polinomski algoritem glede na $k$, vendar osnovo za varnost predstavlja
-problem, ki ima eksponentno časnovno zahtevnost glede na $k$. To implicira, da je verjetnost uspeha
+problem, ki ima eksponentno časovno zahtevnost glede na $k$. To implicira, da je verjetnost uspeha
 napadalca zanemarljiva.
 
 \subsubsection{Model slučajnega oraklja}
-Ko obravnavamo varnost kriptosistemov, se ponavadi pogovarjamo o \textit{standardnemu modelu} kriptografije.
-Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in količino računske moči, ki mu
+Ko obravnavamo varnost kriptosistemov, se običajno govorimo o \textit{standardnemu modelu} kriptografije.
+Ta model ima samo eno predpostavko: napadalec je omejen samo s časom in računsko močjo, ki mu
 je na voljo (tu je običajno predpostavljeno, da ima napadalec realno računsko moč). Občasno se znajdemo
 v primeru, ko moramo za dokaz varnosti sprejeti dodatne predpostavke. V tem primeru govorimo o
 alternativnih modelih kriptografije.
@@ -507,12 +504,13 @@ problema, za katerega domnevamo, da je težek. V takih primerih govorimo o metod
 \textit{dokazovanja z redukcijo} (angl.\ \textit{reduction proof}). Ta metoda temelji na predpostavki,
 da če bi napadalec lahko učinkovito napadel shemo, bi lahko tudi učinkovito rešil težaven problem.
 
-En način, kako to storimo, je z uporabo \textit{iger}. Potek dokaza varnosti v tem primeru je sledeč:
+En način, kako izvedemo redukcijo, je z uporabo \textit{iger}. Potek dokaza varnosti v tem primeru
+je sledeč:
 \begin{itemize}
     \item Naj bo $\mathcal{S}$ podpisna shema, za katero želimo pokazati varnost (npr.\ da je verjetnost
         ponarejanja zanemarljiva). To shemo napada napadalec $\mathcal{F}$, ki je omejen s
         polinomskim časom. Napadalčevi interakciji s podpisno shemo rečemo \textit{igra}, zanima
-        pa nas verjetnost ">zmage"< napadalca, torej uspešnega ponarejenja podpisa.
+        pa nas verjetnost ">zmage"< napadalca, torej uspešnega ponarejanja podpisa.
     \item Definiramo še en algoritem $A$. Cilj tega algoritma je izvesti redukcijo
         iz napada na reševanje težavnega problema. Algoritem $A$ mora v polinomskem času
         prevesti uspešen napad napadalca $\mathcal{F}$ na shemo $\mathcal{S}$ v rešitev težavnega
@@ -579,7 +577,7 @@ računsko moč, vendar ni iskren, preverjevalec pa je omejen s polinomsko račun
 \begin{primer}[Reševanje sudokuja]
     Za enostaven primer interaktivnega dokaza si oglejmo reševanje posplošenega Sudokuja. Tradicionalni
     Sudoku je problem, kjer moramo v $9 \times 9$ mrežo zapolniti števila od $1$ do $9$ tako, da se v vsaki
-    vrstici, stolpcu in $3 \times 3$ kvadratu ne ponovijo nobena števila. Problem posplošimo tako, da
+    vrstici, stolpcu in $3 \times 3$ kvadratu nobeno število ne ponovi. Problem posplošimo tako, da
     ga prenesemo na poljubno mrežo velikosti $n^2 \times n^2$ in dovolimo uporabo števil od $1$ do $n^2$.
 
     Znano je, da je ta problem NP-poln~\cite{yato2003sudoku}, kar pomeni, da je težko najti rešitev,
@@ -606,7 +604,7 @@ sistemov dokazovanja, ki poleg celovitosti in zadostnosti zadoščajo še tretji
         presteže vso komunikacijo med dokazovalcem in preverjevalcem, ne bo izvedel ničesar
         več, kot to, da dokazovalec pozna skrivnost, ki se dokazuje.
 \end{itemize}
-To je torej orodje, prek katerega lahko dokazovale dokaže, da nekaj ve, brez da bi izdal, kaj to je.
+To je torej orodje, prek katerega lahko dokazovalec dokaže, da nekaj ve, brez da bi izdal, kaj to je.
 
 \begin{primer}[Jama Ali Babe~\cite{quisquater1990children}]
     V zgodbi o jami Ali Babe nastopata Ana in Bojan. Živita ob jami Ali Babe, ki je v obliki prstana. 
@@ -668,7 +666,7 @@ uporabno vrednost. Tovrstne dokaze imenujemo \textit{identifikacijski protokoli}
     o njej razkril karkoli drugega. Protokol poteka v več korakih:
     \begin{enumerate}
         \item \textbf{Zaveza:}
-            Dokazovalec si enakomerno naključno izbere vrednost $r \in \Z_q$ in izračuna
+            Dokazovalec si enakomerno naključno izbere vrednost $r \in \Z_q$ in izračuna zavezo
             $$
             X = g^r \in G.
             $$
@@ -699,6 +697,7 @@ uporabno vrednost. Tovrstne dokaze imenujemo \textit{identifikacijski protokoli}
     vidimo, da ne izda ničesar o skrivnosti $s$. Neposredno je uporabljena v odgovoru $y$, vendar jo
     naključna vrednost $r$ zakrije. Za poljubni vrednosti $e$ in $y$ lahko zavezo $X$ izračunamo kot
     $X = g^y \cdot I^{-e}$, torej lahko veljaven transkript izračunamo brez poznavanja skrivnosti $s$.
+    Protokol zato zadošča tudi lastnosti brez razkritja znanja.
 
     Bolj formalno bomo varnost dokazali pri dokazu varnosti Schnorrovega podpisa v
     razdelku~\ref{sec:schnorr-sec}.
@@ -714,7 +713,7 @@ preverjevalcem. Ta komunikacija je zamudna, draga in nepraktična.
 Fiat in Shamir sta leta $1987$~\cite{fiat1987heuristic} predlagala način, kako lahko interaktivne
 dokaze znanja spremenimo v neinteraktivne. Osnovna ideja je, da namesto preverjevalca, breme izbire
 izziva prenesemo na slučajnega oraklja, do katerega imata dostop tako dokazovalec kot preverjevalec.
-Hevristika torej deluje samo v modelu slučajnega oraklja. Zadostnot interaktivnega protokola se
+Hevristika torej deluje samo v modelu slučajnega oraklja. Zadostnost interaktivnega protokola se
 preslika v nezmožnost izračuna ponaredka pri neinteraktivnem protokolu.
 
 \begin{primer}[Schnorrova shema in Fiat-Shamirjeva hevristika]

@@ -47,7 +47,7 @@ na isti zavezi, kar privede do razkritja zasebnega ključa poštenega podpisnika
 Seveda pa je dokaz nevarnosti zajel samo do tedaj poznane metode. Kasneje je raziskovalcem uspelo
 ustvariti podpis, ki zaobide težave prejšnjih shem in je (zaenkrat) dokazano varen. Podpis MuSig2
 je predstavljal velik preboj, saj vrača podpise, ki so popolnoma enaki Schnorrovim. Med drugim to
-pomeni, da lahko njihovo veljavnost preverimo z uporabo Schnorrovee enačbe za preverjanje
+pomeni, da lahko njihovo veljavnost preverimo z uporabo Schnorrove enačbe za preverjanje
 podpisov~\eqref{eq:gen-schnorr-ver}.
 
 \subsection{MuSig2}
@@ -56,7 +56,7 @@ Zaradi popularnosti in enostavnosti Schnorrovih podpisov, se je pojavila težnja
 podpisa, ki je učinkovit, varen in vrača Schnorrove podpise. Obstoj takega podpisa pomeni takojšnjo
 priložnost za uporabo v vseh aplikacijah, ki temeljijo na Schnorrovih podpisih (recimo Bitcoin po
 nadgradnji Taproot~\cite{wuille2020bip341}). Prvi podpis, ki je izpolnjeval vse te pogoje, je bil 
-MuSig2, ki so ga leta $2020$ predstavili Jonas, Ruffing in Seurin~\cite{jonas2020musig2}. Pred pojavom
+MuSig2, ki so ga leta $2020$ predstavili Nick, Ruffing in Seurin~\cite{jonas2020musig2}. Pred pojavom
 MuSig2 so obstajali drugi večstranski podpisi, ki so vračali Schnorrove podpise, vendar so zahtevali
 tri kroge komunikacije, ali pa so vsaj preprečevali hkratne podpise. Eden izmed njih je tudi originalni
 MuSig~\cite{maxwell2019musig}, čigar nevarnost je pokazal Drijvers~\cite{drijvers2019security}.
@@ -82,8 +82,8 @@ Za začetek predstavimo glavne lastnosti MuSig2:
         podpisom.
     \item V primerjavi z opisanim večstranskim Schnorrovim podpisom, MuSig2 ne omogoča prilagodljivosti
         in odgovornosti. Torej za dano skupino podpisnikov se lahko podpišejo le vsi hkrati, njihov
-        podpis priča o skupnem strinjanju, preverjrevalec ne more izvedeti, kdo je dejansko podpisoval.
-        MuSig2 torej omogoča večjo zasebnost podpisnikov, kar je za nekatere aplikaicje zaželena lastnost.
+        podpis priča o skupnem strinjanju, preverjevalec ne more izvedeti, kdo je dejansko podpisoval.
+        MuSig2 torej omogoča večjo zasebnost podpisnikov, kar je za nekatere aplikacije zaželena lastnost.
 \end{itemize}
 
 \subsubsection{Skupni parametri}
@@ -107,7 +107,7 @@ $$
 \subsubsection{Generiranje ključev}
 Na tem mestu se pojavi prva velika prednost MuSig2. Večstranski Schnorrov podpis je preprečil napad
 na generiranje ključev tako, da je od podpisnikov zahteval dokaze znanja brez razkritja znanja in
-konstrukcijo Merklovega drevesa. To je zahtevalo veliko komunikacje med podpisniki, celo linearno
+konstrukcijo Merklovega drevesa. To je zahtevalo veliko komunikacije med podpisniki, celo linearno
 v njihovem številu. MuSig2 se s tem napadom sooči kasneje, med podpisovanjem. To omogoča bistveno
 enostavnejšo fazo generiranja ključev, ki je povsem enaka generiranju ključev pri navadnem
 Schnorrovem podpisu.
@@ -144,7 +144,7 @@ $$
 \subsubsection{Podpisovanje}
 Ker vsa varnost MuSig2 sloni na podpisovanju, je ta del malo kompleksnejši, a vseeno zelo učinkovit.
 Kot omenjeno, podpisovanje poteka v dveh krogih. Vsak krog je sestavljen iz korakov podpisovanja
-in agregaicje, ki ju označimo $\mathcal{S}_i$ in $\mathcal{S}\mathcal{A}_i$ (za $i = 1, 2$). Po
+in agregacije, ki ju označimo $\mathcal{S}_i$ in $\mathcal{S}\mathcal{A}_i$ (za $i = 1, 2$). Po
 komunikaciji je potreben še zadnji korak podpisovanja, ki ga označimo z $\mathcal{S}_3$.
 
 Velika varnostna pomanjkljivost preteklih večstranskih podpisov z dvema krogoma komunikacije je bila
@@ -175,9 +175,9 @@ sami količini pa dopušča prosto izbiro. Število naključnih vrednosti bomo o
         sporočilu $m$.
 
     \item \textbf{Drugi krog}:
-        Vsak podpisnik na te mestu potrebuje svoj zasebni ključ $s_i$, agregirani javni ključ
+        Vsak podpisnik na tem mestu potrebuje svoj zasebni ključ $s_i$, agregirani javni ključ
         $\tilde{I}$, ki ga lahko izračuna z algoritmom $\mathcal{A}$ in svoj koeficient agregacije
-        $c_i$. Prav tako potrebujejo rezulat prvega kroga, torej zaveze $\{X_j | 1 \le j \le \nu\}$
+        $c_i$. Prav tako potrebujejo rezultat prvega kroga, torej zaveze $\{X_j | 1 \le j \le \nu\}$
         in sporočilo $m$. Vsak podpisnik $P_i$ ($1 \le i \le L$) izračuna
         \begin{align*}
             b &= H_{non}(\text{enc}(\tilde{I}) || \text{enc}(X_1) || \text{enc}(X_2) || \dots || \text{enc}(X_\nu) || m), \\
@@ -237,7 +237,7 @@ MuSig2 pa je za osnovo uporabljen soroden problem, ki ga imenujemo \textit{probl
 (angl.\ \textit{one-more discrete logarithm problem})~\cite{bellare2003omdl}. Zasnova je enaka kot
 pri PDL. Imamo grupo z operacijo množenja, generator $g$ in element grupe $I$, zanima pa nas diskretni
 logaritem $s = \log_g I$. Razlika pri problemu še enega diskretnega logaritma je, da imamo na voljo
-oraklja, ki nam lahko pove $t$ rešitev problema diskretnega logaritma, mi pa želimo izračunati $t + 1$
+oraklja, ki nam lahko pove $t$ rešitev problema diskretnega logaritma, mi pa želimo rešiti $t + 1$
 problemov. Predpostavljamo, da ne obstaja polinomski naključnostni algoritem, ki to lahko stori z
 nezanemarljivo verjetnostjo.
 
@@ -249,6 +249,6 @@ njegov algebraični opis (na podlagi do sedaj znanih elementov), potem lahko dok
 varen tudi za $\nu = 2$.
 
 Jedro dokaza je ponovno lema o razcepu~\ref{izr:forking} v kombinaciji s previjanjem. Dokaz pa je še
-dodatno kompleksnejši, ker dokazuje tudi varnost, tudi če podpisniki sodelujejo pri več podpisih naenkrat,
+dodatno kompleksnejši, ker dokazuje varnost tudi v primeru, da podpisniki sodelujejo pri več podpisih naenkrat,
 česar osnovna lema o razcepu ne omogoča. V tem primeru varnost omogoča dejstvo, da podpisniki izberejo
 več naključnih vrednosti, ki jih združijo s pomočjo zgoščevalne funkcije $H_{non}$.
