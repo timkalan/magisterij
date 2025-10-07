@@ -1,4 +1,4 @@
-\documentclass{beamer}    % 14pt je nenujen
+\documentclass{beamer}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[slovene]{babel}
@@ -49,7 +49,8 @@
 \author{Tim Kalan \\ \medskip
         \footnotesize Mentor: doc.~dr. Tilen Marc}
 % \author{Tim Kalan}
-% \institute[FMF]{Fakulteta za matematiko in fiziko}
+        \institute[FMF]{Fakulteta za matematiko in fiziko \\
+        Fakulteta za računalništvo in informatiko}
 \title{
     Večstranski Schnorrovi podpisi \\
     \large (angl. \textit{Schnorr multisignatures})}
@@ -60,7 +61,7 @@
 
 \begin{frame}
     \titlepage
-    \note[item]{30 s}
+    \note[item]{15 s}
     \note[item]{Pozdravljeni, moje ime je Tim Kalan in ...}
     \note[item]{Šala?}
 \end{frame}
@@ -68,13 +69,13 @@
 \begin{frame}
     \frametitle{Vsebina}
     % \framesubtitle{Pregled predstavljenih tematik}
-    \note[item]{30 s}
+    \note[item]{15 s}
     \begin{enumerate}
         \item \textbf{Motivacija}
         \note[item]{Uvod: Zakaj sploh potrebujemo večkratne podpise in katere probleme rešujejo?}
-        \item \textbf{Osnova}: Schnorrov podpis
+        \item \textbf{Osnova}: Schnorr
         \note[item]{Teoretična osnova: Predstavitev Schnorrovega podpisnega algoritma.}
-        \item \textbf{Prvi pristop}: Večstranski Schnorrov podpis (ASM)
+        \item \textbf{Prvi pristop}: ASM
         \note[item]{Analiza sheme ASM, njen potek in varnostni model.}
         \item \textbf{Drugi pristop}: MuSig2
         \note[item]{Predstavitev sodobne in učinkovitejše sheme MuSig2.}
@@ -84,8 +85,8 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Uvod}
-    \framesubtitle{Podpisovanje v skupini}
+    \frametitle{Podpisovanje v skupini}
+    % \framesubtitle{Podpisovanje v skupini}
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{figure}
@@ -124,14 +125,14 @@
 
 \begin{frame}
     \frametitle{Lastnosti idealnega večstranskega podpisa}
-    \framesubtitle{Kaj želimo doseči?}
+    % \framesubtitle{Kaj želimo doseči?}
     \vspace{0.5cm}
     \begin{itemize}
-        \item \textbf{Učinkovitost:} En sam, kratek podpis. Hitro preverjanje, neodvisno od števila podpisnikov.
-        \item \textbf{Minimalna komunikacija:} Čim manj krogov izmenjave sporočil med podpisniki.
+        \item \textbf{Učinkovitost}: Hitro preverjanje%: En sam, kratek podpis. Hitro preverjanje, neodvisno od števila podpisnikov.
+        \item \textbf{Minimalna komunikacija}: Podpisniki se ne čakajo%: Čim manj krogov izmenjave sporočil med podpisniki.
         \bigskip
-        \item \textbf{Odgovornost:} Možnost natančne identifikacije dejanskih podpisnikov.
-        \item \textbf{Prilagodljivost:} Podpisovanje s strani poljubne podskupine članov.
+        \item \textbf{Odgovornost}: Kdo je naredil podpis?%: Možnost natančne identifikacije dejanskih podpisnikov.
+        \item \textbf{Prilagodljivost}: Kdo lahko naredi podpis?%: Podpisovanje s strani poljubne podskupine članov.
     \end{itemize}
     \note[item]{60 s}
     \note[item]{Na prejšnjem slajdu smo videli, da je preprosto nizanje podpisov neučinkovito. Poglejmo si torej, kakšne so lastnosti idealne rešitve – idealnega večstranskega podpisa.}
@@ -144,12 +145,12 @@
 
 \begin{frame}
     \frametitle{Schnorrov podpis}
-    \framesubtitle{Osnovni gradnik}
+    % \framesubtitle{Osnovni gradnik}
 
     \begin{columns}[T]
         \begin{column}{0.3\textwidth}
             \begin{beamercolorbox}[sep=0.2cm,center]{block title}
-                \textbf{1. Generiranje ključev}
+                \textbf{Ključi}
             \end{beamercolorbox}
             \begin{beamercolorbox}[sep=0.2cm,ht=5.5cm]{block body}
                 Podpisnik izbere:
@@ -165,7 +166,7 @@
         \end{column}
         \begin{column}{0.35\textwidth}
             \begin{beamercolorbox}[sep=0.2cm,center]{block title}
-                \textbf{2. Podpisovanje}
+                \textbf{Podpisovanje}
             \end{beamercolorbox}
             \begin{beamercolorbox}[sep=0.2cm,ht=5.5cm]{block body}
                 Za sporočilo $m$:
@@ -180,7 +181,7 @@
         \end{column}
         \begin{column}{0.35\textwidth}
             \begin{beamercolorbox}[sep=0.2cm,center]{block title}
-                \textbf{3. Preverjanje}
+                \textbf{Preverjanje}
             \end{beamercolorbox}
             \begin{beamercolorbox}[sep=0.2cm,ht=5.5cm]{block body}
                 Preveri eno samo enačbo:
@@ -203,10 +204,10 @@
 
 \begin{frame}
     \frametitle{Model ASM}
-    \framesubtitle{Večstranski podpis podskupine z odgovornostjo}
+    % \framesubtitle{Večstranski podpis podskupine z odgovornostjo}
     \begin{columns}[T]
         \begin{column}{0.45\textwidth}
-            \vspace{0.5cm}
+            % \vspace{0.5cm}
             \begin{figure}
                 \centering
                 \begin{tikzpicture}
@@ -222,7 +223,7 @@
 
         \begin{column}{0.55\textwidth}
             \begin{itemize}
-                \item \textbf{Cilj}: Omogočiti poljubni podskupini $S$ znotraj večje skupine $P$, da ustvari en sam podpis.
+                % \item \textbf{Cilj}: Omogočiti poljubni podskupini $S$ znotraj večje skupine $P$, da ustvari en sam podpis.
                 \vspace{0.5cm}
                 \item \textbf{Ključni lastnosti}:
                 \begin{itemize}
@@ -230,7 +231,7 @@
                     \item Odgovornost%: Iz podpisa je razvidno, kdo je podpisal.
                 \end{itemize}
                 \vspace{0.5cm}
-                \item \textbf{Analogija}: Deluje kot fizično podpisovanje pogodb.
+                \item \textbf{Analogija}: Fizični podpis pogodbe.
                 \vspace{0.5cm}
                 \item \textbf{Vprašanje}: Kako bi to dosegli s Schnorrovim podpisom?
             \end{itemize}
@@ -246,7 +247,7 @@
 
 \begin{frame}
     \frametitle{Naivna ideja: Združimo komponente}
-    \framesubtitle{Kako bi zgradili večstranski podpis iz Schnorra?}
+    % \framesubtitle{Kako bi zgradili večstranski podpis iz Schnorra?}
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \textbf{Individualne komponente}
@@ -279,12 +280,12 @@
 
 \begin{frame}
     \frametitle{Napad: Izničenje ključev}
-    \framesubtitle{Zakaj naivni pristop ne deluje}
+    % \framesubtitle{Zakaj naivni pristop ne deluje}
 
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \begin{center}
-                \textbf{Poštena podpisnika} \\ (Anita \& Bojan)
+                \textbf{Poštena podpisnika} \\ Anita \& Bojan
                 \vspace{0.5cm}
                 Objavita ključa:
                 \Large\[ I_A, I_B \]
@@ -293,10 +294,10 @@
 
         \begin{column}{0.5\textwidth}
             \begin{center}
-                \textbf{Zlonamerni podpisnik} \\ (Oskar)
+                \textbf{Zlonamerni podpisnik} \\ Oskar
                 \vspace{0.5cm}
-                Počaka in zgradi svoj ključ:
-                \Large\[ I_M = (I_A \cdot I_B)^{-1} \cdot g^{s_M} \]
+                Počaka in zgradi ključ:
+                \Large\[ I_O = (I_A \cdot I_B)^{-1} \cdot g^{s_M} \]
             \end{center}
         \end{column}
     \end{columns}
@@ -306,21 +307,21 @@
         \large
         \[ \tilde{I} = \underbrace{(I_A \cdot I_B)}_{\text{Anita \& Bojan}} \cdot \underbrace{\left((I_A \cdot I_B)^{-1} \cdot g^{s_M}\right)}_{\text{Oskar}} = g^{s_M} \]
     \end{block}
-    \begin{center}
-        \large\color{red!80!black}
-        Agregiran ključ je odvisen samo od Oskarjeve skrivnosti!
-    \end{center}
+    % \begin{center}
+    %     \large\color{red!80!black}
+    %     Agregiran ključ je odvisen samo od Oskarjeve skrivnosti!
+    % \end{center}
     \note[item]{60 s}
     \note[item]{Ta varnostna luknja se imenuje \textbf{napad na generiranje ključev} ali izničenje ključev.}
     \note[item]{Poglejmo si, kako deluje. Na levi imamo poštena podpisnika, Anite in Bojana. Normalno objavita svoja javna ključa.}
-    \note[item]{Na desni pa imamo zlonamerno Oskarja. On ne ustvari svojega ključa naključno. Počaka, da vidi njuna ključa, in nato svojega zgradi namensko – tako, da bo izničil ostale.}
-    \note[item]{In kaj je rezultat? Ko izračunamo agregiran ključ celotne skupine, se, kot vidite v spodnji enačbi, del od Anite in Boba popolnoma pokrajša z inverznim delom v Oskarjevem ključu.}
+    \note[item]{Na desni pa imamo zlonamernega Oskarja. On ne ustvari svojega ključa naključno. Počaka, da vidi njuna ključa, in nato svojega zgradi namensko – tako, da bo izničil ostale.}
+    \note[item]{In kaj je rezultat? Ko izračunamo agregiran ključ celotne skupine, se, kot vidite v spodnji enačbi, del od Anite in Bojana popolnoma pokrajša z inverznim delom v Oskarjevem ključu.}
     \note[item]{Končni, agregirani ključ je odvisen \textbf{samo} od Oskarjevega zasebnega ključa. To je katastrofa. Oskar lahko sedaj sam podpiše karkoli v imenu celotne skupine.}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Dokazi znanja brez razkritja znanja}
-    \framesubtitle{Rešitev napada na generiranje ključev}
+    \frametitle{Rešitev: Dokazi znanja brez razkritja znanja}
+    % \framesubtitle{Rešitev napada na generiranje ključev}
 
         % \item Dokaz, da nekaj vemo, ne da bi razkrili, kaj vemo.
         % \item Preprečujejo, da bi napadalec ponaredil javni ključ.
@@ -352,8 +353,8 @@
 \end{frame}
 
 \begin{frame}[fragile]
-    \frametitle{Merklova drevesa}
-    \framesubtitle{Učinkovita zaveza skupini}
+    \frametitle{Nadgradnja: Merklova drevesa}
+    % \framesubtitle{Učinkovita zaveza skupini}
 
     \begin{center}
         \large\color{red!80!black}
@@ -400,7 +401,7 @@
 
 \begin{frame}
     \frametitle{Protokol ASM: Priprava}
-    \framesubtitle{Enkratni postopek za vzpostavitev skupine}
+    % \framesubtitle{Enkratni postopek za vzpostavitev skupine}
 
     \begin{columns}[T]
         \begin{column}{0.33\textwidth}
@@ -452,8 +453,7 @@
 
 \begin{frame}
     \frametitle{Protokol ASM: Podpisovanje}
-    \framesubtitle{Interaktivni protokol v 3 krogih}
-
+    % \framesubtitle{Interaktivni protokol v 3 krogih}
     \begin{figure}
         \centering
         \begin{tikzpicture}[
@@ -494,11 +494,11 @@
 
 \begin{frame}
     \frametitle{Varnost ASM}
-    \framesubtitle{Dokaz z redukcijo}
+    % \framesubtitle{Dokaz z redukcijo}
     \begin{itemize}
         \item Shema je \textbf{dokazljivo varna} v modelu slučajnega oraklja.
         \vspace{0.5cm}
-        \item Varnost se z redukcijo prevede na \textbf{težavnost problema diskretnega logaritma}.
+        \item Varnost se z \textbf{redukcijo} prevede na \textbf{težavnost problema diskretnega logaritma}.
         \vspace{0.5cm}
         \item Ključno orodje v dokazu je \textbf{lema o razcepu} (angl. \textit{Forking Lemma}).
         \begin{itemize}
@@ -526,13 +526,12 @@
 
 \begin{frame}
     \frametitle{Moderne zahteve}
-    \framesubtitle{Od odgovornosti k učinkovitosti in zasebnosti}
-
+    % \framesubtitle{Od odgovornosti k učinkovitosti in zasebnosti}
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \begin{block}{Omejitve sheme ASM}
                 \begin{itemize}
-                    \item \textbf{Počasnost:} 3 krogi komunikacije so prepočasni za aplikacije, kot so kriptovalute.
+                    \item \textbf{Počasnost:} 3 krogi komunikacije so prepočasni.% za aplikacije, kot so kriptovalute.
                     \item \textbf{Pomanjkanje zasebnosti:} Polna odgovornost ni vedno zaželena.
                 \end{itemize}
             \end{block}
@@ -562,17 +561,8 @@
 
 \begin{frame}
     \frametitle{MuSig2}
-    \framesubtitle{Učinkovitost in zasebnost v praksi}
-
+    % \framesubtitle{Učinkovitost in zasebnost v praksi}
     \begin{columns}[T]
-        \begin{column}{0.55\textwidth}
-            \begin{itemize}
-                \item \textbf{Hitrost:} Zahteva samo \textbf{dva kroga} komunikacije.
-                \item \textbf{Učinkovitost:} Vsi javni ključi se združijo v \textbf{enega samega} (agregacija ključev).
-                \item \textbf{Združljivost:} Rezultat je \textbf{standarden Schnorrov podpis}, zamenljiv z navadnim.
-                \item \textbf{Zasebnost:} Podpis je nerazločljiv od podpisa posameznika, kar skrije člane skupine.
-            \end{itemize}
-        \end{column}
         \begin{column}{0.45\textwidth}
             \centering
             \begin{tikzpicture}[
@@ -583,11 +573,19 @@
                 \node[signer] (s2) at (-0.8, 1.5) {$P_2$};
                 \node[signer] (s3) at (0.8, 1.5) {$P_3$};
 
-                \draw[->, very thick, double distance=2pt] (0, 0.7) -- (0, -0.7) node[midway, right] {MuSig2};
+                \draw[->, thick, double distance=0pt] (0, 0.7) -- (0, -0.7) node[midway, right] {MuSig2};
 
                 \node[final_box] at (0, -1.5) {En sam podpis $\sigma$ \\ (kot en podpisnik)};
             \end{tikzpicture}
-            \captionof{figure}{\small Več podpisnikov $\rightarrow$ en podpis.}
+            % \captionof{figure}{\small Več podpisnikov $\rightarrow$ en podpis.}
+        \end{column}
+        \begin{column}{0.55\textwidth}
+            \begin{itemize}
+                \item \textbf{Hitrost:} Zahteva samo \textbf{dva kroga} komunikacije.
+                \item \textbf{Učinkovitost:} Uporablja \textbf{agregacijo ključev}.
+                \item \textbf{Združljivost:} Rezultat je \textbf{standarden Schnorrov podpis}.
+                \item \textbf{Zasebnost:} Podpis je nerazločljiv od podpisa posameznika.
+            \end{itemize}
         \end{column}
     \end{columns}
     \note[item]{60 s}
@@ -602,12 +600,11 @@
 
 \begin{frame}
     \frametitle{Kako deluje MuSig2?}
-    \framesubtitle{Varna agregacija in podpisovanje v 2 krogih}
-
+    % \framesubtitle{Varna agregacija in podpisovanje v 2 krogih}
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \begin{block}{1. Varna agregacija ključev}
-                Napad na generiranje ključev je preprečen z \textbf{utežmi} $c_i$, ki so odvisne od \textbf{vseh} ključev v skupini.
+                Napad na generiranje ključev je preprečen s koeficienti $c_i$, ki so odvisne od \textbf{vseh} ključev v skupini.
             \end{block}
             \centering
             \begin{tikzpicture}[node distance=0.8cm]
@@ -629,13 +626,16 @@
                     \node[participant] (signers) {Podpisniki};
                     \node[participant, right=of signers] (coord) {Koordinator};
                     
-                    \draw[dashed] (signers.south) -- ++(0,-4);
-                    \draw[dashed] (coord.south) -- ++(0,-4);
+                    \draw[dashed] (signers.south) -- ++(0,-4.5);
+                    \draw[dashed] (coord.south) -- ++(0,-4.5);
                     
-                    \draw[->, thick] ([yshift=-1cm]signers.east) -- node[midway, above, font=\small] {1. Krog (Zaveza)} node[midway, below, font=\small] {$X_i$} ([yshift=-1cm]coord.west);
-                    \node[align=center, font=\tiny\itshape] at ([yshift=-1.7cm]signers) {(lahko vnaprej)};
+                    \draw[<->, very thick, blue!60!black] ([yshift=-2cm]signers.east) -- ([yshift=-2cm]coord.west)
+                        node[midway, above, black, align=center] {\textbf{1. Krog (Zaveza)} \\ \tiny\itshape(lahko vnaprej)}
+                        node[midway, below, black] {$X_{i, j}$};
 
-                    \draw[->, thick] ([yshift=-3cm]signers.east) -- node[midway, above, font=\small] {2. Krog (Odgovor)} node[midway, below, font=\small] {$y_i$} ([yshift=-3cm]coord.west);
+                    \draw[->, very thick, blue!60!black] ([yshift=-4cm]signers.east) -- ([yshift=-4cm]coord.west)
+                        node[midway, above, black] {\textbf{2. Krog (Odgovor)}}
+                        node[midway, below, black] {$y_i$};
                 \end{tikzpicture}
             \end{block}
         \end{column}
@@ -652,26 +652,22 @@
 
 \begin{frame}
     \frametitle{Empirična analiza}
-    \framesubtitle{Odgovornost ali učinkovitost v praksi?}
-
-    \begin{block}{Primerjani pristopi}
+    % \framesubtitle{Odgovornost ali učinkovitost v praksi?}
+    \begin{block}{Primerjane sheme}
         \begin{columns}[T,totalwidth=\textwidth] % Use full width for better spacing
             \begin{column}{0.33\textwidth}
-                \centering
                 \textbf{1. Osnova}
                 \begin{itemize}
                     \item Schnorr
                 \end{itemize}
             \end{column}
             \begin{column}{0.33\textwidth}
-                \centering
                 \textbf{2. Odgovornost}
                 \begin{itemize}
                     \item Shema ASM
                 \end{itemize}
             \end{column}
             \begin{column}{0.33\textwidth}
-                \centering
                 \textbf{3. Učinkovitost}
                 \begin{itemize}
                     \item MuSig2
@@ -698,14 +694,14 @@
 
 \begin{frame}
     \frametitle{Rezultati: Generiranje ključev in Podpisovanje}
-    
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
             \centering
             \textbf{1. Generiranje ključev}
             \includegraphics[width=\linewidth]{images/benchmark_KeyGeneration.pdf}
             
-            \begin{block}{Ugotovitev}
+            % \begin{block}{Ugotovitev}
+            \begin{block}
                 \small % Use a smaller font for the finding
                 \textbf{ASM je najpočasnejši} zaradi kompleksne priprave (dokazi znanja, Merklovo drevo), ki se izvede le enkrat. 
             \end{block}
@@ -713,10 +709,11 @@
 
         \begin{column}{0.5\textwidth}
             \centering
-            \textbf{2. Podpisovanje (samo računanje)}
+            \textbf{2. Podpisovanje}
             \includegraphics[width=\linewidth]{images/benchmark_Signing.pdf}
             
-            \begin{block}{Ugotovitev}
+            % \begin{block}{Ugotovitev}
+            \begin{block}
                 \small
                 MuSig2 zahteva več računskega dela, a je v praksi \textbf{bistveno hitrejši} zaradi manj komunikacije (2 vs. 3 krogi). 
             \end{block}
@@ -731,7 +728,7 @@
 
 \begin{frame}
     \frametitle{Rezultati: Preverjanje}
-    \framesubtitle{Glavna prednost večstranskih podpisov}
+    % \framesubtitle{Glavna prednost večstranskih podpisov}
     \begin{figure}
         \centering
         \includegraphics[width=0.85\textwidth]{images/benchmark_Verification.pdf}
@@ -743,7 +740,7 @@
             \color{orange!80!black}\large\bfseries 1. Schnorr
             \rmfamily\normalsize
             \begin{itemize}
-                \item Čas narašča \textbf{linearno} ($O(L)$).
+                \item Čas narašča \textbf{linearno}.
                 \item Ni skalabilno.
             \end{itemize}
         \end{column}
@@ -753,8 +750,8 @@
             \color{green!50!black}\large\bfseries 2. ASM
             \rmfamily\normalsize
             \begin{itemize}
-                \item Rast je \textbf{zelo počasna} ($O(\log L)$).
-                \item Zelo učinkovito.
+                \item Rast je \textbf{zelo počasna}.
+                \item Učinkovito.
             \end{itemize}
         \end{column}
         
@@ -763,7 +760,7 @@
             \color{blue!60!black}\large\bfseries 3. MuSig2
             \rmfamily\normalsize
             \begin{itemize}
-                \item Čas je \textbf{konstanten} ($O(1)$).
+                \item Čas je \textbf{konstanten}.
                 \item Idealno.
             \end{itemize}
         \end{column}
@@ -779,7 +776,7 @@
 
 \begin{frame}
     \frametitle{Primerjava shem}
-    \framesubtitle{Pregled ključnih lastnosti}
+    % \framesubtitle{Pregled ključnih lastnosti}
     \centering
     \renewcommand{\arraystretch}{1.5} % Your original row spacing
     \footnotesize % Your original font size
@@ -803,7 +800,7 @@
 
 \begin{frame}
     \frametitle{Kompromis}
-    \framesubtitle{Odgovornost ali učinkovitost?}
+    % \framesubtitle{Odgovornost ali učinkovitost?}
     % Izbira sheme je odvisna od zahtev aplikacije.
     % \vspace{1cm}
     %
