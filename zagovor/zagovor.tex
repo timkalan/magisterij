@@ -96,13 +96,13 @@
             \end{figure}
         \end{column}
         \begin{column}{0.5\textwidth}
-            \textbf{Problem:} Nizanje podpisov.
+            \textbf{Problem:} Nizanje podpisov
             \begin{itemize}
                 \item Velikost in čas preverjanja rasteta linearno.
             \end{itemize}
             \vspace{1cm}
             % \bigskip
-            \textbf{Rešitev:} Večstranski podpisi.
+            \textbf{Rešitev:} Večstranski podpisi
              \begin{itemize}
                 \item En sam podpis, hitro preverjanje.
             \end{itemize}
@@ -150,7 +150,7 @@
     \begin{columns}[T]
         \begin{column}{0.3\textwidth}
             \begin{beamercolorbox}[sep=0.2cm,center]{block title}
-                \textbf{Ključi}
+                Ključi
             \end{beamercolorbox}
             \begin{beamercolorbox}[sep=0.2cm,ht=5.5cm]{block body}
                 Podpisnik izbere:
@@ -167,7 +167,7 @@
         \end{column}
         \begin{column}{0.35\textwidth}
             \begin{beamercolorbox}[sep=0.2cm,center]{block title}
-                \textbf{Podpisovanje}
+                Podpisovanje
             \end{beamercolorbox}
             \begin{beamercolorbox}[sep=0.2cm,ht=5.5cm]{block body}
                 Za sporočilo $m$:
@@ -183,7 +183,7 @@
         \end{column}
         \begin{column}{0.35\textwidth}
             \begin{beamercolorbox}[sep=0.2cm,center]{block title}
-                \textbf{Preverjanje}
+                Preverjanje
             \end{beamercolorbox}
             \begin{beamercolorbox}[sep=0.2cm,ht=5.5cm]{block body}
                 Preveri eno samo enačbo:
@@ -300,7 +300,7 @@
                 \textbf{Zlonamerni podpisnik} \\ Oskar
                 \vspace{0.5cm}
                 počaka in zgradi ključ:
-                \Large\[ I_O = (I_A \cdot I_B)^{-1} \cdot g^{s_M} \]
+                \Large\[ I_O = (I_A \cdot I_B)^{-1} \cdot g^{s_O} \]
             \end{center}
         \end{column}
     \end{columns}
@@ -308,7 +308,7 @@
     \vfill
     \begin{block}{Rezultat: Agregiran javni ključ}
         \large
-        \[ \tilde{I} = \underbrace{(I_A \cdot I_B)}_{\text{Anita \& Bojan}} \cdot \underbrace{\left((I_A \cdot I_B)^{-1} \cdot g^{s_M}\right)}_{\text{Oskar}} = g^{s_M} \]
+        \[ \tilde{I} = \underbrace{(I_A \cdot I_B)}_{\text{Anita \& Bojan}} \cdot \underbrace{\left((I_A \cdot I_B)^{-1} \cdot g^{s_O}\right)}_{\text{Oskar}} = g^{s_O} \]
     \end{block}
     % \begin{center}
     %     \large\color{red!80!black}
@@ -478,11 +478,12 @@
                 
             \draw[<-, very thick, blue!60!black] ([yshift=-2.5cm]signers.east) -- ([yshift=-2.5cm]coord.west)
                 node[midway, above, black] {\textbf{2. Krog (Izziv)}}
-                node[midway, below, black, align=center] {$e = H(\prod X_i, m, S)$};
+                node[midway, below, black, align=center] {$\prod X_i$};
                 
             \draw[->, very thick, blue!60!black] ([yshift=-4cm]signers.east) -- ([yshift=-4cm]coord.west)
                 node[midway, above, black] {\textbf{3. Krog (Odgovor)}}
                 node[midway, below, black] {$y_i = es_i + r_i$};
+                % node[midway, below, black] {$y_i = H(\prod X_i, m, S)s_i + r_i$};
                 
             \node[draw, thick, fill=yellow!20, rounded corners, below=0.2cm of coord, yshift=-5cm, align=center] (assembly) {Sestavi podpis:\\$\sigma = (\prod X_i, \sum y_i)$};
             \draw[->, thick] ([yshift=-4.2cm]coord.south) -- (assembly.north);
@@ -537,8 +538,8 @@
         \begin{column}{0.5\textwidth}
             \begin{block}{Omejitve sheme ASM}
                 \begin{itemize}
-                    \item \textbf{Počasnost:} 3 krogi komunikacije. % so prepočasni.% za aplikacije, kot so kriptovalute.
-                    \item \textbf{Pomanjkanje zasebnosti:} Polna odgovornost.% ni vedno zaželena.
+                    \item \textbf{Počasnost:} 3 krogi komunikacije % so prepočasni.% za aplikacije, kot so kriptovalute.
+                    \item \textbf{Pomanjkanje zasebnosti:} Polna odgovornost% ni vedno zaželena.
                 \end{itemize}
             \end{block}
         \end{column}
@@ -546,8 +547,8 @@
         \begin{column}{0.5\textwidth}
             \begin{block}{Novi cilji}
                 \begin{itemize}
-                    \item \textbf{Hitrost:} 2 kroga komunikacije.
-                    \item \textbf{Zasebnost:} Zamenljivost s standardnim podpisom.
+                    \item \textbf{Hitrost:} 2 kroga komunikacije
+                    \item \textbf{Zasebnost:} Zamenljivost s standardnim podpisom
                 \end{itemize}
             \end{block}
         \end{column}
@@ -674,14 +675,21 @@
 
     \vfill
 
-    \begin{block}{}
-        \centering
-        \large
-        Generiranje ključev \quad$\cdot$\quad Podpisovanje \quad$\cdot$\quad Preverjanje
-        \vspace{0.5cm}
-    \end{block}
-    \centering
-    \large\textit{...vse v odvisnosti od števila podpisnikov.}
+    \begin{columns}[T]
+        \begin{column}{0.4\textwidth}
+            \begin{itemize}
+                \item Generiranje ključev
+                \item Podpisovanje
+                \item Preverjanje
+            \end{itemize}
+        \end{column}
+
+        \begin{column}{0.6\textwidth}
+            \centering
+            \vspace{0.66cm}
+            \large\textit{... v odvisnosti od števila podpisnikov.}
+        \end{column}
+    \end{columns}
     \note[item]{30 s}
     \note[item]{Da bi teoretične prednosti in slabosti teh shem preveril tudi v praksi, sem izvedel empirično analizo učinkovitosti.}
     \note[item]{Primerjal sem tri ključne pristope: osnovni Schnorr, shemo ASM za odgovornost in MuSig2 za učinkovitost.}
@@ -738,8 +746,8 @@
             \color{orange!80!black}\large\bfseries Schnorr
             \rmfamily\normalsize
             \begin{itemize}
-                \item Čas narašča \textbf{linearno}.
-                \item Ni skalabilno.
+                \item linearna rast
+                \item ni skalabilnosti
             \end{itemize}
         \end{column}
         
@@ -748,8 +756,8 @@
             \color{green!50!black}\large\bfseries ASM
             \rmfamily\normalsize
             \begin{itemize}
-                \item Rast je \textbf{zelo počasna}.
-                \item Učinkovito.
+                \item počasna rast
+                \item učinkovitost
             \end{itemize}
         \end{column}
         
@@ -758,8 +766,8 @@
             \color{blue!60!black}\large\bfseries MuSig2
             \rmfamily\normalsize
             \begin{itemize}
-                \item Čas je \textbf{konstanten}.
-                \item Idealno.
+                \item konstanten čas
+                \item idealna rešitev
             \end{itemize}
         \end{column}
     \end{columns}
@@ -785,7 +793,7 @@
         Čas preverjanja   & \cellcolor{bad}Linearen      & \cellcolor{ok}Konstanten* & \cellcolor{good}Konstanten \\ \hline
         Odgovornost       & \cellcolor{good}Popolna       & \cellcolor{good}Popolna        & \cellcolor{bad}Brez \\ \hline
         Prilagodljivost   & \cellcolor{good}Popolna       & \cellcolor{good}Popolna        & \cellcolor{bad}Brez (cela skupina) \\ \hline
-        Komunikacija      & \cellcolor{good}0 krogov      & \cellcolor{bad}3 krogi         & \cellcolor{ok}2 kroga \\ \hline
+        Komunikacija      & \cellcolor{good}0 krogov*     & \cellcolor{bad}3 krogi         & \cellcolor{ok}2 kroga \\ \hline
         Zasebnost         & \cellcolor{bad}Brez           & \cellcolor{bad}Brez            & \cellcolor{good}Popolna \\ \hline
     \end{tabular}
     \note[item]{60 s}
@@ -804,9 +812,9 @@
     %
     \begin{columns}[T]
         \begin{column}{0.5\textwidth}
-            \begin{beamercolorbox}[sep=0.3cm,center]{block title}
-                \textbf{Izberi ASM, ko ...}
-            \end{beamercolorbox}
+            \centering
+            \textbf{Izberi ASM, ko ...}
+            \\[0.5cm] % Ends the line and adds 0.3cm of space
             \begin{beamercolorbox}[sep=0.3cm,ht=5cm]{block body}
                 \begin{itemize}
                     \item ... je \textbf{odgovornost} ključna (mora se vedeti, kdo je podpisal).
@@ -816,14 +824,14 @@
             \end{beamercolorbox}
         \end{column}
         \begin{column}{0.5\textwidth}
-            \begin{beamercolorbox}[sep=0.3cm,center]{block title}
-                \textbf{Izberi MuSig2, ko ...}
-            \end{beamercolorbox}
+            \centering
+            \textbf{Izberi MuSig2, ko ...}
+            \\[0.5cm] % Ends the line and adds 0.3cm of space
             \begin{beamercolorbox}[sep=0.3cm,ht=5cm]{block body}
                 \begin{itemize}
                     \item ... je \textbf{učinkovitost preverjanja} najpomembnejša.
                     \item ... je zaželena \textbf{zasebnost} podpisnikov.
-                    \item ... potrebujete združljivost z obstoječo Schnorr infrastrukturo (npr. Bitcoin).
+                    \item ... potrebuješ združljivost z obstoječo Schnorr infrastrukturo (npr. Bitcoin).
                 \end{itemize}
             \end{beamercolorbox}
         \end{column}
@@ -835,7 +843,7 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Prihodnje delo}
+    \frametitle{Nadaljnje raziskovanje}
     % \framesubtitle{Odgovornost ali učinkovitost?}
     \begin{itemize}
         \item \textbf{Podrobnejša empirična analiza}
